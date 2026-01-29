@@ -1,0 +1,14 @@
+*
+!/**/
+!*.*
+
+.venv
+.vscode
+
+.clang-format
+
+*.exe
+src/cpp/*.out
+src/*.egg-info
+
+secret

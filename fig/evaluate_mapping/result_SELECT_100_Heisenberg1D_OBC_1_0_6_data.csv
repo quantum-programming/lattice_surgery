@@ -1,0 +1,14 @@
+factory_method,allocation_method,layer_count,routing_algorithm,Total Time
+Ignore,Topology,,,185
+outer,naive,1,CareKinkParity,740
+outer,naive,2,CareKinkParity,550
+outer,random,1,CareKinkParity,427
+outer,random,2,CareKinkParity,288
+outer,SA,1,CareKinkParity,199
+outer,SA,2,CareKinkParity,197
+inner,naive,1,CareKinkParity,740
+inner,naive,2,CareKinkParity,550
+inner,random,1,CareKinkParity,393
+inner,random,2,CareKinkParity,263
+inner,SA,1,CareKinkParity,198
+inner,SA,2,CareKinkParity,192

@@ -1,0 +1,10 @@
+circuit,total_code_beat,circuit_volume
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_1,10453,1729600
+result_trotter_10_Heisenberg2D_cylinder_0.5_0.5_rand,3339,652754
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_0,14695,1973490
+result_trotter_10_Heisenberg2D_cylinder_0.5_0.5_det,2672,544680
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_2,8202,1966008
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_3,6076,2190030
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_4,4106,2467352
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_5,2919,3109658
+result_SELECT_10_Heisenberg2D_cylinder_0.5_0.5_6,2649,5154416

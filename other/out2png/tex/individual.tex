@@ -1,0 +1,51 @@
+\documentclass{standalone}
+
+\usepackage{animate}
+\usepackage{amsmath, amssymb, amsthm, mathrsfs, amsfonts, dsfont}
+\usepackage{ascmac}
+\usepackage{bbm}
+\usepackage{bm}
+\usepackage{breakcites}
+\usepackage{calc}
+\usepackage{enumerate}
+\usepackage{ifthen}
+\usepackage{mathtools}
+\usepackage{makecell}
+\usepackage{mlmodern}
+\usepackage{newtxtext}
+\usepackage{optidef}
+\usepackage{physics}
+\usepackage{pifont}
+\usepackage{setspace}
+\usepackage{stfloats}
+\usepackage{subcaption}
+\usepackage{svg}
+\usepackage{tikz}
+\usepackage{xparse}
+\usepackage[all]{xy}
+
+\usepackage{float}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+% SVGのファイル名衝突を防ぐ設定
+\svgsetup{inkscapelatex=false}
+
+\begin{document}
+
+\centering
+\begin{tabular}{c@{\hspace{1em}}c}
+  \makecell{\small{\textsf{Outer 1D Projective}}                                                                                                        \\[-0.2em]
+  \includesvg[width=0.35\textwidth]{individual_result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1___001.svg}}           &
+
+  \makecell{\small{\textsf{Outer 1D Double}}                                                                                                            \\[-0.2em]
+  \includesvg[width=0.35\textwidth]{individual_result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1___001.svg}}                 \\
+
+  \makecell{\includesvg[width=0.35\textwidth]{individual_result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1___002.svg}} &
+  \makecell{\includesvg[width=0.35\textwidth]{individual_result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1___002.svg}}       \\
+  \makecell{\includesvg[width=0.35\textwidth]{individual_result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1___003.svg}} &
+  \makecell{\includesvg[width=0.35\textwidth]{individual_result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1___003.svg}}       \\
+\end{tabular}
+
+\end{document}

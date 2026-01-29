@@ -1,0 +1,37 @@
+# Output file paths - one per line
+
+# Main demo files
+# out/example/demo.out
+# out/example/stair_single.out
+# out/example/stair_double.out
+# out/example/stair_projective.out
+# out/example/chain_single.out
+# out/example/chain_double.out
+# out/example/chain_projective.out
+# out/example/legend_inner.out
+# out/example/legend_outer.out
+# out/example/kink_time.out
+# out/example/kink_25D.out
+# out/example/floorplan_1_4.out
+# out/example/floorplan_4_9.out
+# out/example/floorplan_1_2.out
+
+# for mapping section
+out/result/result_SELECT_2_FermiHubbard2D_cylinder_0_0_2_inner_naive_1_1000000_CareKinkParity.out
+out/result/result_SELECT_2_FermiHubbard2D_cylinder_0_0_2_inner_random_1_1000000_CareKinkParity.out
+out/result/result_SELECT_2_FermiHubbard2D_cylinder_0_0_2_inner_SA_1_1000000_CareKinkParity.out
+out/result/result_SELECT_2_FermiHubbard2D_cylinder_0_0_2_outer_naive_1_1000000_CareKinkParity.out
+out/result/result_SELECT_2_FermiHubbard2D_cylinder_0_0_2_outer_random_1_1000000_CareKinkParity.out
+out/result/result_SELECT_2_FermiHubbard2D_cylinder_0_0_2_outer_SA_1_1000000_CareKinkParity.out
+
+# for individual.tex
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_inner_double_CareKinkParity_1__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_inner_double_CareKinkParity_2__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_inner_projective_CareKinkParity_1__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_inner_projective_CareKinkParity_2__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_inner_single_CareKinkParity_2__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_2__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_2__.out
+# out/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_single_CareKinkParity_2__.out

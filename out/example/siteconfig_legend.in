@@ -1,0 +1,12 @@
+{
+  "system": [
+    0,
+    1
+  ],
+  "control": [
+    2
+  ],
+  "control_ancilla": [
+    3
+  ]
+}

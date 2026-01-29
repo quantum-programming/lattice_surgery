@@ -1,0 +1,10 @@
+[package]
+name = "out2png"
+version = "0.1.0"
+edition = "2021"
+description = "output to SVG"
+license = "MIT"
+
+[dependencies]
+svg = "0.18.0"
+serde_json = "1.0"

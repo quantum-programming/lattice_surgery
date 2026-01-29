@@ -1,0 +1,20 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{svg}
+\usepackage{array}
+\usepackage{graphics}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \node[inner sep=0pt] (table) at (0,0) {
+        \begin{tabular}{>{\centering\arraybackslash}m{2cm}
+            >{\centering\arraybackslash}m{4cm}
+            >{\centering\arraybackslash}m{4.5cm}}
+            outer 2D                                      & inner 2.5D \;                                 &                                          \\
+            \includesvg[height=2cm]{legend_outer_001.svg} & \includesvg[height=2cm]{legend_inner_001.svg} & \includesvg[height=2cm]{legend_only.svg}
+        \end{tabular}
+    };
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,8 @@
+                                                  | 2.5D Ignore Kink | 2.5D Ignore Kink (Rnd.) | 2.5D Care Kink | 2.5D Care Kink (Rnd.)
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_0.in |            20012 |                   20012 |          20012 |                 20012
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_1.in |            10024 |                   10024 |          10024 |                 10025
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_2.in |             5033 |                    5033 |           5034 |                  5037
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_3.in |             2541 |                    2541 |           2554 |                  2551
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_4.in |             1333 |                    1317 |           1374 |                  1358
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_5.in |              864 |                     848 |            907 |                   881
+result_SELECT_10_Heisenberg2D_cylinder_1_0.5_6.in |              729 |                     703 |            751 |                   721

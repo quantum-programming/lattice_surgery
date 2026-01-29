@@ -1,0 +1,55 @@
+{
+  "experiments": [
+    {
+      "name": "select_6",
+      "file_patterns": [
+        "../data/circuit/result_SELECT_10_*_6.in",
+        "../data/circuit/result_SELECT_100_*_6.in"
+      ],
+      "factories": ["inner", "outer"],
+      "layer_counts": [1, 2],
+      "allocators": {
+        "naive": [0],
+        "random": [0],
+        "SA": [1, 0.1, 0.01, 0.001]
+      },
+      "msf_prep_times": [2]
+    },
+    {
+      "name": "heisenberg_10",
+      "file_patterns": ["../data/circuit/result_*_10_Heisenberg2D_*.in"],
+      "factories": ["inner", "outer"],
+      "layer_counts": [1, 2],
+      "allocators": {
+        "naive": [0],
+        "random": [0],
+        "SA": [1, 0.1, 0.01, 0.001]
+      },
+      "msf_prep_times": [0, 2]
+    },
+    {
+      "name": "msf_prep_time_select",
+      "file_patterns": ["../data/circuit/result_SELECT_10_Heisenberg2D_*_6.in"],
+      "factories": ["inner", "outer"],
+      "layer_counts": [1, 2],
+      "allocators": {
+        "naive": [0],
+        "random": [0],
+        "SA": [1, 0.1, 0.01, 0.001]
+      },
+      "msf_prep_times": [0, 2, 4, 6, 8, 10]
+    },
+    {
+      "name": "msf_prep_time_trotter",
+      "file_patterns": ["../data/circuit/result_trotter_10_Heisenberg2D_*.in"],
+      "factories": ["inner", "outer"],
+      "layer_counts": [1, 2],
+      "allocators": {
+        "naive": [0],
+        "random": [0],
+        "SA": [1, 0.1, 0.01, 0.001]
+      },
+      "msf_prep_times": [0, 1, 2]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+                                                   | Ignore Top. | 2D Ignore Kink | 2D Ignore Kink (Rnd.) | 2.5D Ignore Kink | 2.5D Ignore Kink (Rnd.) | 2.5D Care Kink | 2.5D Care Kink (Rnd.)
+  result_SELECT_4_FermiHubbard2D_cylinder_0_0_0.in |        1141 |           1141 |                  1141 |             1141 |                    1141 |           1141 |                  1141
+  result_SELECT_4_FermiHubbard2D_cylinder_0_0_1.in |         678 |            683 |                   678 |              678 |                     678 |            678 |                   678
+  result_SELECT_4_FermiHubbard2D_cylinder_0_0_2.in |         373 |            400 |                   376 |              373 |                     373 |            383 |                   374
+  result_SELECT_4_FermiHubbard2D_cylinder_0_0_3.in |         230 |            268 |                   236 |              238 |                     231 |            242 |                   231
+  result_SELECT_4_FermiHubbard2D_cylinder_0_0_4.in |         136 |            175 |                   184 |              156 |                     138 |            164 |                   140
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_0.in |         719 |            719 |                   719 |              719 |                     719 |            719 |                   719
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_1.in |         371 |            377 |                   373 |              371 |                     371 |            371 |                   371
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_2.in |         200 |            253 |                   217 |              201 |                     200 |            214 |                   204
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_3.in |         119 |            196 |                   147 |              148 |                     121 |            158 |                   125
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_4.in |          81 |            108 |                   145 |              118 |                      86 |            121 |                    97
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_5.in |          66 |            197 |                   161 |               80 |                      93 |             91 |                    98
+result_SELECT_4_Heisenberg2D_cylinder_0.5_0.5_6.in |          74 |            185 |                   184 |              154 |                     102 |            145 |                   105
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_0.in |        2831 |           2831 |                  2831 |             2831 |                    2831 |           2831 |                  2831
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_1.in |        1429 |           1450 |                  1444 |             1429 |                    1429 |           1429 |                  1429
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_2.in |         731 |            915 |                   790 |              738 |                     731 |            789 |                   735
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_3.in |         389 |            752 |                   500 |              483 |                     398 |            520 |                   412
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_4.in |         219 |            407 |                   408 |              373 |                     234 |            379 |                   246
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_5.in |         151 |            439 |                   386 |              222 |                     187 |            234 |                   195
+  result_SELECT_4_Heisenberg2D_cylinder_1_0.5_6.in |         115 |            316 |                   379 |              294 |                     178 |            286 |                   183
