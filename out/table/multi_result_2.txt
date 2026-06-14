@@ -1,8 +1,0 @@
-                                                  | Single No Top | Single No Kink | Single Yes Kink | Multi No Top | Proj No Kink
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_0.in |         20012 |          20012 |           20012 |        17760 |        17760
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_1.in |         10024 |          10024 |           10025 |         8880 |         8883
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_2.in |          5033 |           5033 |            5037 |         4440 |         4445
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_3.in |          2539 |           2545 |            2558 |         2221 |         2231
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_4.in |          1296 |           1325 |            1373 |         1112 |         1129
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_5.in |           678 |            852 |             878 |          557 |          648
-result_SELECT_10_Heisenberg2D_cylinder_1_0.5_6.in |           374 |            667 |             688 |          280 |          481
