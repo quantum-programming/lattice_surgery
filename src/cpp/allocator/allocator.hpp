@@ -123,7 +123,16 @@ class Allocator {
 
   Result naive_alloc(const Problem& prob) {
     auto [w, h, alloc, factory] = _base_for_allocation(prob);
-    alloc.resize(prob.data_qubits.size());
+    if (factory_method == "inner") {
+      std::vector<Pos> loc(alloc.begin(), alloc.end());
+      loc.insert(loc.end(), factory.begin(), factory.end());
+      std::sort(loc.begin(), loc.end());
+      alloc.assign(loc.begin(), loc.begin() + prob.data_qubits.size());
+      factory.assign(loc.begin() + prob.data_qubits.size(),
+                     loc.begin() + prob.data_qubits.size() + factory.size());
+    } else if (factory_method == "outer") {
+      alloc.resize(prob.data_qubits.size());
+    }
     return {w, h, alloc, factory};
   }
 

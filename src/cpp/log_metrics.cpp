@@ -13,24 +13,27 @@ namespace fs = std::filesystem;
 
 template <class Result>
 void validate(std::string routing_option, Result result) {
-  int check_level;
+  RoutingAlgorithm routing_algo;
   if (routing_option == "Yes_Kink") {
-    check_level = 3;
+    routing_algo = CareKinkParity;
   } else if (routing_option == "No_Kink") {
-    check_level = 2;
+    routing_algo = IgnoreKinkParity;
   } else if (routing_option == "No_Top") {
-    check_level = 1;
+    routing_algo = IgnoreTopology;
+  } else if (routing_option == "No_MP") {
+    routing_algo = IgnoreMagicTopology;
   } else if (routing_option == "No_MSF") {
-    check_level = 0;
+    routing_algo = IgnoreTopologyInfiniteMagic;
   } else {
     assert(false);
   }
-  ScheduleResultValidator(result, check_level).validate_all();
+  ScheduleResultValidator(result, routing_algo).validate_all();
 };
 
 std::string to_csv(fs::path input_path, std::string factory, int layer_count,
                    std::string allocator, double msf_coeff, int msf_prep_time) {
   Problem prob(input_path.string(), msf_prep_time);
+
   Allocator().allocate(prob, factory, allocator, layer_count, msf_coeff,
                        1000000);
 
@@ -44,7 +47,8 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
   std::stringstream ss;
   // CSV Header
   ss << "circuit,factory,layer_count,allocator,msf_coeff,msf_prep_time,"
-        "routing_algo,routing_option,total_code_beat,circuit_volume\n";
+        "routing_algo,routing_option,total_code_beat,circuit_"
+        "volume\n";
 
   std::string csv_row_prefix =
       input_path.stem().string() + "," + factory + ","  //
@@ -60,6 +64,8 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
             {"No_MSF", single_scheduler
                            .look_ahead_schedule<IgnoreTopologyInfiniteMagic>()},
             {"No_Top", single_scheduler.look_ahead_schedule<IgnoreTopology>()},
+            {"No_MP",
+             single_scheduler.look_ahead_schedule<IgnoreMagicTopology>()},
             {"No_Kink",
              single_scheduler.look_ahead_schedule<IgnoreKinkParity>()},
 
@@ -69,7 +75,7 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
           {"Yes_Kink", single_scheduler.look_ahead_schedule<CareKinkParity>()});
     }
 
-    for (auto &&[option, result] : results) {
+    for (auto&& [option, result] : results) {
       validate(option, result);
       ss << csv_row_prefix << "Single" << "," << option << ","
          << result.total_time << "," << result.compute_circuit_volume() << "\n";
@@ -83,13 +89,15 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
             {"No_MSF", double_scheduler
                            .look_ahead_schedule<IgnoreTopologyInfiniteMagic>()},
             {"No_Top", double_scheduler.look_ahead_schedule<IgnoreTopology>()},
+            {"No_MP",
+             double_scheduler.look_ahead_schedule<IgnoreMagicTopology>()},
             {"No_Kink",
              double_scheduler.look_ahead_schedule<IgnoreKinkParity>()},
             {"Yes_Kink",
              double_scheduler.look_ahead_schedule<CareKinkParity>()},
         };
 
-    for (auto &&[option, result] : results) {
+    for (auto&& [option, result] : results) {
       validate(option, result);
       ss << csv_row_prefix << "Double" << "," << option << ","
          << result.total_time << "," << result.compute_circuit_volume() << "\n";
@@ -100,15 +108,18 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
 
     std::vector<std::pair<std::string, MultiTimeSliceScheduleResult>> results =
         {
-            {"No_MSF", proj_scheduler.schedule<IgnoreTopologyInfiniteMagic>()},
-            {"No_Top", proj_scheduler.schedule<IgnoreTopology>()},
-            {"No_Kink", proj_scheduler.schedule<IgnoreKinkParity>()},
-            {"Yes_Kink", proj_scheduler.schedule<CareKinkParity>()},
+            {"No_MSF",
+             proj_scheduler.look_ahead_schedule<IgnoreTopologyInfiniteMagic>()},
+            {"No_Top", proj_scheduler.look_ahead_schedule<IgnoreTopology>()},
+            {"No_MP",
+             proj_scheduler.look_ahead_schedule<IgnoreMagicTopology>()},
+            {"No_Kink", proj_scheduler.look_ahead_schedule<IgnoreKinkParity>()},
+            {"Yes_Kink", proj_scheduler.look_ahead_schedule<CareKinkParity>()},
         };
 
-    for (auto &&[option, result] : results) {
+    for (auto&& [option, result] : results) {
       validate(option, result);
-      ss << csv_row_prefix << "Proj" << "," << option << ","
+      ss << csv_row_prefix << "Proj." << "," << option << ","
          << result.total_time << "," << result.compute_circuit_volume() << "\n";
     }
   }
@@ -116,7 +127,7 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
   return ss.str();
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   fs::path input_path;
   std::string factory, allocator;
   int layer_count, msf_prep_time;

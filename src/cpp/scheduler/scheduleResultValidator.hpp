@@ -4,51 +4,51 @@
 #include "scheduleResult.hpp"
 
 class ScheduleResultValidator {
-  Problem prob;
-  MultiTimeSliceScheduleResult result;
-  bool check_magic_operand, check_topology, check_kink;
-
  public:
-  ScheduleResultValidator(SingleTimeSliceScheduleResult result,
-                          bool check_magic_operand = true,
-                          bool check_topology = true, bool check_kink = true)
-      : prob(result.prob),
-        result(result),
-        check_magic_operand(check_magic_operand),
-        check_topology(check_topology),
-        check_kink(check_kink) {}
-  ScheduleResultValidator(MultiTimeSliceScheduleResult result,
-                          bool check_magic_operand = true,
-                          bool check_topology = true, bool check_kink = true)
-      : prob(result.prob),
-        result(result),
-        check_magic_operand(check_magic_operand),
-        check_topology(check_topology),
-        check_kink(check_kink) {}
+  struct ValidationFlags {
+    bool check_cx_topology = true;
+    bool check_magic_operand = true;
+    bool check_magic_topology = true;
+    bool check_kink = true;
+  };
 
-  // The argument `check_level` should be set as follows:
-  // - check_level == 0 <-> IgnoreTopologyInfiniteMagic
-  // - check_level == 1 <-> IgnoreTopology
-  // - check_level == 2 <-> IgnoreKinkParity
-  // - check_level == 3 <-> CareKinkParity
-  ScheduleResultValidator(SingleTimeSliceScheduleResult result,
-                          int check_level = 3)
-      : ScheduleResultValidator(result, check_level >= 1, check_level >= 2,
-                                check_level >= 3) {}
+  static ValidationFlags get_validation_flags(RoutingAlgorithm algo) {
+    if (algo == IgnoreTopologyInfiniteMagic) {
+      return {false, false, false, false};
+    }
+    if (algo == IgnoreTopology) {
+      return {false, true, false, false};
+    }
+    if (algo == IgnoreMagicTopology) {
+      return {true, false, false, false};
+    }
+    if (algo == IgnoreKinkParity) {
+      return {true, true, true, false};
+    }
+    if (algo == CareKinkParity) {
+      return {true, true, true, true};
+    }
 
-  // The argument `check_level` should be set as follows:
-  // - check_level == 0 <-> IgnoreTopologyInfiniteMagic
-  // - check_level == 1 <-> IgnoreTopology
-  // - check_level == 2 <-> IgnoreKinkParity
-  // - check_level == 3 <-> CareKinkParity
+    return {true, true, true, true};
+  }
+
+  ScheduleResultValidator(SingleTimeSliceScheduleResult result,
+                          ValidationFlags flags)
+      : prob(result.prob), result(result), validation_flags(flags) {}
   ScheduleResultValidator(MultiTimeSliceScheduleResult result,
-                          int check_level = 3)
-      : ScheduleResultValidator(result, check_level >= 1, check_level >= 2,
-                                check_level >= 3) {}
+                          ValidationFlags flags)
+      : prob(result.prob), result(result), validation_flags(flags) {}
+
+  ScheduleResultValidator(SingleTimeSliceScheduleResult result,
+                          RoutingAlgorithm algo)
+      : ScheduleResultValidator(result, get_validation_flags(algo)) {}
+  ScheduleResultValidator(MultiTimeSliceScheduleResult result,
+                          RoutingAlgorithm algo)
+      : ScheduleResultValidator(result, get_validation_flags(algo)) {}
 
   void operand_matches_target(int operand, int target_id) const {
     if (target_id == -1) {
-      if (check_magic_operand) {
+      if (validation_flags.check_magic_operand) {
         assert(prob.is_magic_factory(operand));
       }
     } else {
@@ -163,14 +163,22 @@ class ScheduleResultValidator {
 
       operands_are_correct(inst, path);
 
+      bool check_topology = inst.gate == "CX"
+                                ? validation_flags.check_cx_topology
+                                : validation_flags.check_magic_topology;
       if (check_topology) {
         path_is_connected(path);
         directions_are_correct(inst, path);
       }
 
-      if (check_kink) {
+      if (validation_flags.check_kink) {
         kink_parity_is_valid(inst, path);
       }
     }
   }
+
+ private:
+  Problem prob;
+  MultiTimeSliceScheduleResult result;
+  ValidationFlags validation_flags;
 };

@@ -22,9 +22,10 @@ int main(int argc, char const* argv[]) {
 
   MultiTimeSliceScheduleResult best_schedule_result(prob, {});
 
-  if (routing_alg == "IgnoreTopology") {
-    best_schedule_result = solveBest<DoubleTimeSliceScheduler, IgnoreTopology>(
-        prob, factory_method, allocation_method, layer_count);
+  if (routing_alg == "IgnoreTopologyInfiniteMagic") {
+    best_schedule_result =
+        solveBest<DoubleTimeSliceScheduler, IgnoreTopologyInfiniteMagic>(
+            prob, factory_method, allocation_method, layer_count);
   } else if (routing_alg == "CareKinkParity") {
     best_schedule_result = solveBest<DoubleTimeSliceScheduler, CareKinkParity>(
         prob, factory_method, allocation_method, layer_count);

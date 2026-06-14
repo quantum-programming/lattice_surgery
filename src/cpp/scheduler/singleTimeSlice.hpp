@@ -393,7 +393,7 @@ class SingleTimeSliceScheduler {
       for (auto&& [nx, ny, nz] : next_goal) {
         if (prob.is_inside(nx, ny, nz)) {
           int pos = prob.xyz_to_position(nx, ny, nz);
-          if (prob.is_magic_factory(pos)) {
+          if (prob.is_magic_factory(pos) && lifetime.available(pos)) {
             return {pos, goal};
           }
         }
@@ -415,6 +415,12 @@ class SingleTimeSliceScheduler {
       return find_path_ignore_topology(inst);
     } else if constexpr (routing_algo == IgnoreKinkParity) {
       return find_path_ignore_kink_parity(inst);
+    } else if constexpr (routing_algo == IgnoreMagicTopology) {
+      if (inst.targetIds[0] == -1) {
+        return find_path_ignore_topology_infinite_magic(inst);
+      } else {
+        return find_path_ignore_kink_parity(inst);
+      }
     } else if constexpr (routing_algo == CareKinkParity ||
                          routing_algo == MeetInTheMiddle) {
       return find_path_meet_in_the_middle(inst);
@@ -453,7 +459,8 @@ class SingleTimeSliceScheduler {
         lifetime.set_lifetime(pos, 1);
       }
       // Cool time for magic state preparation
-      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic) {
+      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
+                    routing_algo != IgnoreMagicTopology) {
         if (inst.targetIds[0] == -1) {
           assert(prob.is_magic_factory(encoded_path[0]));
           lifetime.set_lifetime(encoded_path[0], 1 + prob.magic_prep_time);
@@ -474,14 +481,15 @@ class SingleTimeSliceScheduler {
     std::vector<SingleTimeSliceSurgeryPath> surgery_paths(
         prob.instructions.size());
 
+    auto reordered_instructions = reorder_instructions(prob);
     InstructionDependencyManager manager(prob.data_qubits.size(),
-                                         prob.instructions);
+                                         reordered_instructions);
 
     while (!manager.all_finished()) {
       auto ready_indices = manager.get_ready_indices();
 
       for (auto&& inst_index : ready_indices) {
-        Instruction inst = prob.instructions[inst_index];
+        Instruction inst = reordered_instructions[inst_index];
         std::vector<int> encoded_path;
 
         encoded_path = find_path<routing_algo>(inst);
@@ -502,15 +510,16 @@ class SingleTimeSliceScheduler {
             lifetime.set_lifetime(pos, 1);
           }
           // Cool time for magic state preparation
-          if constexpr (routing_algo != IgnoreTopologyInfiniteMagic) {
+          if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
+                        routing_algo != IgnoreMagicTopology) {
             if (inst.targetIds[0] == -1) {
               assert(prob.is_magic_factory(encoded_path[0]));
               lifetime.set_lifetime(encoded_path[0], 1 + prob.magic_prep_time);
             }
           }
 
-          surgery_paths[inst_index] = {lifetime.current_time(),
-                                       std::move(encoded_path)};
+          surgery_paths[inst.instId] = {lifetime.current_time(),
+                                        std::move(encoded_path)};
         }
       }
 

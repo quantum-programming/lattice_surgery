@@ -13,6 +13,7 @@
 #include "../util/constants.hpp"
 #include "../util/instruction.hpp"
 #include "../util/problem.hpp"
+#include "../util/instructionDependencyManager.hpp"
 #include "routingError.hpp"
 #include "scheduleResult.hpp"
 
@@ -118,13 +119,6 @@ class ProjectiveScheduler {
   std::vector<int> find_2d_minimum_weight_path(const Instruction& inst) const {
     assert(inst.targetIds.size() == 2);
 
-    // A dirty hack to avoid searching for a path with a kink
-    // when the gate is MAGIC_MZZ.
-    auto start_directions = inst.directions[0];
-    if (inst.gate == "MAGIC_MZZ") {
-      start_directions = {Direction::H};
-    }
-
     const std::vector<int> start_positions =
         get_target_positions(inst.targetIds[0]);
     const int goal_pos = prob.data_qubits[inst.targetIds[1]];
@@ -138,7 +132,7 @@ class ProjectiveScheduler {
     std::vector<int64_t> dist(prob.chip_size, INFLL);
     std::vector<int> parent(prob.chip_size, -1);
     for (auto&& start_pos : start_positions) {
-      for (auto&& start_dir : start_directions) {
+      for (auto&& start_dir : inst.directions[0]) {
         for (auto&& init_pos : next_ancillary_qubits(start_pos, start_dir)) {
           dist[init_pos] = weight_position<weighting>(init_pos);
           parent[init_pos] = start_pos;
@@ -196,47 +190,31 @@ class ProjectiveScheduler {
     return path;
   }
 
-  std::vector<int> lifted_path_top_heights(const std::vector<int>& path) const {
-    std::vector<int> path_heights;
-    path_heights.reserve(path.size());
-    for (auto&& pos : path) {
-      path_heights.push_back(heights[pos]);
+  std::vector<int> get_path_move_heights(const std::vector<int>& path) const {
+    std::vector<int> move_heights(path.size() - 1);
+    for (int i = 0; i < int(path.size()) - 1; i++) {
+      move_heights[i] = std::max(heights[path[i]], heights[path[i + 1]]);
     }
-
-    std::vector<int> top_heights = path_heights;
-    for (int index = 1; index < int(path.size()); index++) {
-      top_heights[index - 1] =
-          std::max(top_heights[index - 1], path_heights[index]);
-    }
-    for (int index = 0; index < int(path.size()) - 1; index++) {
-      top_heights[index + 1] =
-          std::max(top_heights[index + 1], path_heights[index]);
-    }
-
-    return top_heights;
+    return move_heights;
   }
 
   std::vector<std::pair<int, int>> interpolate_3d_path(
-      const std::vector<int>& path, const std::vector<int>& top_heights) const {
+      const std::vector<int>& path,
+      const std::vector<int>& move_heights) const {
     std::vector<std::pair<int, int>> lifted_3d_path;
-    for (int index = 0; index < int(path.size()); index++) {
-      auto pos = path[index];
-      int top_height = top_heights[index];
+    int n = path.size();
 
-      int left_height = (index == 0) ? top_height : top_heights[index - 1];
-      int right_height = (index == int(top_heights.size()) - 1)
-                             ? top_height
-                             : top_heights[index + 1];
-      int bottom_height =
-          std::min(std::min(left_height, right_height), top_height);
+    for (int i = 0; i < n; i++) {
+      int pos = path[i];
+      int h_prev = (i == 0) ? move_heights[0] : move_heights[i - 1];
+      int h_next = (i == n - 1) ? move_heights[n - 2] : move_heights[i];
 
-      std::vector<int> segment_heights(std::max(0, top_height - bottom_height) +
-                                       1);
-      iota(segment_heights.begin(), segment_heights.end(), bottom_height);
-      // left is top   -> downward
-      // middle is top -> one cell
-      // right is top  -> upward
-      if (left_height > right_height) {
+      auto [bottom_height, top_height] = std::minmax({h_prev, h_next});
+
+      std::vector<int> segment_heights(top_height - bottom_height + 1);
+      std::iota(segment_heights.begin(), segment_heights.end(), bottom_height);
+
+      if (h_prev > h_next) {
         std::reverse(segment_heights.begin(), segment_heights.end());
       }
 
@@ -244,14 +222,11 @@ class ProjectiveScheduler {
         lifted_3d_path.emplace_back(timing, pos);
       }
     }
-
     return lifted_3d_path;
   }
 
   int count_kink(const std::vector<int>& path,
-                 const std::vector<int>& top_heights) const {
-    // We can regard time axis and Z axis as the same direction
-    // when counting kinks.
+                 const std::vector<int>& move_heights) const {
     std::vector<Direction> run_compressed_directions;
     auto push = [&](Direction dir) -> void {
       if (run_compressed_directions.empty() ||
@@ -260,34 +235,26 @@ class ProjectiveScheduler {
       }
     };
 
-    for (int index = 0; index < int(path.size()) - 1; index++) {
-      if (top_heights[index] > top_heights[index + 1]) {
-        // The path goes down in the time axis.
+    for (int i = 0; i < int(path.size()) - 1; i++) {
+      push(prob.adjacent_direction(path[i], path[i + 1]));
+      if (i < int(move_heights.size()) - 1 &&
+          move_heights[i] != move_heights[i + 1])
         push(Direction::Z);
-      }
-      push(prob.adjacent_direction(path[index], path[index + 1]));
-      if (top_heights[index] < top_heights[index + 1]) {
-        // The path goes up in the time axis.
-        push(Direction::Z);
-      }
     }
-
     return prob.count_kink(run_compressed_directions);
   }
 
-  bool modify_heights_to_flip_kink_parity(const std::vector<int>& path,
-                                          std::vector<int>& top_heights) const {
+  bool modify_heights_to_flip_kink_parity(
+      const std::vector<int>& path, std::vector<int>& move_heights) const {
     // We only care a kink generated by time axis moves (e.g. X (*T) Y)
     // and ignore a kink generated by Z moves (e.g. X (*T) Z (*T) Y),
     // because the latter case cannot be eliminated by modifying heights.
 
-    std::vector<bool> is_bending_point(path.size());
-    for (int i = 1; i < int(path.size()) - 1; i++) {
-      const int prev_pos = path[i - 1];
-      const int pos = path[i];
-      const int next_pos = path[i + 1];
-      const Direction prev_dir = prob.adjacent_direction(prev_pos, pos);
-      const Direction next_dir = prob.adjacent_direction(pos, next_pos);
+    int n = path.size();
+    std::vector<bool> is_bending_point(n, false);
+    for (int i = 1; i < n - 1; i++) {
+      Direction prev_dir = prob.adjacent_direction(path[i - 1], path[i]);
+      Direction next_dir = prob.adjacent_direction(path[i], path[i + 1]);
       if (prev_dir != Direction::Z && next_dir != Direction::Z &&
           prev_dir != next_dir) {
         // X Y or Y X
@@ -295,144 +262,117 @@ class ProjectiveScheduler {
       }
     }
 
-    std::vector<bool> is_time_kink(path.size());
+    std::vector<bool> is_time_kink(path.size(), false);
     for (int i = 1; i < int(path.size()) - 1; i++) {
       if (is_bending_point[i]) {
-        if (top_heights[i] > top_heights[i - 1] ||
-            top_heights[i] > top_heights[i + 1]) {
-          is_time_kink[i] = 1;
+        if (move_heights[i - 1] != move_heights[i]) {
+          is_time_kink[i] = true;
         }
       }
     }
 
-    // Referring to the modified `top_heights` and the recomputation range,
-    // it recomputes if the kink parity flips.
-    // The recomputation range means the range in which kinks may appear or
-    // disappear.
+    // - Referring to the modified `move_heights` and the recomputation range,
+    //   it recomputes if the kink parity flips.
+    // - The recomputation range means the affected segment where
+    //   kinks may appear or disappear.
     auto check_current_flip = [&](int recompute_first,
                                   int recompute_last) -> bool {
       recompute_first = std::max(recompute_first, 1);
-      recompute_last = std::min(recompute_last, int(path.size()) - 2);
+      recompute_last = std::min(recompute_last, int(move_heights.size()) - 1);
 
       bool flipped = false;
       for (int i = recompute_first; i < recompute_last + 1; i++) {
         if (is_bending_point[i]) {
           flipped ^= is_time_kink[i];
-          bool new_kink = (top_heights[i] > top_heights[i - 1] ||
-                           top_heights[i] > top_heights[i + 1]);
+          bool new_kink = (move_heights[i - 1] != move_heights[i]);
           flipped ^= new_kink;
         }
       }
-
       return flipped;
     };
 
-    {
-      for (int i = 1; i < int(path.size()) - 1; i++) {
-        for (int j = i; j < int(path.size()) - 1; j++) {
-          assert(check_current_flip(i, j) == false);
-        }
-      }
-    }
-
-    std::stack<std::pair<int, int>> rollback_stack;
-    auto lift_top_heights = [&](int index, int new_height) -> void {
-      rollback_stack.push({index, top_heights[index]});
-      top_heights[index] = std::max(top_heights[index], new_height);
-    };
-    auto rollback_top_heights = [&]() -> void {
-      auto [index, old_height] = rollback_stack.top();
-      rollback_stack.pop();
-      top_heights[index] = old_height;
-    };
-
-    // Lifting a single cell to remove a kink.
+    int first_corner = -1;
     for (int i = 1; i < int(path.size()) - 1; i++) {
-      if (is_time_kink[i]) {
-        int modify_index =
-            (top_heights[i - 1] < top_heights[i]) ? i - 1 : i + 1;
-
-        lift_top_heights(modify_index, top_heights[i]);
-        if (check_current_flip(modify_index - 1, modify_index + 1)) {
-          return true;
-        }
-        rollback_top_heights();
+      if (is_bending_point[i]) {
+        first_corner = i;
+        break;
       }
     }
 
-    // Lifting two cells to add a kink.
-    // Among the bending points which have the same heights,
-    // lifting the first one always create a kink.
-    for (int i = 1; i < int(path.size()) - 1; i++) {
-      if (is_bending_point[i] && !is_time_kink[i]) {
-        for (auto&& diff : {-1, +1}) {
-          auto [modify_index_min, modify_index_max] =
-              std::minmax({i - diff, i});
-          std::set<int> new_heights;
-          int orig_height = std::max(top_heights[i - diff], top_heights[i]);
-          new_heights.insert(std::max(top_heights[i + diff], orig_height));
-          new_heights.insert(std::max(top_heights[i + diff] + 1, orig_height));
-          for (auto&& new_height : new_heights) {
-            lift_top_heights(modify_index_min, new_height);
-            lift_top_heights(modify_index_max, new_height);
-            if (check_current_flip(modify_index_min - 1,
-                                   modify_index_max + 1)) {
-              return true;
-            }
-            rollback_top_heights();
-            rollback_top_heights();
-          }
-        }
+    int last_corner = -1;
+    for (int i = int(path.size()) - 2; i >= 1; i--) {
+      if (is_bending_point[i]) {
+        last_corner = i;
+        break;
       }
     }
 
-    // If it still fails to modify the kink parity,
-    // there are three bending points in a row such that
-    // only the middle one has the lower height.
-    // Then, it aligns the middle point to remove two kinks
-    // and lifts two cells to create a kink.
-    for (int i = 2; i < int(path.size()) - 2; i++) {
-      if (is_bending_point[i - 1] && is_bending_point[i] &&
-          is_bending_point[i + 1] && top_heights[i - 1] > top_heights[i] &&
-          top_heights[i - 1] == top_heights[i + 1]) {
-        int new_kink_base = top_heights[i - 1];
-        lift_top_heights(i, new_kink_base);
-        lift_top_heights(i - 1, new_kink_base + 1);
-        lift_top_heights(i - 2, new_kink_base + 1);
-        if (check_current_flip(i - 3, i + 1)) {
-          return true;
-        }
-        rollback_top_heights();
-        rollback_top_heights();
-        rollback_top_heights();
+    // If no bending point exists, parity cannot be flipped.
+    if (first_corner == -1) return false;
+
+    // 1. Modify a non-kink corner to create a kink (Flips parity)
+    std::vector<std::pair<int, int>> extreme_corners = {
+        {first_corner - 1, first_corner},
+        {last_corner, last_corner - 1},
+    };
+
+    // Work on the lower corner to minimize impact
+    int first_corner_height =
+        std::max(move_heights[first_corner - 1], move_heights[first_corner]);
+    int last_corner_height =
+        std::max(move_heights[last_corner - 1], move_heights[last_corner]);
+
+    if (first_corner_height > last_corner_height) {
+      std::swap(extreme_corners[0], extreme_corners[1]);
+    }
+
+    for (auto&& [outer_move, inner_move] : extreme_corners) {
+      auto corner = std::max(outer_move, inner_move);
+      if (!is_time_kink[corner]) {
+        move_heights[outer_move]++;
+        assert(check_current_flip(outer_move - 1, outer_move + 1));
+        return true;
       }
     }
 
-    return false;
+    // 2. Both are kinks. Try aligning one to remove it.
+
+    // Lift neighbors to match the corner height (eliminates the kink)
+    auto [outer_move, inner_move] = extreme_corners[0];
+    auto& outer_height = move_heights[outer_move];
+    auto& inner_height = move_heights[inner_move];
+    outer_height = inner_height = std::max(outer_height, inner_height);
+    if (check_current_flip(outer_move - 2, outer_move + 2)) {
+      return true;
+    }
+
+    // 3. Twist the resulting non-kink corner if parity is still not flipped
+    outer_height++;
+    assert(check_current_flip(outer_move - 2, outer_move + 2));
+    return true;
   }
 
   std::vector<std::pair<int, int>> find_3d_path_ignore_kink(
       const Instruction& inst) const {
     const auto path = find_2d_minimum_weight_path(inst);
-    const auto top_heights = lifted_path_top_heights(path);
-    return interpolate_3d_path(path, top_heights);
+    const auto move_heights = get_path_move_heights(path);
+    return interpolate_3d_path(path, move_heights);
   }
 
   std::vector<std::pair<int, int>> find_3d_path_modify_kink(
       const Instruction& inst) const {
     const auto path = find_2d_minimum_weight_path(inst);
-    auto top_heights = lifted_path_top_heights(path);
-    const int parity = count_kink(path, top_heights) % 2;
+    auto move_heights = get_path_move_heights(path);
+    const int parity = count_kink(path, move_heights) % 2;
     if (inst.kink_parity_allowed[parity]) {
-      return interpolate_3d_path(path, top_heights);
+      return interpolate_3d_path(path, move_heights);
     } else {
-      assert(modify_heights_to_flip_kink_parity(path, top_heights));
-      auto path_3d = interpolate_3d_path(path, top_heights);
+      assert(modify_heights_to_flip_kink_parity(path, move_heights));
+      auto path_3d = interpolate_3d_path(path, move_heights);
       assert(prob.count_kink(path_3d) % 2 != parity);
       return path_3d;
     }
   }
-
   template <RoutingAlgorithm routing_algo>
   std::vector<std::pair<int, int>> find_path(const Instruction& inst) const {
     if constexpr (routing_algo == IgnoreTopologyInfiniteMagic) {
@@ -441,6 +381,12 @@ class ProjectiveScheduler {
       return find_3d_path_ignore_topology(inst);
     } else if constexpr (routing_algo == IgnoreKinkParity) {
       return find_3d_path_ignore_kink(inst);
+    } else if constexpr (routing_algo == IgnoreMagicTopology) {
+      if (inst.targetIds[0] == -1) {
+        return find_3d_path_ignore_topology_infinite_magic(inst);
+      } else {
+        return find_3d_path_ignore_kink(inst);
+      }
     } else if constexpr (routing_algo == CareKinkParity ||
                          routing_algo == ModifyHeights) {
       return find_3d_path_modify_kink(inst);
@@ -476,7 +422,8 @@ class ProjectiveScheduler {
         elapsed_code_beat = std::max(elapsed_code_beat, t + 1);
       }
       // Cool time for magic state preparation
-      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic) {
+      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
+                    routing_algo != IgnoreMagicTopology) {
         if (inst.targetIds[0] == -1) {
           const auto [t, pos] = encoded_path[0];
           assert(prob.is_magic_factory(pos));
@@ -486,6 +433,67 @@ class ProjectiveScheduler {
       }
 
       surgery_paths.emplace_back(encoded_path);
+    }
+    return MultiTimeSliceScheduleResult(prob, surgery_paths);
+  }
+
+  template <RoutingAlgorithm routing_algo = CareKinkParity>
+  MultiTimeSliceScheduleResult look_ahead_schedule() {
+    initialize();
+
+    std::vector<MultiTimeSliceSurgeryPath> surgery_paths(
+        prob.instructions.size());
+
+    auto inst_height = [&](Instruction inst, int inst_index) -> int {
+      int height = 0;
+      for (int target_id : inst.targetIds) {
+        int pos;
+        if (target_id != -1) {
+          pos = prob.data_qubits[target_id];
+          height = std::max(height, heights[pos]);
+        }
+      }
+      return height;
+    };
+
+    PrioritizedInstructionDependencyManager<int> manager(
+        prob.data_qubits.size(), prob.instructions, inst_height);
+
+    while (!manager.all_finished()) {
+      auto inst_index = manager.get_best_ready_index();
+      manager.process_instruction(inst_index);
+      auto inst = prob.instructions[inst_index];
+
+      std::vector<std::pair<int, int>> encoded_path;
+
+      encoded_path = find_path<routing_algo>(inst);
+      if (encoded_path.empty()) {
+        std::stringstream ss;
+        ss << "Routing Failed\n"
+           << "Inst: " << inst << '\n';
+        MultiTimeSliceScheduleResult(prob, surgery_paths).output_index(ss);
+        throw RoutingError(ss.str());
+      }
+
+      for (auto&& [t, pos] : encoded_path) {
+        assert(heights[pos] <= t);
+      }
+      for (auto&& [t, pos] : encoded_path) {
+        heights[pos] = std::max(heights[pos], t + 1);
+        elapsed_code_beat = std::max(elapsed_code_beat, t + 1);
+      }
+      // Cool time for magic state preparation
+      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
+                    routing_algo != IgnoreMagicTopology) {
+        if (inst.targetIds[0] == -1) {
+          const auto [t, pos] = encoded_path[0];
+          assert(prob.is_magic_factory(pos));
+          heights[pos] += prob.magic_prep_time;
+          elapsed_code_beat = std::max(elapsed_code_beat, heights[pos]);
+        }
+      }
+
+      surgery_paths[inst_index] = encoded_path;
     }
     return MultiTimeSliceScheduleResult(prob, surgery_paths);
   }

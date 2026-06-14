@@ -38,7 +38,7 @@ void output(std::string file_name, Result result) {
   std::cout << "Output path: " << file_name << std::endl;
 }
 
-void execute(Problem &prob, const std::string &output_dir) {
+void execute(Problem& prob, const std::string& output_dir) {
   auto to_file_name = [&](std::string routing_name) -> std::string {
     return output_dir + routing_name + ".txt";
   };
@@ -61,13 +61,13 @@ void execute(Problem &prob, const std::string &output_dir) {
     ProjectiveScheduler proj_scheduler(prob);
 
     output(to_file_name("Proj_No_MSF"),
-           proj_scheduler.schedule<IgnoreTopologyInfiniteMagic>());
+           proj_scheduler.look_ahead_schedule<IgnoreTopologyInfiniteMagic>());
     output(to_file_name("Proj_No_Top"),
-           proj_scheduler.schedule<IgnoreTopology>());
+           proj_scheduler.look_ahead_schedule<IgnoreTopology>());
     output(to_file_name("Proj_No_Kink"),
-           proj_scheduler.schedule<IgnoreKinkParity>());
+           proj_scheduler.look_ahead_schedule<IgnoreKinkParity>());
     output(to_file_name("Proj_Yes_Kink"),
-           proj_scheduler.schedule<CareKinkParity>());
+           proj_scheduler.look_ahead_schedule<CareKinkParity>());
   }
   if constexpr (execute_double) {
     DoubleTimeSliceScheduler double_scheduler(prob);
@@ -83,7 +83,7 @@ void execute(Problem &prob, const std::string &output_dir) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   fs::path input_path;
   std::string factory, allocator;
   int layer_count, msf_prep_time;

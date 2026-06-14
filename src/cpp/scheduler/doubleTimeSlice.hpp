@@ -476,6 +476,12 @@ class DoubleTimeSliceScheduler {
       return find_path_ignore_topology<routing_algo>(inst);
     } else if constexpr (routing_algo == IgnoreKinkParity) {
       return find_path_ignore_kink_parity(inst);
+    } else if constexpr (routing_algo == IgnoreMagicTopology) {
+      if (inst.targetIds[0] == -1) {
+        return find_path_ignore_topology<IgnoreTopologyInfiniteMagic>(inst);
+      } else {
+        return find_path_ignore_kink_parity(inst);
+      }
     } else if constexpr (routing_algo == CareKinkParity ||
                          routing_algo == InvertPath ||
                          routing_algo == InvertTwoCells) {
@@ -521,7 +527,8 @@ class DoubleTimeSliceScheduler {
       }
 
       // Cool time for magic state preparation
-      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic) {
+      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
+                    routing_algo != IgnoreMagicTopology) {
         if (inst.targetIds[0] == -1) {
           const auto [t, pos] = encoded_path[0];
           // Routing cost: 1
@@ -548,15 +555,16 @@ class DoubleTimeSliceScheduler {
     std::vector<MultiTimeSliceSurgeryPath> surgery_paths(
         prob.instructions.size());
 
+    auto reordered_instructions = reorder_instructions(prob);
     InstructionDependencyManager manager(prob.data_qubits.size(),
-                                         prob.instructions);
+                                         reordered_instructions);
 
     std::vector<std::pair<int, int>> encoded_path;
 
     while (!manager.all_finished()) {
       for (auto it = manager.begin(); it != manager.end();) {
         int inst_index = *it;
-        const Instruction& inst = prob.instructions[inst_index];
+        const Instruction& inst = reordered_instructions[inst_index];
 
         encoded_path = find_path<routing_algo>(inst);
 
@@ -573,7 +581,8 @@ class DoubleTimeSliceScheduler {
             }
           }
           // Cool time for magic state preparation
-          if constexpr (routing_algo != IgnoreTopologyInfiniteMagic) {
+          if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
+                        routing_algo != IgnoreMagicTopology) {
             if (inst.targetIds[0] == -1) {
               const auto [t, pos] = encoded_path[0];
               // Routing cost: 1
@@ -586,7 +595,7 @@ class DoubleTimeSliceScheduler {
               occupy(pos, cool_time);
             }
           }
-          surgery_paths[inst_index] = std::move(encoded_path);
+          surgery_paths[inst.instId] = std::move(encoded_path);
         } else {
           it++;
           if (occupied[0].all_available() && occupied[1].all_available()) {

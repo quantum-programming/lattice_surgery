@@ -30,7 +30,7 @@ struct Instruction {
       kink_parity_allowed = {false, true};
     } else if (gate == "MAGIC_MZZ") {
       targetIds = {-1, target};
-      directions = {{Direction::H, Direction::V}, {Direction::H}};
+      directions = {{Direction::H}, {Direction::H}};
       kink_parity_allowed = {true, false};
     } else if (gate == "MAGIC_MOVE") {
       targetIds = {-1, target};
