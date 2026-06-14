@@ -1,3 +1,4 @@
+import argparse
 import glob
 import gzip
 import os
@@ -7,6 +8,7 @@ import sys
 from multiprocessing import Pool
 from pathlib import Path
 
+from log_metrics import get_all_tested_parameters_from_config
 from tqdm import tqdm
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -17,15 +19,27 @@ elif os.path.exists("./cpp/log_all"):
 else:
     raise FileNotFoundError("Executable not found")
 
-PROCESSES = 16
-
-
-def getFiles() -> list[str]:
-    files = glob.glob("../data/circuit/result_*_10_Heisenberg2D_*.in")
-    files.sort()
-    print(f"{files = }", file=sys.stderr)
-    print(f"#files: {len(files)}", file=sys.stderr)
-    return files
+parser = argparse.ArgumentParser(
+    description="Run scheduling experiments and save their raw results.",
+    formatter_class=argparse.RawTextHelpFormatter,
+)
+parser.add_argument(
+    "--process",
+    "-p",
+    type=int,
+    default=16,
+    help="The number of parallel processes.\nDefault: 16",
+)
+parser.add_argument(
+    "--config",
+    "-c",
+    type=str,
+    default="path_histogram_length.json",
+    help="Path to the JSON config file that defines experiment parameters.\nDefault: path_histogram_length.json",
+)
+args = parser.parse_args()
+PROCESSES = args.process
+CONFIG_PATH = args.config
 
 
 def execute(parameters: tuple[str, str, str, str, str, str]) -> str:
@@ -48,6 +62,7 @@ def execute(parameters: tuple[str, str, str, str, str, str]) -> str:
         print("\033[91m" + "Error" + "\033[0m: " + res.stderr.decode(), file=sys.stderr)
         raise AssertionError
 
+    # Compress the outputs of the C++ executable.
     input_path_stem = Path(input_path).stem
     dir_name = f"../out/result/{input_path_stem}/{factory}_{layer_count}_{allocator}_{msf_coeff}_{msf_prep_time}"
     tfs = glob.glob(dir_name + "/*.txt")
@@ -61,35 +76,18 @@ def execute(parameters: tuple[str, str, str, str, str, str]) -> str:
     return res.stdout.decode()
 
 
-def executeFiles(
-    files: list[str],
-) -> None:
-    tested_parameters = []
-    for file in files:
-        for factory in ["inner", "outer"]:
-            for layer_count in [1, 2]:
-                for allocator in ["naive", "random", "SA"]:
-                    msf_coeffs = [1, 0.1, 0.01, 0.001] if allocator == "SA" else [0]
-                    for msf_coeff in msf_coeffs:
-                        msf_prep_times = [0, 1, 2]
-                        for msf_prep_time in msf_prep_times:
-                            tested_parameters.append(
-                                (
-                                    file,
-                                    factory,
-                                    str(layer_count),
-                                    allocator,
-                                    str(msf_coeff),
-                                    str(msf_prep_time),
-                                )
-                            )
-    print(f"{PROCESSES = }")
-    print(f"{len(tested_parameters) = }")
+def executeFiles(tested_parameters: list[tuple[str, str, str, str, str, str]]) -> None:
+    if not tested_parameters:
+        print("No parameters to test. Exiting.")
+        return
 
     if PROCESSES == 1:  # type: ignore[reportUnnecessaryComparison]
-        list(map(execute, tqdm(tested_parameters)))
+        print("Running in single process mode...")
+        for params in tqdm(tested_parameters):
+            execute(params)
     else:
         assert PROCESSES > 1
+        print(f"Running in parallel with {PROCESSES} processes...")
         with Pool(PROCESSES) as p:
             for _ in tqdm(
                 p.imap_unordered(execute, tested_parameters),
@@ -99,7 +97,8 @@ def executeFiles(
 
 
 def main() -> None:
-    executeFiles(getFiles())
+    tested_parameters = get_all_tested_parameters_from_config(CONFIG_PATH)
+    executeFiles(tested_parameters)
 
 
 if __name__ == "__main__":

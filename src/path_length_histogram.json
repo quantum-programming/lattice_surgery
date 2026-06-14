@@ -1,0 +1,29 @@
+{
+  "experiments": [
+    {
+      "name": "SELECT_10_Heisenberg2D_parallel",
+      "file_patterns": [
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*_4.in",
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*_5.in",
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*_6.in"
+      ],
+      "factories": [
+        "outer"
+      ],
+      "layer_counts": [
+        1
+      ],
+      "allocators": {
+        "SA": [
+          1,
+          0.1,
+          0.01,
+          0.001
+        ]
+      },
+      "msf_prep_times": [
+        0
+      ]
+    }
+  ]
+}

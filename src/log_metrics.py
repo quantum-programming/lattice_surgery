@@ -1,16 +1,13 @@
-import datetime
+import argparse
 import glob
-import gzip
 import io
+import json
 import os
-import shutil
 import subprocess
 import sys
 from itertools import product
 from multiprocessing import Pool
 from pathlib import Path
-import argparse
-import json
 
 import pandas as pd
 from tqdm import tqdm
@@ -24,23 +21,22 @@ else:
     raise FileNotFoundError("Executable not found")
 
 parser = argparse.ArgumentParser(
-    description="Set the number of parallel executions and config file from command-line arguments.",
-    # Use RawTextHelpFormatter to properly format the help text
+    description="Run scheduling experiments and save their metrics.",
     formatter_class=argparse.RawTextHelpFormatter,
 )
 parser.add_argument(
     "--process",
     "-p",
     type=int,
-    default=4,
-    help="The number of parallel processes (integer).\nDefault value: 4",
+    default=16,
+    help="The number of parallel processes (integer).\nDefault value: 16",
 )
 parser.add_argument(
     "--config",
     "-c",
     type=str,
-    default="config.json",
-    help="Path to the JSON config file defining experiment parameters.\nDefault value: config.json",
+    default="paper_figures.json",
+    help="Path to the JSON config file that defines experiment parameters.\nDefault value: paper_figures.json",
 )
 parser.add_argument(
     "--output",
@@ -73,17 +69,7 @@ def execute(parameters: tuple[str, str, str, str, str, str]) -> str:
     if res.returncode != 0:
         # red text with ANSI escape code
         print("\033[91m" + "Error" + "\033[0m: " + res.stderr.decode(), file=sys.stderr)
-        raise AssertionError
-
-    input_path_stem = Path(input_path).stem
-    dir_name = f"../out/result/{input_path_stem}/{factory}_{layer_count}_{allocator}_{msf_coeff}_{msf_prep_time}"
-    tfs = glob.glob(dir_name + "/*.txt")
-    for tf in tfs:
-        with open(tf, "rb") as f_in:
-            with gzip.open(tf + ".gz", "wb", compresslevel=6) as f_out:
-                shutil.copyfileobj(f_in, f_out)
-        os.remove(tf)
-
+        raise AssertionError(str(parameters))
     # print("End: ", parameters, file=sys.stderr)
     return res.stdout.decode()
 
@@ -112,7 +98,7 @@ def get_all_tested_parameters_from_config(
 
     if "experiments" not in config or not isinstance(config["experiments"], list):
         print(
-            f"\033[91mError\033[0m: JSON config must contain a top-level 'experiments' list.",
+            "\033[91mError\033[0m: JSON config must contain a top-level 'experiments' list.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -162,14 +148,11 @@ def get_all_tested_parameters_from_config(
         allocator_dict = experiment["allocators"]
         msf_prep_times = experiment["msf_prep_times"]
 
-        # 独立したパラメータの組み合わせを生成 (file, factory, layer_count)
         base_product = product(file_paths, factories, layer_counts)
 
         for file, factory, layer_count in base_product:
-            # 依存関係のあるパラメータ (allocator と msf_coeffs) をループ
             for allocator, msf_coeffs in allocator_dict.items():
                 for msf_coeff in msf_coeffs:
-                    # 最後のパラメータ (msf_prep_time) をループ
                     for msf_prep_time in msf_prep_times:
                         all_parameters.add(
                             (
@@ -187,14 +170,13 @@ def get_all_tested_parameters_from_config(
 
 
 def executeFiles(tested_parameters: list[tuple[str, str, str, str, str, str]]) -> None:
-    if len(tested_parameters) == 0:
+    if not tested_parameters:
         print("No parameters to test. Exiting.")
         return
 
     dfs = []
     if PROCESSES == 1:  # type: ignore[reportUnnecessaryComparison]
         print("Running in single process mode...")
-        # シングルプロセスでも結果を収集するように修正
         for params in tqdm(tested_parameters):
             csv_str = execute(params)
             dfs.append(pd.read_csv(io.StringIO(csv_str)))
@@ -209,7 +191,8 @@ def executeFiles(tested_parameters: list[tuple[str, str, str, str, str, str]]) -
                 dfs.append(pd.read_csv(io.StringIO(csv_str)))
 
     merged_df = pd.concat(dfs)
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    path = Path(OUTPUT_PATH)
+    path.parent.mkdir(parents=True, exist_ok=True)
     merged_df.to_csv(OUTPUT_PATH, index=False)
     print(f"Successfully merged results and saved to {OUTPUT_PATH}")
 

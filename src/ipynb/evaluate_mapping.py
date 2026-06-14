@@ -16,6 +16,9 @@ plt.rcParams.update(
         "font.family": "serif",
         "font.serif": ["Computer Modern Roman"],
         "font.size": 14,
+        "axes.labelsize": 18,
+        "xtick.labelsize": 18,
+        "ytick.labelsize": 18,
     }
 )
 
@@ -88,12 +91,12 @@ def run(input_file, force_recalculate):
         "naive",
         "1",
         "1000000",
-        "IgnoreTopology",
+        "IgnoreTopologyInfiniteMagic",
     ]
     result = subprocess.run(arg, capture_output=True, text=True)
     total_time = int(result.stdout.splitlines()[0].split()[-1].strip())
-    results.append(("Ignore", "Topology", "", "", total_time))
-    print("IgnoreTopology")
+    results.append(("Ignore", "TopologyInfiniteMagic", "", "", total_time))
+    print("IgnoreTopologyInfiniteMagic")
     print(f"Total time: {total_time} code beats")
 
     factory_methods = ["outer", "inner"]
@@ -156,17 +159,19 @@ def create_barplot_visualization(df, input_file):
     df_viz = df[df["factory_method"] != "Ignore"].copy()
     df_viz["Total Time"] = pd.to_numeric(df_viz["Total Time"], errors="coerce")
 
-    # Calculate common y-axis limits
-    # margin = 0.2 * (df_viz["Total Time"].max() - df_viz["Total Time"].min())
-    # y_min = ignore_baseline - margin
-    # y_max = df_viz["Total Time"].max() + margin
-
     # Create subplots for layer count 1 and 2
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharey=True)
 
     # Filter data for each layer count
     df_layer1 = df_viz[df_viz["layer_count"].astype(str) == "1.0"]
     df_layer2 = df_viz[df_viz["layer_count"].astype(str) == "2.0"]
+
+    df_layer1["factory_method"] = df_layer1["factory_method"].replace(
+        {"outer": "Outer Factory", "inner": "Inner Factory"}
+    )
+    df_layer2["factory_method"] = df_layer2["factory_method"].replace(
+        {"outer": "Outer Factory", "inner": "Inner Factory"}
+    )
 
     allocation_order = ["SA", "random", "naive"]
     for df_layer in [df_layer1, df_layer2]:
@@ -186,16 +191,16 @@ def create_barplot_visualization(df, input_file):
         )
         ax1.axhline(
             y=ignore_baseline,
-            color="black",
-            linestyle="--",
+            color="k",
+            linestyle="dashed",
             linewidth=2,
-            label=f"Baseline ({ignore_baseline:,})",
+            label="Lower Bound",
         )
-        ax1.set_title("2D Architecture", fontweight="bold", fontsize=25)
-        ax1.set_xlabel("Mapping Method", fontweight="bold", fontsize=25)
-        ax1.set_ylabel("Total Code Beats", fontweight="bold", fontsize=25)
+        ax1.set_title("2D Architecture")
+        ax1.set_xlabel("Mapping Method")
+        ax1.set_ylabel(r"Total Execution Time $T_P$")
         ax1.tick_params(axis="x", rotation=0)
-        ax1.legend(fontsize=17, loc="upper left")
+        ax1.legend(fontsize=14, loc="upper left")
 
     # Plot for Layer 2
     if not df_layer2.empty:
@@ -211,19 +216,21 @@ def create_barplot_visualization(df, input_file):
             color="black",
             linestyle="--",
             linewidth=2,
-            label=f"Baseline ({ignore_baseline:,})",
+            label="Lower Bound",
         )
-        ax2.set_title("2.5D Architecture", fontweight="bold", fontsize=25)
-        ax2.set_xlabel("Mapping Method", fontweight="bold", fontsize=25)
+        ax2.set_title("2.5D Architecture")
+        ax2.set_xlabel("Mapping Method")
         ax2.tick_params(axis="x", rotation=0)
-        ax2.legend(fontsize=17, loc="upper left")
+        ax2.get_legend().remove()
 
-    # ax1.set_ylim(bottom=y_min, top=y_max)
-    # ax2.set_ylim(bottom=y_min, top=y_max)
+    ax1.spines["top"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+    ax2.spines["top"].set_visible(False)
+    ax2.spines["right"].set_visible(False)
     plt.tight_layout()
     assert os.path.exists("fig/evaluate_mapping")
-    save_path = f"fig/evaluate_mapping/{input_file.split('/')[-1]}_barplot.png"
-    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    save_path = f"fig/evaluate_mapping/{input_file.split('/')[-1]}_barplot.pdf"
+    plt.savefig(save_path, bbox_inches="tight")
     plt.close()
     print(f"Barplot saved to: {save_path}")
 

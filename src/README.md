@@ -28,7 +28,7 @@ Here are the list of the options to the `python log_metrics.py`:
 - `--config` or `-c`: Path to the JSON config file. Default value: `config.json`.
 - `--output` or `-o`: Path to the output csv file. Default value: `../out/table/results.csv`.
 
-# Reproducing Our Results
+# Reproducing Our Main Results
 
 Here, we describe a procedure to reproduce our results in the paper.
 
@@ -43,10 +43,14 @@ python log_metrics.py
 ```
 See the section above, `config.json & log_metrics.py`, for optional arguments.
 
+You can also obtain additional results by
+```bash
+python log_all.py
+```
+
 3\. Move to the subdirectory `TeleportRouterSub` and execute the following to run the julia code implementing the EDPC algorithm. It may be required to set up the `TeleportRouter.jl` directory as a julia project.
 ```bash
 python process_circuit.py
 ```
-
 
 4\. After obtaining the results, you can run the cells of `paper_figures.ipynb` to reproduce the figures in the papers.

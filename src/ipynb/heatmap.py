@@ -70,9 +70,11 @@ def vis():
         control_ancilla_qubits = sorted(siteconfig["control_ancilla"])
         n = sum(map(len, [system_qubits, control_qubits, control_ancilla_qubits]))
 
-        print(f"System: {system_qubits}")
-        print(f"Control: {control_qubits}")
-        print(f"Control Ancilla: {control_ancilla_qubits}")
+        print(f"System: {len(system_qubits)} ({system_qubits})")
+        print(f"Control: {len(control_qubits)} ({control_qubits})")
+        print(
+            f"Control Ancilla: {len(control_ancilla_qubits)} ({control_ancilla_qubits})"
+        )
 
         instructions = load_instance(path)
         data_qubit_count = max(max(inst) for inst in instructions) + 1
@@ -89,12 +91,12 @@ def vis():
             ancilla_end = max(control_ancilla_qubits) + 1
 
             # Draw boundaries between regions
-            ax.axhline(y=control_end, color="red", linewidth=2, linestyle="--")
-            ax.axvline(x=control_end, color="red", linewidth=2, linestyle="--")
-            ax.axhline(y=ancilla_end, color="blue", linewidth=2, linestyle="--")
-            ax.axvline(x=ancilla_end, color="blue", linewidth=2, linestyle="--")
-            ax.axhline(y=n, color="green", linewidth=2, linestyle="--")
-            ax.axvline(x=n, color="green", linewidth=2, linestyle="--")
+            ax.axhline(y=control_end, color="tab:orange", linewidth=2, linestyle="--")
+            ax.axvline(x=control_end, color="tab:orange", linewidth=2, linestyle="--")
+            ax.axhline(y=ancilla_end, color="tab:green", linewidth=2, linestyle="--")
+            ax.axvline(x=ancilla_end, color="tab:green", linewidth=2, linestyle="--")
+            ax.axhline(y=n, color="tab:blue", linewidth=2, linestyle="--")
+            ax.axvline(x=n, color="tab:blue", linewidth=2, linestyle="--")
 
             # Add region labels (center of each region in heatmap coordinates)
             control_mid = (min(control_qubits) + max(control_qubits)) / 2 + 1
@@ -104,9 +106,9 @@ def vis():
             system_mid = (min(system_qubits) + max(system_qubits)) / 2 + 1
 
             regions = [
-                (control_mid, "QPE\nancilla", "red"),
-                (ancilla_mid, "Block\nencoding\nancilla", "blue"),
-                (system_mid, "System", "green"),
+                (control_mid, "QPE\nancilla", "tab:orange"),
+                (ancilla_mid, "Block\nencoding\nancilla", "tab:green"),
+                (system_mid, "System", "tab:blue"),
             ]
             for mid, label, color in regions:
                 ax.text(
@@ -117,7 +119,7 @@ def vis():
                     va="center",
                     ha="center",
                     color=color,
-                    weight="bold",
+                    weight=1000,
                 )
 
         sns.heatmap(
@@ -127,13 +129,14 @@ def vis():
             square=True,
             cbar=True,
             cbar_kws={"label": "Number of instructions"},
+            zorder=2,
         )
         cbar_axes = ax.figure.axes[-1]
         cbar_axes.yaxis.label.set_size(25)  # type: ignore
 
-        ax.set_xlabel("index $i$", fontsize=20)
-        ax.set_ylabel("index $j$", fontsize=20)
-        ticks = [i * 10 - 1 for i in range(1, 5)]
+        ax.set_xlabel("qubit index $i$", fontsize=20)
+        ax.set_ylabel("qubit index $j$", fontsize=20)
+        ticks = [i * 10 - 0.5 for i in range(1, 5)]
         labels = list(map(str, [i * 10 for i in range(1, 5)]))
         ax.set_xticks(ticks)
         ax.set_xticklabels(labels, fontsize=20)
@@ -146,7 +149,7 @@ def vis():
         ax.axvline(x=arr_mod.shape[0], color="k")
 
         plt.tight_layout()
-        plt.savefig("fig/heatmap.png", bbox_inches="tight", dpi=300)
+        plt.savefig("fig/heatmap.pdf", bbox_inches="tight")
 
 
 def main():
