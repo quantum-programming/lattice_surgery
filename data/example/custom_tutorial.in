@@ -1,0 +1,8 @@
+CX 0 1
+CX 1 2
+CX 2 3
+CX 3 4
+MAGIC_MOVE 2
+CX 4 2
+CX 3 1
+CX 2 0

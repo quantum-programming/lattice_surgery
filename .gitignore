@@ -12,3 +12,5 @@ src/cpp/*.out
 src/*.egg-info
 
 secret
+
+__pycache__
