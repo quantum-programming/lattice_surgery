@@ -1,0 +1,1469 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="604"
+   id="vis"
+   style="background-color:white"
+   viewBox="-5 -5 604 604"
+   width="604"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs475" />
+  <style
+     id="style2">
+text {text-anchor: middle; dominant-baseline: central; user-select: none;}
+</style>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="0"
+     id="rect6">
+    <title
+       id="title4">(l, w, h) = (0, 0, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="66"
+     id="rect10">
+    <title
+       id="title8">(l, w, h) = (0, 0, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="132"
+     id="rect14">
+    <title
+       id="title12">(l, w, h) = (0, 0, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="198"
+     id="rect18">
+    <title
+       id="title16">(l, w, h) = (0, 0, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="264"
+     id="rect22">
+    <title
+       id="title20">(l, w, h) = (0, 0, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="330"
+     id="rect26">
+    <title
+       id="title24">(l, w, h) = (0, 0, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="396"
+     id="rect30">
+    <title
+       id="title28">(l, w, h) = (0, 0, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="462"
+     id="rect34">
+    <title
+       id="title32">(l, w, h) = (0, 0, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="0"
+     y="528"
+     id="rect38">
+    <title
+       id="title36">(l, w, h) = (0, 0, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="0"
+     id="rect42">
+    <title
+       id="title40">(l, w, h) = (0, 1, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="66"
+     id="rect46">
+    <title
+       id="title44">(l, w, h) = (0, 1, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="132"
+     id="rect50">
+    <title
+       id="title48">(l, w, h) = (0, 1, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="198"
+     id="rect54">
+    <title
+       id="title52">(l, w, h) = (0, 1, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="264"
+     id="rect58">
+    <title
+       id="title56">(l, w, h) = (0, 1, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="330"
+     id="rect62">
+    <title
+       id="title60">(l, w, h) = (0, 1, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="396"
+     id="rect66">
+    <title
+       id="title64">(l, w, h) = (0, 1, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="462"
+     id="rect70">
+    <title
+       id="title68">(l, w, h) = (0, 1, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="66"
+     y="528"
+     id="rect74">
+    <title
+       id="title72">(l, w, h) = (0, 1, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="0"
+     id="rect78">
+    <title
+       id="title76">(l, w, h) = (0, 2, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="66"
+     id="rect82">
+    <title
+       id="title80">(l, w, h) = (0, 2, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="132"
+     id="rect86">
+    <title
+       id="title84">(l, w, h) = (0, 2, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="198"
+     id="rect90">
+    <title
+       id="title88">(l, w, h) = (0, 2, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="264"
+     id="rect94">
+    <title
+       id="title92">(l, w, h) = (0, 2, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="330"
+     id="rect98">
+    <title
+       id="title96">(l, w, h) = (0, 2, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="396"
+     id="rect102">
+    <title
+       id="title100">(l, w, h) = (0, 2, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="462"
+     id="rect106">
+    <title
+       id="title104">(l, w, h) = (0, 2, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="132"
+     y="528"
+     id="rect110">
+    <title
+       id="title108">(l, w, h) = (0, 2, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="0"
+     id="rect114">
+    <title
+       id="title112">(l, w, h) = (0, 3, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="66"
+     id="rect118">
+    <title
+       id="title116">(l, w, h) = (0, 3, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="132"
+     id="rect122">
+    <title
+       id="title120">(l, w, h) = (0, 3, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="198"
+     id="rect126">
+    <title
+       id="title124">(l, w, h) = (0, 3, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="264"
+     id="rect130">
+    <title
+       id="title128">(l, w, h) = (0, 3, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="330"
+     id="rect134">
+    <title
+       id="title132">(l, w, h) = (0, 3, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="396"
+     id="rect138">
+    <title
+       id="title136">(l, w, h) = (0, 3, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="462"
+     id="rect142">
+    <title
+       id="title140">(l, w, h) = (0, 3, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="198"
+     y="528"
+     id="rect146">
+    <title
+       id="title144">(l, w, h) = (0, 3, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="0"
+     id="rect150">
+    <title
+       id="title148">(l, w, h) = (0, 4, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="66"
+     id="rect154">
+    <title
+       id="title152">(l, w, h) = (0, 4, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="132"
+     id="rect158">
+    <title
+       id="title156">(l, w, h) = (0, 4, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="198"
+     id="rect162">
+    <title
+       id="title160">(l, w, h) = (0, 4, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="264"
+     id="rect166">
+    <title
+       id="title164">(l, w, h) = (0, 4, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="330"
+     id="rect170">
+    <title
+       id="title168">(l, w, h) = (0, 4, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="396"
+     id="rect174">
+    <title
+       id="title172">(l, w, h) = (0, 4, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="462"
+     id="rect178">
+    <title
+       id="title176">(l, w, h) = (0, 4, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="264"
+     y="528"
+     id="rect182">
+    <title
+       id="title180">(l, w, h) = (0, 4, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="0"
+     id="rect186">
+    <title
+       id="title184">(l, w, h) = (0, 5, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="66"
+     id="rect190">
+    <title
+       id="title188">(l, w, h) = (0, 5, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="132"
+     id="rect194">
+    <title
+       id="title192">(l, w, h) = (0, 5, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="198"
+     id="rect198">
+    <title
+       id="title196">(l, w, h) = (0, 5, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="264"
+     id="rect202">
+    <title
+       id="title200">(l, w, h) = (0, 5, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="330"
+     id="rect206">
+    <title
+       id="title204">(l, w, h) = (0, 5, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="396"
+     id="rect210">
+    <title
+       id="title208">(l, w, h) = (0, 5, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="462"
+     id="rect214">
+    <title
+       id="title212">(l, w, h) = (0, 5, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="330"
+     y="528"
+     id="rect218">
+    <title
+       id="title216">(l, w, h) = (0, 5, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="0"
+     id="rect222">
+    <title
+       id="title220">(l, w, h) = (0, 6, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="66"
+     id="rect226">
+    <title
+       id="title224">(l, w, h) = (0, 6, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="132"
+     id="rect230">
+    <title
+       id="title228">(l, w, h) = (0, 6, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="198"
+     id="rect234">
+    <title
+       id="title232">(l, w, h) = (0, 6, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="264"
+     id="rect238">
+    <title
+       id="title236">(l, w, h) = (0, 6, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="330"
+     id="rect242">
+    <title
+       id="title240">(l, w, h) = (0, 6, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="396"
+     id="rect246">
+    <title
+       id="title244">(l, w, h) = (0, 6, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="462"
+     id="rect250">
+    <title
+       id="title248">(l, w, h) = (0, 6, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="396"
+     y="528"
+     id="rect254">
+    <title
+       id="title252">(l, w, h) = (0, 6, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="0"
+     id="rect258">
+    <title
+       id="title256">(l, w, h) = (0, 7, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="66"
+     id="rect262">
+    <title
+       id="title260">(l, w, h) = (0, 7, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="132"
+     id="rect266">
+    <title
+       id="title264">(l, w, h) = (0, 7, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="198"
+     id="rect270">
+    <title
+       id="title268">(l, w, h) = (0, 7, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="264"
+     id="rect274">
+    <title
+       id="title272">(l, w, h) = (0, 7, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="330"
+     id="rect278">
+    <title
+       id="title276">(l, w, h) = (0, 7, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="396"
+     id="rect282">
+    <title
+       id="title280">(l, w, h) = (0, 7, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="462"
+     id="rect286">
+    <title
+       id="title284">(l, w, h) = (0, 7, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="462"
+     y="528"
+     id="rect290">
+    <title
+       id="title288">(l, w, h) = (0, 7, 8)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="0"
+     id="rect294">
+    <title
+       id="title292">(l, w, h) = (0, 8, 0)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="66"
+     id="rect298">
+    <title
+       id="title296">(l, w, h) = (0, 8, 1)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="132"
+     id="rect302">
+    <title
+       id="title300">(l, w, h) = (0, 8, 2)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="198"
+     id="rect306">
+    <title
+       id="title304">(l, w, h) = (0, 8, 3)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="264"
+     id="rect310">
+    <title
+       id="title308">(l, w, h) = (0, 8, 4)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="330"
+     id="rect314">
+    <title
+       id="title312">(l, w, h) = (0, 8, 5)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="396"
+     id="rect318">
+    <title
+       id="title316">(l, w, h) = (0, 8, 6)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="462"
+     id="rect322">
+    <title
+       id="title320">(l, w, h) = (0, 8, 7)</title>
+  </rect>
+  <rect
+     fill="#dae3f3"
+     height="66"
+     stroke="#1f77b4"
+     stroke-width="2"
+     width="66"
+     x="528"
+     y="528"
+     id="rect326">
+    <title
+       id="title324">(l, w, h) = (0, 8, 8)</title>
+  </rect>
+  <rect
+     fill="#1f77b4"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="133"
+     y="133"
+     id="rect330">
+    <title
+       id="title328">Qubit 1, (l, w, h) = (0, 2, 2)</title>
+  </rect>
+  <rect
+     fill="#1f77b4"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="133"
+     y="265"
+     id="rect334">
+    <title
+       id="title332">Qubit 2, (l, w, h) = (0, 2, 4)</title>
+  </rect>
+  <rect
+     fill="#1f77b4"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="133"
+     y="397"
+     id="rect338">
+    <title
+       id="title336">Qubit 3, (l, w, h) = (0, 2, 6)</title>
+  </rect>
+  <rect
+     fill="#1f77b4"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="265"
+     y="133"
+     id="rect342">
+    <title
+       id="title340">Qubit 4, (l, w, h) = (0, 4, 2)</title>
+  </rect>
+  <rect
+     fill="#ff7f0e"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="265"
+     y="265"
+     id="rect346">
+    <title
+       id="title344">Qubit 5, (l, w, h) = (0, 4, 4)</title>
+  </rect>
+  <rect
+     fill="#ff7f0e"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="265"
+     y="397"
+     id="rect350">
+    <title
+       id="title348">Qubit 6, (l, w, h) = (0, 4, 6)</title>
+  </rect>
+  <rect
+     fill="#2ca02c"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="397"
+     y="133"
+     id="rect354">
+    <title
+       id="title352">Qubit 7, (l, w, h) = (0, 6, 2)</title>
+  </rect>
+  <rect
+     fill="#2ca02c"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="397"
+     y="265"
+     id="rect358">
+    <title
+       id="title356">Qubit 8, (l, w, h) = (0, 6, 4)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="1"
+     y="1"
+     id="rect362">
+    <title
+       id="title360">Qubit 9, (l, w, h) = (0, 0, 0)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="1"
+     y="133"
+     id="rect366">
+    <title
+       id="title364">Qubit 10, (l, w, h) = (0, 0, 2)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="1"
+     y="265"
+     id="rect370">
+    <title
+       id="title368">Qubit 11, (l, w, h) = (0, 0, 4)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="1"
+     y="397"
+     id="rect374">
+    <title
+       id="title372">Qubit 12, (l, w, h) = (0, 0, 6)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="1"
+     y="529"
+     id="rect378">
+    <title
+       id="title376">Qubit 13, (l, w, h) = (0, 0, 8)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="133"
+     y="1"
+     id="rect382">
+    <title
+       id="title380">Qubit 14, (l, w, h) = (0, 2, 0)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="133"
+     y="529"
+     id="rect386">
+    <title
+       id="title384">Qubit 15, (l, w, h) = (0, 2, 8)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="265"
+     y="1"
+     id="rect390">
+    <title
+       id="title388">Qubit 16, (l, w, h) = (0, 4, 0)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="265"
+     y="529"
+     id="rect394">
+    <title
+       id="title392">Qubit 17, (l, w, h) = (0, 4, 8)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="397"
+     y="1"
+     id="rect398">
+    <title
+       id="title396">Qubit 18, (l, w, h) = (0, 6, 0)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="397"
+     y="529"
+     id="rect402">
+    <title
+       id="title400">Qubit 19, (l, w, h) = (0, 6, 8)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="529"
+     y="1"
+     id="rect406">
+    <title
+       id="title404">Qubit 20, (l, w, h) = (0, 8, 0)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="529"
+     y="133"
+     id="rect410">
+    <title
+       id="title408">Qubit 21, (l, w, h) = (0, 8, 2)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="529"
+     y="265"
+     id="rect414">
+    <title
+       id="title412">Qubit 22, (l, w, h) = (0, 8, 4)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="529"
+     y="397"
+     id="rect418">
+    <title
+       id="title416">Qubit 23, (l, w, h) = (0, 8, 6)</title>
+  </rect>
+  <rect
+     fill="#808080"
+     height="64"
+     stroke=""
+     stroke-width="0"
+     width="64"
+     x="529"
+     y="529"
+     id="rect422">
+    <title
+       id="title420">Qubit 24, (l, w, h) = (0, 8, 8)</title>
+  </rect>
+  <g
+     aria-label="1"
+     id="text424"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 156.45996,172.77734 h 7.08984 v -24.4707 l -7.71289,1.54688 v -3.95313 l 7.66993,-1.54687 h 4.33984 v 28.42382 h 7.08984 v 3.65235 h -18.47656 z"
+       id="path477" />
+  </g>
+  <g
+     aria-label="2"
+     id="text426"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 159.44629,304.77734 h 15.14648 v 3.65235 h -20.36718 v -3.65235 q 2.4707,-2.55664 6.72461,-6.85351 4.27539,-4.31836 5.37109,-5.56446 2.08398,-2.34179 2.90039,-3.95312 0.83789,-1.63281 0.83789,-3.20117 0,-2.55664 -1.80469,-4.16797 -1.7832,-1.61133 -4.66211,-1.61133 -2.04101,0 -4.31836,0.70899 -2.25586,0.70898 -4.83398,2.14843 v -4.38281 q 2.62109,-1.05273 4.89844,-1.58984 2.27734,-0.53711 4.16797,-0.53711 4.98437,0 7.94921,2.49218 2.96485,2.49219 2.96485,6.66016 0,1.97656 -0.75195,3.75977 -0.73047,1.76172 -2.68555,4.16797 -0.53711,0.62304 -3.41602,3.60937 -2.8789,2.96484 -8.12109,8.31445 z"
+       id="path480" />
+  </g>
+  <g
+     aria-label="3"
+     id="text428"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 168.85645,423.13477 q 3.11523,0.66601 4.85546,2.77148 1.76172,2.10547 1.76172,5.19922 0,4.74805 -3.26562,7.34765 -3.26563,2.59961 -9.28125,2.59961 -2.01953,0 -4.16797,-0.4082 -2.12695,-0.38672 -4.4043,-1.18164 v -4.18945 q 1.80469,1.05273 3.95313,1.58984 2.14843,0.53711 4.49023,0.53711 4.08203,0 6.20899,-1.61133 2.14843,-1.61133 2.14843,-4.68359 0,-2.83594 -1.99804,-4.42578 -1.97657,-1.61133 -5.52149,-1.61133 h -3.73828 v -3.56641 h 3.91016 q 3.20117,0 4.89843,-1.26758 1.69727,-1.28906 1.69727,-3.69531 0,-2.4707 -1.76172,-3.78125 -1.74023,-1.33203 -5.00586,-1.33203 -1.7832,0 -3.82422,0.38672 -2.04101,0.38672 -4.49023,1.20312 v -3.86718 q 2.4707,-0.6875 4.61914,-1.03125 2.16992,-0.34375 4.08203,-0.34375 4.94141,0 7.82031,2.25586 2.87891,2.23437 2.87891,6.05859 0,2.66406 -1.52539,4.51172 -1.52539,1.82617 -4.33984,2.53516 z"
+       id="path483" />
+  </g>
+  <g
+     aria-label="4"
+     id="text430"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 299.63184,148.13477 -10.95704,17.12304 h 10.95704 z m -1.13868,-3.78125 h 5.45704 v 20.90429 h 4.57617 v 3.60938 h -4.57617 v 7.5625 h -4.31836 v -7.5625 h -14.48047 v -4.18946 z"
+       id="path486" />
+  </g>
+  <g
+     aria-label="5"
+     id="text432"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 287.75098,276.35352 h 17.03711 v 3.65234 h -13.0625 v 7.86328 q 0.94531,-0.32227 1.89062,-0.47266 0.94531,-0.17187 1.89063,-0.17187 5.37109,0 8.50781,2.94336 3.13672,2.94336 3.13672,7.9707 0,5.17774 -3.22266,8.05664 -3.22266,2.85742 -9.08789,2.85742 -2.01953,0 -4.125,-0.34375 -2.08398,-0.34375 -4.31836,-1.03125 v -4.36132 q 1.93359,1.05273 3.99609,1.56836 2.0625,0.51562 4.36133,0.51562 3.7168,0 5.88672,-1.95508 2.16992,-1.95508 2.16992,-5.30664 0,-3.35156 -2.16992,-5.30664 -2.16992,-1.95508 -5.88672,-1.95508 -1.74023,0 -3.48047,0.38672 -1.71875,0.38672 -3.52343,1.20313 z"
+       id="path489" />
+  </g>
+  <g
+     aria-label="6"
+     id="text434"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 297.52637,422.66211 q -2.92188,0 -4.64063,1.99805 -1.69726,1.99804 -1.69726,5.47851 0,3.45899 1.69726,5.47852 1.71875,1.99804 4.64063,1.99804 2.92187,0 4.61914,-1.99804 1.71875,-2.01953 1.71875,-5.47852 0,-3.48047 -1.71875,-5.47851 -1.69727,-1.99805 -4.61914,-1.99805 z m 8.61523,-13.59961 v 3.95312 q -1.63281,-0.77343 -3.30859,-1.18164 -1.6543,-0.4082 -3.28711,-0.4082 -4.29688,0 -6.57422,2.90039 -2.25586,2.90039 -2.57813,8.76563 1.26758,-1.86914 3.17969,-2.85743 1.91211,-1.00976 4.21094,-1.00976 4.83398,0 7.62695,2.94336 2.81446,2.92187 2.81446,7.9707 0,4.94141 -2.92188,7.92774 -2.92187,2.98632 -7.77734,2.98632 -5.56446,0 -8.50782,-4.2539 -2.94335,-4.27539 -2.94335,-12.375 0,-7.60547 3.60937,-12.11719 3.60938,-4.5332 9.68945,-4.5332 1.63282,0 3.28711,0.32226 1.67578,0.32227 3.48047,0.9668 z"
+       id="path492" />
+  </g>
+  <g
+     aria-label="7"
+     id="text436"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 418.6123,144.35352 h 20.625 v 1.84765 l -11.64453,30.22852 h -4.5332 l 10.95703,-28.42383 h -15.4043 z"
+       id="path495" />
+  </g>
+  <g
+     aria-label="8"
+     id="text438"
+     style="font-size:44px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 428.98926,293.19727 q -3.09375,0 -4.87696,1.65429 -1.76171,1.6543 -1.76171,4.55469 0,2.90039 1.76171,4.55469 1.78321,1.65429 4.87696,1.65429 3.09375,0 4.87695,-1.65429 1.7832,-1.67578 1.7832,-4.55469 0,-2.90039 -1.7832,-4.55469 -1.76172,-1.65429 -4.87695,-1.65429 z m -4.33985,-1.84766 q -2.79296,-0.6875 -4.36132,-2.59961 -1.54688,-1.91211 -1.54688,-4.66211 0,-3.8457 2.72852,-6.08008 2.75,-2.23437 7.51953,-2.23437 4.79101,0 7.51953,2.23437 2.72851,2.23438 2.72851,6.08008 0,2.75 -1.56835,4.66211 -1.54688,1.91211 -4.31836,2.59961 3.13671,0.73047 4.87695,2.85742 1.76172,2.12695 1.76172,5.19922 0,4.66211 -2.85742,7.1543 -2.83594,2.49218 -8.14258,2.49218 -5.30664,0 -8.16406,-2.49218 -2.83594,-2.49219 -2.83594,-7.1543 0,-3.07227 1.76172,-5.19922 1.76172,-2.12695 4.89843,-2.85742 z m -1.58984,-6.85352 q 0,2.49219 1.54688,3.88868 1.56835,1.39648 4.38281,1.39648 2.79297,0 4.36133,-1.39648 1.58984,-1.39649 1.58984,-3.88868 0,-2.49218 -1.58984,-3.88867 -1.56836,-1.39648 -4.36133,-1.39648 -2.81446,0 -4.38281,1.39648 -1.54688,1.39649 -1.54688,3.88867 z"
+       id="path498" />
+  </g>
+  <g
+     aria-label="M"
+     id="text440"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 8.668457,5.6767578 h 3.233398 L 15.994629,16.59082 20.108887,5.6767578 h 3.233398 V 21.714844 H 21.226074 V 7.6318359 L 17.090332,18.631836 H 14.909668 L 10.773926,7.6318359 V 21.714844 H 8.668457 Z"
+       id="path501" />
+  </g>
+  <g
+     aria-label="M"
+     id="text442"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 8.668457,137.67676 h 3.233398 l 4.092774,10.91406 4.114258,-10.91406 h 3.233398 v 16.03808 h -2.116211 v -14.083 l -4.135742,11 h -2.180664 l -4.135742,-11 v 14.083 H 8.668457 Z"
+       id="path504" />
+  </g>
+  <g
+     aria-label="M"
+     id="text444"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 8.668457,269.67676 h 3.233398 l 4.092774,10.91406 4.114258,-10.91406 h 3.233398 v 16.03808 h -2.116211 v -14.083 l -4.135742,11 h -2.180664 l -4.135742,-11 v 14.083 H 8.668457 Z"
+       id="path507" />
+  </g>
+  <g
+     aria-label="M"
+     id="text446"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 8.668457,401.67676 h 3.233398 l 4.092774,10.91406 4.114258,-10.91406 h 3.233398 v 16.03808 h -2.116211 v -14.083 l -4.135742,11 h -2.180664 l -4.135742,-11 v 14.083 H 8.668457 Z"
+       id="path510" />
+  </g>
+  <g
+     aria-label="M"
+     id="text448"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 8.668457,533.67676 h 3.233398 l 4.092774,10.91406 4.114258,-10.91406 h 3.233398 v 16.03808 h -2.116211 v -14.083 l -4.135742,11 h -2.180664 l -4.135742,-11 v 14.083 H 8.668457 Z"
+       id="path513" />
+  </g>
+  <g
+     aria-label="M"
+     id="text450"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 140.66846,5.6767578 h 3.2334 l 4.09277,10.9140622 4.11426,-10.9140622 h 3.2334 V 21.714844 h -2.11622 V 7.6318359 l -4.13574,11.0000001 h -2.18066 L 142.77393,7.6318359 V 21.714844 h -2.10547 z"
+       id="path516" />
+  </g>
+  <g
+     aria-label="M"
+     id="text452"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 140.66846,533.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path519" />
+  </g>
+  <g
+     aria-label="M"
+     id="text454"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 272.66846,5.6767578 h 3.2334 l 4.09277,10.9140622 4.11426,-10.9140622 h 3.2334 V 21.714844 h -2.11622 V 7.6318359 l -4.13574,11.0000001 h -2.18066 L 274.77393,7.6318359 V 21.714844 h -2.10547 z"
+       id="path522" />
+  </g>
+  <g
+     aria-label="M"
+     id="text456"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 272.66846,533.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path525" />
+  </g>
+  <g
+     aria-label="M"
+     id="text458"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 404.66846,5.6767578 h 3.2334 l 4.09277,10.9140622 4.11426,-10.9140622 h 3.2334 V 21.714844 h -2.11622 V 7.6318359 l -4.13574,11.0000001 h -2.18066 L 406.77393,7.6318359 V 21.714844 h -2.10547 z"
+       id="path528" />
+  </g>
+  <g
+     aria-label="M"
+     id="text460"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 404.66846,533.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path531" />
+  </g>
+  <g
+     aria-label="M"
+     id="text462"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 536.66846,5.6767578 h 3.2334 l 4.09277,10.9140622 4.11426,-10.9140622 h 3.2334 V 21.714844 h -2.11622 V 7.6318359 l -4.13574,11.0000001 h -2.18066 L 538.77393,7.6318359 V 21.714844 h -2.10547 z"
+       id="path534" />
+  </g>
+  <g
+     aria-label="M"
+     id="text464"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 536.66846,137.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path537" />
+  </g>
+  <g
+     aria-label="M"
+     id="text466"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 536.66846,269.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path540" />
+  </g>
+  <g
+     aria-label="M"
+     id="text468"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 536.66846,401.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path543" />
+  </g>
+  <g
+     aria-label="M"
+     id="text470"
+     style="font-size:22px;dominant-baseline:central;text-anchor:middle">
+    <path
+       d="m 536.66846,533.67676 h 3.2334 l 4.09277,10.91406 4.11426,-10.91406 h 3.2334 v 16.03808 h -2.11622 v -14.083 l -4.13574,11 h -2.18066 l -4.13574,-11 v 14.083 h -2.10547 z"
+       id="path546" />
+  </g>
+</svg>
