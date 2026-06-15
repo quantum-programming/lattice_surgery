@@ -1,0 +1,14 @@
+factory_method,allocation_method,layer_count,routing_algorithm,Total Time
+Ignore,TopologyInfiniteMagic,,,473
+outer,naive,1,CareKinkParity,969
+outer,naive,2,CareKinkParity,636
+outer,random,1,CareKinkParity,627
+outer,random,2,CareKinkParity,492
+outer,SA,1,CareKinkParity,504
+outer,SA,2,CareKinkParity,478
+inner,naive,1,CareKinkParity,1029
+inner,naive,2,CareKinkParity,626
+inner,random,1,CareKinkParity,604
+inner,random,2,CareKinkParity,490
+inner,SA,1,CareKinkParity,509
+inner,SA,2,CareKinkParity,479
