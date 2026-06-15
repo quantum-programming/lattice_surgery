@@ -34,8 +34,8 @@ parser.add_argument(
     "--config",
     "-c",
     type=str,
-    default="path_histogram_length.json",
-    help="Path to the JSON config file that defines experiment parameters.\nDefault: path_histogram_length.json",
+    default="path_length_histogram.json",
+    help="Path to the JSON config file that defines experiment parameters.\nDefault: path_length_histogram.json",
 )
 args = parser.parse_args()
 PROCESSES = args.process

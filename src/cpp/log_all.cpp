@@ -19,19 +19,21 @@ constexpr bool execute_single = true, execute_proj = true,
 
 template <class Result>
 void output(std::string file_name, Result result) {
-  int check_level;
+  RoutingAlgorithm routing_algo;
   if (file_name.find(std::string("Yes_Kink")) != std::string::npos) {
-    check_level = 3;
+    routing_algo = CareKinkParity;
   } else if (file_name.find(std::string("No_Kink")) != std::string::npos) {
-    check_level = 2;
+    routing_algo = IgnoreKinkParity;
   } else if (file_name.find(std::string("No_Top")) != std::string::npos) {
-    check_level = 1;
+    routing_algo = IgnoreTopology;
+  } else if (file_name.find(std::string("No_MP")) != std::string::npos) {
+    routing_algo = IgnoreMagicTopology;
   } else if (file_name.find(std::string("No_MSF")) != std::string::npos) {
-    check_level = 0;
+    routing_algo = IgnoreTopologyInfiniteMagic;
   } else {
     assert(false);
   }
-  ScheduleResultValidator(result, check_level).validate_all();
+  ScheduleResultValidator(result, routing_algo).validate_all();
 
   std::ofstream ofs(file_name);
   result.to_visualizer(ofs, INT32_MAX);
@@ -50,6 +52,8 @@ void execute(Problem& prob, const std::string& output_dir) {
            single_scheduler.look_ahead_schedule<IgnoreTopologyInfiniteMagic>());
     output(to_file_name("Single_No_Top"),
            single_scheduler.look_ahead_schedule<IgnoreTopology>());
+    output(to_file_name("Single_No_MP"),
+           single_scheduler.look_ahead_schedule<IgnoreMagicTopology>());
     output(to_file_name("Single_No_Kink"),
            single_scheduler.look_ahead_schedule<IgnoreKinkParity>());
     if (prob.layer_count > 1) {
@@ -64,6 +68,8 @@ void execute(Problem& prob, const std::string& output_dir) {
            proj_scheduler.look_ahead_schedule<IgnoreTopologyInfiniteMagic>());
     output(to_file_name("Proj_No_Top"),
            proj_scheduler.look_ahead_schedule<IgnoreTopology>());
+    output(to_file_name("Proj_No_MP"),
+           proj_scheduler.look_ahead_schedule<IgnoreMagicTopology>());
     output(to_file_name("Proj_No_Kink"),
            proj_scheduler.look_ahead_schedule<IgnoreKinkParity>());
     output(to_file_name("Proj_Yes_Kink"),
@@ -76,6 +82,8 @@ void execute(Problem& prob, const std::string& output_dir) {
            double_scheduler.look_ahead_schedule<IgnoreTopologyInfiniteMagic>());
     output(to_file_name("Double_No_Top"),
            double_scheduler.look_ahead_schedule<IgnoreTopology>());
+    output(to_file_name("Double_No_MP"),
+           double_scheduler.look_ahead_schedule<IgnoreMagicTopology>());
     output(to_file_name("Double_No_Kink"),
            double_scheduler.look_ahead_schedule<IgnoreKinkParity>());
     output(to_file_name("Double_Yes_Kink"),
