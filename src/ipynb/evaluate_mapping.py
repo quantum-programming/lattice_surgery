@@ -25,11 +25,11 @@ plt.rcParams.update(
 
 def compile_main():
     compile_cmd = [
-        "g++",
+        "g++-13",
         "-g",
         "src/cpp/main.cpp",
         "-o",
-        "src/cpp/main.out",
+        "src/cpp/main",
         "-std=c++17",
         "-Wall",
         "-Wextra",
@@ -83,7 +83,7 @@ def run(input_file, force_recalculate):
 
     print("Running calculations...")
     results = []
-    executable = "src/cpp/main.out"
+    executable = "src/cpp/main"
     arg = [
         executable,
         input_file,
@@ -163,8 +163,8 @@ def create_barplot_visualization(df, input_file):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharey=True)
 
     # Filter data for each layer count
-    df_layer1 = df_viz[df_viz["layer_count"].astype(int) == 1]
-    df_layer2 = df_viz[df_viz["layer_count"].astype(int) == 2]
+    df_layer1 = df_viz[df_viz["layer_count"].astype(str) == "1.0"]
+    df_layer2 = df_viz[df_viz["layer_count"].astype(str) == "2.0"]
 
     df_layer1["factory_method"] = df_layer1["factory_method"].replace(
         {"outer": "Outer Factory", "inner": "Inner Factory"}
