@@ -55,7 +55,7 @@ The former is necessary for running `paper_figures.ipynb`, and the latter is req
 3\. Move to the `TeleportRouter.jl` directory and set it up as a Julia project:
 
 ```bash
-julia --project=@. -e 'using Pkg; Pkg.up(); Pkg.instantiate(); Pkg.precompile()'
+julia --project=@. -e 'using Pkg; Pkg.update(); Pkg.instantiate(); Pkg.precompile()'
 ```
 
 Then, move to the directory `src/TeleportRouterSub` and execute the following to run the Julia code implementing the EDPC algorithm:
@@ -70,4 +70,4 @@ This result is saved as `out/table/EDPC_results.csv`, which is required for runn
 
 ## Additional Notes
 
-You can also run `python src/ipynb/evaluate_mapping.py` to reproduce the figures in  `fig/evaluate_mapping/`.
+You can also run `src/ipynb/evaluate_mapping.py` and `src/ipynb/heatmap.py` to reproduce the figures in `fig/evaluate_mapping/` and `fig/heatmap.pdf`, respectively.
