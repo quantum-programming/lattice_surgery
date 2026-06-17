@@ -29,7 +29,7 @@ def compile_main():
         "-g",
         "src/cpp/main.cpp",
         "-o",
-        "src/cpp/main",
+        "src/cpp/main.out",
         "-std=c++17",
         "-Wall",
         "-Wextra",
@@ -83,7 +83,7 @@ def run(input_file, force_recalculate):
 
     print("Running calculations...")
     results = []
-    executable = "src/cpp/main"
+    executable = "src/cpp/main.out"
     arg = [
         executable,
         input_file,
