@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
         executable_dir /
         "../../data/circuit/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1.in";
     factory = "outer";
-    layer_count = 2;
+    layer_count = 1;
     allocator = "SA";
     msf_coeff = 0.1;
     msf_prep_time = 2;

@@ -28,25 +28,16 @@ EXAMPLE_SVG_PATHS = [
 ]
 
 RESULT_SVG_PATHS = [
-    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1__/001.svg",
-    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1__/001.svg",
-    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1__/002.svg",
-    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1__/002.svg",
-    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_projective_CareKinkParity_1__/003.svg",
-    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1_outer_double_CareKinkParity_1__/003.svg",
+    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1/outer_1_SA_0.1_2/Double_Yes_Kink/001.svg",
+    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1/outer_1_SA_0.1_2/Double_Yes_Kink/002.svg",
+    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1/outer_1_SA_0.1_2/Double_Yes_Kink/003.svg",
+    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1/outer_1_SA_0.1_2/Proj_Yes_Kink/001.svg",
+    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1/outer_1_SA_0.1_2/Proj_Yes_Kink/002.svg",
+    "svg/result/result_SELECT_10_FermiHubbard2D_cylinder_0_0_1/outer_1_SA_0.1_2/Proj_Yes_Kink/003.svg",
 ]
 
 TEX_DIR = Path("tex")
 
-
-def verify_colors_in_utils():
-    """Verify that colors are defined in src/util.rs"""
-    with open("src/util.rs", "r") as f:
-        utils = f.read()
-        assert LEGEND_COLORS[0] in utils, (
-            "magic state factory color not found in utils.rs"
-        )
-        assert LEGEND_COLORS[1] in utils, "ancilla color not found in utils.rs"
 
 
 def create_legend_svg():
@@ -75,16 +66,34 @@ def create_legend_svg():
     plt.close(fig)
 
 
-def copy_svg_files(svg_paths, prefix=""):
-    """Copy SVG files to tex directory with renamed filenames"""
-    for path in svg_paths:
-        path_main = "_".join(path.split("/")[-2:])
-        dst_filename = f"{prefix}{path_main}" if prefix else path_main
-        shutil.copy(path, TEX_DIR / dst_filename)
 
+def compile_tex():
+    os.chdir(os.path.dirname(__file__))
 
-def cleanup_tex_directory():
-    """Clean up generated files in tex directory except .tex and .pdf files"""
+    with open("src/util.rs", "r") as f:
+        utils = f.read()
+        assert LEGEND_COLORS[0] in utils, (
+            "magic state factory color not found in utils.rs"
+        )
+        assert LEGEND_COLORS[1] in utils, "ancilla color not found in utils.rs"
+
+    create_legend_svg()
+
+    # Copy SVG files and compile LaTeX
+    for tex_file, svg_paths, prefix in [
+        ("legend.tex", EXAMPLE_SVG_PATHS, ""),
+        ("individual.tex", RESULT_SVG_PATHS, "individual_"),
+    ]:
+        for path in svg_paths:
+            assert os.path.exists(path), path
+            path_main = "_".join(path.split("/")[-2:])
+            dst_filename = f"{prefix}{path_main}" if prefix else path_main
+            shutil.copy(path, TEX_DIR / dst_filename)
+        for _ in range(2):
+            subprocess.run(
+                ["pdflatex", "--shell-escape", tex_file], check=True, cwd=TEX_DIR
+            )
+
     items_to_delete = [
         (f, f.is_dir())
         for f in TEX_DIR.iterdir()
@@ -94,26 +103,6 @@ def cleanup_tex_directory():
     for item, is_dir in items_to_delete:
         print(f"Deleted: {item.name}{'/' if is_dir else ''}")
         shutil.rmtree(item) if is_dir else item.unlink()
-
-
-def compile_tex():
-    os.chdir(os.path.dirname(__file__))
-
-    verify_colors_in_utils()
-    create_legend_svg()
-
-    # Copy SVG files and compile LaTeX
-    for tex_file, svg_paths, prefix in [
-        ("legend.tex", EXAMPLE_SVG_PATHS, ""),
-        ("individual.tex", RESULT_SVG_PATHS, "individual_"),
-    ]:
-        copy_svg_files(svg_paths, prefix=prefix)
-        for _ in range(2):
-            subprocess.run(
-                ["pdflatex", "--shell-escape", tex_file], check=True, cwd=TEX_DIR
-            )
-
-    cleanup_tex_directory()
 
 
 def load_siteconfig(siteconfig_path: str) -> List[int]:
@@ -172,16 +161,6 @@ def get_cmd(input_path: str):
     return cmd
 
 
-def run_rust_executable(input_path: str) -> dict[str, str] | None:
-    cmd = get_cmd(input_path)
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.stderr:
-        print(f"Stderr: {result.stderr}")
-    if result.returncode != 0:
-        raise RuntimeError(f"Failed: {input_path} with {result.returncode}")
-    return json.loads(result.stdout)
-
-
 def get_relative_path(input_path: str) -> Path:
     path = Path(input_path)
     parts = path.parts
@@ -237,9 +216,15 @@ def _process_svg_item(args):
 
 
 def generate_svg_files(input_path: str) -> None:
-    svg_data = run_rust_executable(input_path)
-    if not svg_data:
-        return
+    cmd = get_cmd(input_path)
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.stderr:
+        print(f"Stderr: {result.stderr}")
+    if result.returncode != 0:
+        raise RuntimeError(f"Failed: {input_path} with {result.returncode}")
+
+    svg_data= json.loads(result.stdout)
+    assert svg_data
 
     relative_path = get_relative_path(input_path)
     output_dir = Path("svg") / relative_path
