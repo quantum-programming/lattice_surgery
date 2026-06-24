@@ -1,8 +1,12 @@
 # Lattice Surgery
 
-## Introduction
-
 This repository contains the source code and implementations for lattice surgery algorithms and their performance analysis on quantum circuits.
+
+This is also the supplemental material for our paper, "Bounded-depth spacetime lattice surgery for resource-efficient fault-tolerant quantum computation" (2026) by Kou Hamada, Hiroki Hamaguchi, Yosuke Ueno, Yasunari Suzuki, Teruo Tanimoto, and Nobuyuki Yoshioka.
+
+https://arxiv.org/abs/2606.21192
+
+![README_fig](fig/_README_fig.png)
 
 ## Quick Start
 
