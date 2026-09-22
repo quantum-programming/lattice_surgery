@@ -1,0 +1,6 @@
+tool,role,benchmark,commit,status,runtime_seconds,logical_depth,max_footprint,bounding_box_volume,occupied_patch_time_volume,native_volume,data_density,notes
+liblsqecc,compiler,smoke_cnot,fddaecf0d929b0afa0ae72a1adc1df865fab4e18,blocked,,,,,,,,CMake configuration found MSVC but stopped because SQLite3 headers/libraries are unavailable.
+topols,compiler,smoke_cnot,4c12ea2dbf8856d373ff8d2ed9edd54ee8d78cd5,passed,1.508,3,25,75,,75,,Upstream ZX optimization enabled; one seed; bounding-box volume.
+surface_code_compiler,compiler,smoke_cnot,e5f10526340dadacde170f4b92fc2872517a286c,passed,0.006250100006582215,4,36,144,45,45,0.1111111111111111,Python DAG adapter; fixed 6x6 QCB; upstream active space-time volume. Upstream set traversal can vary the active volume between processes.
+mqt_qecc_cococo,compiler,smoke_cnot,f3c26db10727174af2d2d7c02d1fbee70162a1c0,passed,0.011990200000582263,2,108,216,24,,0.2222222222222222,Color-code triple layout; BasicRouter; upstream Stim/order checks enabled.
+tqec,backend,tqec_gallery_cnot_z,8c352c0d605c90ca7eb877e02c777198407875e3,passed,17.197132400004193,,,,,,,BlockGraph-to-Stim smoke test at code distance 3; Stim qubits=81; instructions=727.

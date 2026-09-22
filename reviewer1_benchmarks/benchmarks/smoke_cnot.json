@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "smoke_cnot",
+  "num_qubits": 4,
+  "operations": [
+    {"gate": "cx", "control": 0, "target": 1},
+    {"gate": "cx", "control": 2, "target": 3},
+    {"gate": "cx", "control": 1, "target": 2},
+    {"gate": "cx", "control": 0, "target": 3}
+  ]
+}
+
