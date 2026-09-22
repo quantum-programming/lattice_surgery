@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "columns": {
+    "tool": "Stable tool identifier.",
+    "role": "compiler or backend.",
+    "benchmark": "Canonical benchmark name, or a tool-native backend case.",
+    "commit": "Pinned Git submodule commit.",
+    "status": "passed, failed, or blocked.",
+    "runtime_seconds": "Wall-clock time measured by the adapter.",
+    "logical_depth": "Tool-native slice, cycle, or routing-layer count.",
+    "max_footprint": "Maximum reserved logical sites when available.",
+    "bounding_box_volume": "max_footprint times logical_depth when meaningful.",
+    "occupied_patch_time_volume": "Sum of occupied logical sites over time when available.",
+    "native_volume": "Volume reported by the upstream implementation.",
+    "data_density": "Logical data locations divided by max_footprint when meaningful.",
+    "notes": "Metric caveats, validation result, or blocking reason."
+  }
+}
+
