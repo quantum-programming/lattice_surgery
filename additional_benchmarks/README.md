@@ -39,7 +39,12 @@ cmake --build .
 From this `additional_benchmarks` directory, we can run the following test:
 
 ```powershell
+# cd ../../../ # If necessary.
 uv sync
+
+# The editable install creates untracked package metadata in the submodule. Remove it to keep Git status clean.
+rm -rf external/Surface_Code_Compiler/src/surface_code_routing.egg-info
+
 uv run scripts/run_smoke.py
 uv run python -m unittest discover -s tests -v
 ```
