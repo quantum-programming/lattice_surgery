@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-import argparse
 import random
 import time
+from pathlib import Path
+from typing import Any
 
-from common import emit_result, load_benchmark
-import mqt.qecc.cococo.utils_routing as routing
-from mqt.qecc.cococo import layouts
+from common import load_benchmark
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("benchmark")
-    args = parser.parse_args()
-    benchmark = load_benchmark(args.benchmark)
+def run_smoke(benchmark_path: Path) -> dict[str, Any]:
+    import mqt.qecc.cococo.utils_routing as routing
+    from mqt.qecc.cococo import layouts
+
+    benchmark = load_benchmark(benchmark_path)
     random.seed(0)
 
     factories: list[tuple[int, int]] = []
@@ -56,21 +55,13 @@ def main() -> None:
         occupied_volume += len(occupied)
     footprint = graph.number_of_nodes()
     depth = len(schedule)
-    emit_result(
-        tool="mqt_qecc_cococo",
-        role="compiler",
-        benchmark=benchmark["name"],
-        status="passed",
-        runtime_seconds=elapsed,
-        logical_depth=depth,
-        max_footprint=footprint,
-        bounding_box_volume=footprint * depth,
-        occupied_patch_time_volume=occupied_volume,
-        native_volume=None,
-        data_density=len(data_locations) / footprint,
-        notes="Color-code triple layout; BasicRouter; upstream Stim/order checks enabled.",
-    )
-
-
-if __name__ == "__main__":
-    main()
+    return {
+        "status": "passed",
+        "runtime_seconds": elapsed,
+        "logical_depth": depth,
+        "max_footprint": footprint,
+        "bounding_box_volume": footprint * depth,
+        "occupied_patch_time_volume": occupied_volume,
+        "data_density": len(data_locations) / footprint,
+        "notes": "Color-code triple layout; BasicRouter; upstream Stim/order checks enabled.",
+    }

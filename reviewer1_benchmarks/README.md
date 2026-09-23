@@ -36,17 +36,14 @@ cmake --build .
 
 ## Reproducibility contract
 
-From this directory:
+From this `reviewer1_benchmarks` directory, we can run the following test:
 
 ```powershell
-python scripts/run_smoke.py --setup
+uv sync
+uv run scripts/run_smoke.py
+uv run python -m unittest discover -s tests -v
 ```
 
-`--setup` creates tool-specific virtual environments under `.venv/`.  Subsequent
-runs can omit it.  Normalized results are written to
-`results/smoke_results.json` and `results/smoke_results.csv`; temporary and
-upstream-native outputs stay under ignored `work/` and `results/raw/` paths.
-
-`liblsqecc` must first be built into `work/liblsqecc-build`.  On Windows its
-CMake configuration requires SQLite3 development headers and libraries in
-addition to the installed MSVC toolchain.
+`uv sync` creates and updates the shared `.venv/` from `pyproject.toml` and `uv.lock`.
+Normalized results are written to `results/smoke_results.json` and `results/smoke_results.csv`.
+Temporary and upstream-native outputs stay under ignored `work/` and `results/raw/` paths.

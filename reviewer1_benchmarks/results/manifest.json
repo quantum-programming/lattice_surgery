@@ -1,12 +1,12 @@
 {
-  "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
-  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.13.6 (main, Aug  8 2025, 17:08:22) [Clang 20.1.4 ]",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
   "benchmark_sha256": "c8f09b16e7a98ed9829c76ef956799a69c85090c7032e18fe87a95796bfc607f",
   "tool_commits": {
+    "liblsqecc": "fddaecf0d929b0afa0ae72a1adc1df865fab4e18",
     "topols": "4c12ea2dbf8856d373ff8d2ed9edd54ee8d78cd5",
     "surface_code_compiler": "e5f10526340dadacde170f4b92fc2872517a286c",
     "mqt_qecc_cococo": "f3c26db10727174af2d2d7c02d1fbee70162a1c0",
     "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
-  },
-  "liblsqecc_commit": "fddaecf0d929b0afa0ae72a1adc1df865fab4e18"
+  }
 }
