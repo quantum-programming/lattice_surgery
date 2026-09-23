@@ -1,4 +1,4 @@
-# Reviewer 1 comparison experiments
+# Additional Benchmarks
 
 ## Setup <!-- for LLM: DO NOT EDIT THIS SECTION -->
 
@@ -22,8 +22,8 @@ sudo apt install -y \
   libboost-graph-dev
 
 # 4. build liblsqecc
-# See lattice_surgery/reviewer1_benchmarks/external/liblsqecc/README.md
-cd reviewer1_benchmarks/external/liblsqecc
+# See lattice_surgery/additional_benchmarks/external/liblsqecc/README.md
+cd additional_benchmarks/external/liblsqecc
 mkdir build
 cd build
 cmake ..
@@ -31,12 +31,12 @@ cmake --build .
 # The output should look like:
 # -- Configuring done (52.0s)
 # -- Generating done (0.0s)
-# -- Build files have been written to: /home/hirok/University/lattice_surgery/reviewer1_benchmarks/external/liblsqecc/build
+# -- Build files have been written to: /home/hirok/University/lattice_surgery/additional_benchmarks/external/liblsqecc/build
 ```
 
 ## Reproducibility contract
 
-From this `reviewer1_benchmarks` directory, we can run the following test:
+From this `additional_benchmarks` directory, we can run the following test:
 
 ```powershell
 uv sync

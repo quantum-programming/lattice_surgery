@@ -1,5 +1,5 @@
 [project]
-name = "reviewer1-benchmarks"
+name = "additional-benchmarks"
 version = "0.1.0"
 description = "Comparison experiments for Reviewer 1"
 readme = "README.md"
