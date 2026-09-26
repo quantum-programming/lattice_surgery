@@ -5,8 +5,11 @@ description = "Comparison experiments for Reviewer 1"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "matplotlib",
     "mqt-qecc",
     "numpy",
+    "pylatexenc>=2.11",
+    "qiskit",
     "surface-code-routing",
     "topols",
     "tqec",

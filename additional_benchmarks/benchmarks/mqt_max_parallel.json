@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "name": "mqt_max_parallel",
+  "num_qubits": 6,
+  "generator": {
+    "implementation": "mqt.qecc.cococo.circuit_construction",
+    "commit": "f3c26db10727174af2d2d7c02d1fbee70162a1c0",
+    "function": "generate_max_parallel_circuit",
+    "parameters": {
+      "q": 6,
+      "min_depth": 24,
+      "seed": 45
+    }
+  },
+  "operations": [
+    {
+      "gate": "cx",
+      "control": 5,
+      "target": 0
+    },
+    {
+      "gate": "cx",
+      "control": 1,
+      "target": 4
+    },
+    {
+      "gate": "cx",
+      "control": 3,
+      "target": 2
+    },
+    {
+      "gate": "cx",
+      "control": 3,
+      "target": 0
+    },
+    {
+      "gate": "cx",
+      "control": 4,
+      "target": 5
+    },
+    {
+      "gate": "cx",
+      "control": 2,
+      "target": 1
+    },
+    {
+      "gate": "cx",
+      "control": 5,
+      "target": 0
+    },
+    {
+      "gate": "cx",
+      "control": 2,
+      "target": 4
+    },
+    {
+      "gate": "cx",
+      "control": 1,
+      "target": 3
+    },
+    {
+      "gate": "cx",
+      "control": 2,
+      "target": 0
+    },
+    {
+      "gate": "cx",
+      "control": 4,
+      "target": 1
+    },
+    {
+      "gate": "cx",
+      "control": 5,
+      "target": 3
+    },
+    {
+      "gate": "cx",
+      "control": 2,
+      "target": 1
+    },
+    {
+      "gate": "cx",
+      "control": 4,
+      "target": 5
+    },
+    {
+      "gate": "cx",
+      "control": 0,
+      "target": 3
+    },
+    {
+      "gate": "cx",
+      "control": 1,
+      "target": 4
+    },
+    {
+      "gate": "cx",
+      "control": 3,
+      "target": 5
+    },
+    {
+      "gate": "cx",
+      "control": 0,
+      "target": 2
+    },
+    {
+      "gate": "cx",
+      "control": 2,
+      "target": 5
+    },
+    {
+      "gate": "cx",
+      "control": 0,
+      "target": 3
+    },
+    {
+      "gate": "cx",
+      "control": 4,
+      "target": 1
+    },
+    {
+      "gate": "cx",
+      "control": 4,
+      "target": 3
+    },
+    {
+      "gate": "cx",
+      "control": 5,
+      "target": 2
+    },
+    {
+      "gate": "cx",
+      "control": 0,
+      "target": 1
+    }
+  ]
+}
