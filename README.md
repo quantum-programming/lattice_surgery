@@ -6,6 +6,8 @@ This is also the supplemental material for our paper, "Bounded-depth spacetime l
 
 https://arxiv.org/abs/2606.21192
 
+Please refer to [the GitHub releases page](https://github.com/quantum-programming/lattice_surgery/releases) to find the exact implementation and source code snapshot corresponding to each version of the paper.
+
 ![README_fig](fig/_README_fig.png)
 
 ## Quick Start
