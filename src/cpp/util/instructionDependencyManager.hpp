@@ -21,8 +21,10 @@ std::vector<Instruction> reorder_instructions(Problem prob) {
     for (auto&& target_id : inst.targetIds) {
       if (target_id == -1) continue;
       int next_inst_index = next_inst_indices[target_id];
-      critical_path[inst_index] = std::max(critical_path[inst_index],
+      if (next_inst_index >= 0) {
+        critical_path[inst_index] = std::max(critical_path[inst_index],
                                            critical_path[next_inst_index] + 1);
+      }
       next_inst_indices[target_id] = inst_index;
     }
   }
