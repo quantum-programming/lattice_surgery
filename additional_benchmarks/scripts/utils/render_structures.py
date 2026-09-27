@@ -5,7 +5,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-ROOT = Path(__file__).resolve().parents[1]
 COLORS = {"data": "#377eb8", "factory": "#ff7f00", "route": "#4daf4a",
           0: "#377eb8", 1: "#e41a1c", 2: "#999999"}
 
@@ -70,10 +69,3 @@ def render(ours_path: Path, topols_path: Path, output: Path) -> None:
     output.parent.mkdir(exist_ok=True)
     fig.savefig(output, dpi=220, bbox_inches="tight")
     plt.close(fig)
-
-
-if __name__ == "__main__":
-    work = ROOT / "work" / "comparison"
-    render(work / "ours-mqt_min_parallel.json",
-           work / "topols-mqt_min_parallel.json",
-           ROOT / "figures" / "structure_comparison.png")

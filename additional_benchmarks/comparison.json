@@ -1,10 +1,10 @@
 {
   "inputs": {
-    "mqt_max_parallel": "ad46b99270acd163698fa3c6456161f15fe5c7f5d3da879f2fa71e55ffab95f0",
-    "mqt_min_parallel": "cacfa5ec682e6cfc6455fd8e75810aa0ead7b9bd12e0309a0f8336a801ebe90e"
+    "mqt_max_parallel": "3b879169efa136ea049172b059031c86983bf077e23f0afe520c7cdc2d6bbafe",
+    "mqt_min_parallel": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
   },
   "commits": {
-    "this_work": "2c282447388be227ec172ce0e3b5751b82584169",
+    "this_work": "3fad44b79482b42e01905f0851618774f19982db",
     "topols": "78aab0ef1326bdf2041b519708f28741162f45c4",
     "mqt_qecc": "f3c26db10727174af2d2d7c02d1fbee70162a1c0"
   },
@@ -36,7 +36,7 @@
       "depth": 22,
       "spatial_footprint": 45,
       "bounding_box_volume": 990,
-      "compilation_seconds": 83.66536259651184,
+      "compilation_seconds": 82.97855639457703,
       "zx_graph": {
         "before": {
           "vertices": 60,
@@ -75,7 +75,7 @@
       "depth": 16,
       "spatial_footprint": 45,
       "bounding_box_volume": 720,
-      "compilation_seconds": 45.16300845146179,
+      "compilation_seconds": 47.129974126815796,
       "zx_graph": {
         "before": {
           "vertices": 60,

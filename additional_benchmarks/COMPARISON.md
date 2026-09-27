@@ -3,15 +3,20 @@
 ## Reproduction
 
 Run the following commands from this directory under Linux or WSL.
-The only system requirements are `uv` and a C++17 compiler available as `g++`.
+The only system requirements are `uv`, CMake, and a C++17 compiler available as `g++`.
 
 ```bash
 git submodule update --init --recursive
+export UV_PROJECT_ENVIRONMENT=work/venv-wsl
 uv sync --frozen
 
 # Build the C++ implementation of our CNOT decomposition.
 mkdir -p work
-g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/ours_cnot.cpp -o work/ours_cnot
+g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/utils/ours_cnot.cpp -o work/ours_cnot
+
+# Build libLSQECC outside its pinned source tree.
+cmake -S external/liblsqecc -B work/liblsqecc-build -DCMAKE_BUILD_TYPE=Release
+cmake --build work/liblsqecc-build --target lsqecc_slicer
 
 # Results:
 # - benchmarks/mqt_max_parallel.qasm
@@ -21,8 +26,9 @@ g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/ours_cnot.cpp -o work/ours_cnot
 uv run python benchmarks/generate_benchmarks.py
 
 # This runs both inputs through
-# - scripts/run_topols.py
-# - scripts/render_structures.py
+# - this work and TopoLS for the direct comparison
+# - libLSQECC, Surface Code Compiler, MQT QECC, and TQEC for native results
+# - scripts/utils/render_structures.py for the comparison figure
 uv run python scripts/run_comparison.py
 
 # This checks that the outputs match the checked-in reference results.
@@ -59,7 +65,40 @@ TopoLS instead simplifies and slices a ZX graph before placing merge–split str
 The reductions in ZX vertices above show the pre-placement merging, but are not themselves
 volume reductions.
 
+## Native external-tool runs
+
+The following runs show that each pinned external implementation produces a
+native result. They are not an additional ranking: the tools use different
+inputs, architectures, and resource-accounting rules. Exact commits, input
+hashes, configurations, and machine-readable outputs are recorded in
+`external_results.json`.
+
+- **libLSQECC** (`fddaecf`), using its compact layout, produced 49 slices and
+  total volume 2904 for max-parallel, and 55 slices and total volume 3102 for
+  min-parallel. Its native statistics also separate distillation, unused
+  routing, and other active volume.
+- **Surface Code Compiler** (`e5f1052`), using its Python DAG interface and a
+  fixed 6×6 QCB, produced 33 cycles for each input. Its active space-time
+  volumes were 418 and 402, respectively; the full allocated volume was 1188
+  in both cases. Upstream set traversal can make the active volumes vary between
+  processes.
+- **MQT QECC** (`f3c26db`), using `BasicRouter` on the scalable triple layout,
+  produced 9 routed layers for max-parallel and 13 for min-parallel. The native
+  routing graph had 108 nodes and 24 data locations.
+- **TQEC** (`8c352c0`) does not consume these OpenQASM circuits as an equivalent
+  place-and-route problem. Its native gallery CNOT was therefore compiled from
+  a Z-basis block graph to a distance-three Stim circuit with 81 qubits and 727
+  instructions.
+- **TopoLS** (`78aab0e`) is already exercised on both inputs in the direct
+  comparison above; its native results remain in `comparison.json` rather than
+  being duplicated.
+
 `comparison.json` records exact inputs, revisions, settings, metrics, and accounting fields.
+
+`external_results.json` records the separate native external-tool runs.
+
+`figures/native_external_results.png` shows those native outputs in independent
+panels with tool-specific units; it is not a cross-tool ranking.
 
 `figures/structure_comparison.png` renders the
 min-parallel outputs with a shared coordinate convention and drawing style.

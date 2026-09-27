@@ -1,8 +1,8 @@
 // Fixed planar comparison: call the paper allocator, scheduler, and validator.
 #include <iostream>
-#include "../../src/cpp/allocator/allocator.hpp"
-#include "../../src/cpp/scheduler/doubleTimeSlice.hpp"
-#include "../../src/cpp/scheduler/scheduleResultValidator.hpp"
+#include "../../../src/cpp/allocator/allocator.hpp"
+#include "../../../src/cpp/scheduler/doubleTimeSlice.hpp"
+#include "../../../src/cpp/scheduler/scheduleResultValidator.hpp"
 
 static void print_xyz(const Problem& problem, int position, int time) {
   auto [x, y, z] = problem.position_to_xyz(position);

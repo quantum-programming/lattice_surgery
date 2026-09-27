@@ -1,0 +1,92 @@
+{
+  "liblsqecc": {
+    "commit": "fddaecf0d929b0afa0ae72a1adc1df865fab4e18",
+    "configuration": "OpenQASM input; compact layout",
+    "results": {
+      "mqt_max_parallel": {
+        "slices": 49,
+        "total_volume": 2904,
+        "distillation_volume": 1320,
+        "unused_routing_volume": 507,
+        "other_active_volume": 1077,
+        "native_stats": "LS Instructions read 112 Slices 49 Made patch computation. Took 0.128292s. Total volume: 2904 Distillation volume: 1320 (45.4545%) Unused routing volume: 507 (17.4587%) Dead volume: 0 (0%) Other active volume: 1077 (37.0868%)",
+        "status": "passed",
+        "input_sha256": "3b879169efa136ea049172b059031c86983bf077e23f0afe520c7cdc2d6bbafe"
+      },
+      "mqt_min_parallel": {
+        "slices": 55,
+        "total_volume": 3102,
+        "distillation_volume": 1410,
+        "unused_routing_volume": 539,
+        "other_active_volume": 1153,
+        "native_stats": "LS Instructions read 114 Slices 55 Made patch computation. Took 0.164758s. Total volume: 3102 Distillation volume: 1410 (45.4545%) Unused routing volume: 539 (17.3759%) Dead volume: 0 (0%) Other active volume: 1153 (37.1696%)",
+        "status": "passed",
+        "input_sha256": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
+      }
+    }
+  },
+  "surface_code_compiler": {
+    "commit": "e5f10526340dadacde170f4b92fc2872517a286c",
+    "configuration": "Python DAG adapter; fixed 6x6 QCB",
+    "notes": "Upstream set traversal can vary active volume between processes.",
+    "results": {
+      "mqt_max_parallel": {
+        "cycles": 33,
+        "width": 6,
+        "height": 6,
+        "allocated_volume": 1188,
+        "active_space_time_volume": 418,
+        "status": "passed",
+        "input_sha256": "3b879169efa136ea049172b059031c86983bf077e23f0afe520c7cdc2d6bbafe"
+      },
+      "mqt_min_parallel": {
+        "cycles": 33,
+        "width": 6,
+        "height": 6,
+        "allocated_volume": 1188,
+        "active_space_time_volume": 402,
+        "status": "passed",
+        "input_sha256": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
+      }
+    }
+  },
+  "mqt_qecc": {
+    "commit": "f3c26db10727174af2d2d7c02d1fbee70162a1c0",
+    "configuration": "BasicRouter; scalable triple layout; seed 0",
+    "results": {
+      "mqt_max_parallel": {
+        "routed_layers": 9,
+        "routing_graph_nodes": 108,
+        "data_locations": 24,
+        "status": "passed",
+        "input_sha256": "3b879169efa136ea049172b059031c86983bf077e23f0afe520c7cdc2d6bbafe"
+      },
+      "mqt_min_parallel": {
+        "routed_layers": 13,
+        "routing_graph_nodes": 108,
+        "data_locations": 24,
+        "status": "passed",
+        "input_sha256": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
+      }
+    }
+  },
+  "tqec": {
+    "commit": "8c352c0d605c90ca7eb877e02c777198407875e3",
+    "configuration": "gallery CNOT; Z basis; code distance 3; depolarizing noise 0.001",
+    "native_example": {
+      "status": "passed",
+      "correlation_surfaces": 2,
+      "stim_qubits": 81,
+      "stim_instructions": 727
+    }
+  },
+  "topols": {
+    "commit": "78aab0ef1326bdf2041b519708f28741162f45c4",
+    "status": "passed",
+    "source": "comparison.json",
+    "benchmarks": [
+      "mqt_max_parallel",
+      "mqt_min_parallel"
+    ]
+  }
+}

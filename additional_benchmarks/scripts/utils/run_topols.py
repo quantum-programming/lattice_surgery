@@ -7,7 +7,7 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def run(source: Path, output: Path) -> None:
@@ -60,13 +60,3 @@ def run(source: Path, output: Path) -> None:
                 "paths": [[list(point) for point in path] for path in data["path_hist"]]}
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
     (output / "geometry.json").write_text(json.dumps(geometry) + "\n")
-
-
-def main() -> None:
-    if len(sys.argv) != 3:
-        raise SystemExit("usage: run_topols.py INPUT.qasm OUTPUT_DIRECTORY")
-    run(Path(sys.argv[1]), Path(sys.argv[2]))
-
-
-if __name__ == "__main__":
-    main()

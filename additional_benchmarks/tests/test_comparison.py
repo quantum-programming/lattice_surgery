@@ -40,6 +40,20 @@ class ComparisonTest(unittest.TestCase):
                 self.assertEqual(row["bounding_box_volume"],
                                  row["spatial_footprint"] * row["depth"])
 
+    def test_external_results(self):
+        results = json.loads((ROOT / "external_results.json").read_text())
+        self.assertEqual(set(results), {
+            "liblsqecc", "surface_code_compiler", "mqt_qecc", "tqec", "topols"})
+        for result in results.values():
+            self.assertRegex(result["commit"], r"^[0-9a-f]{40}$")
+        for tool in ("liblsqecc", "surface_code_compiler", "mqt_qecc"):
+            self.assertEqual(set(results[tool]["results"]), set(BENCHMARKS))
+            self.assertTrue(all(result["status"] == "passed"
+                                for result in results[tool]["results"].values()))
+        self.assertEqual(results["tqec"]["native_example"]["status"], "passed")
+        self.assertEqual(results["topols"]["source"], "comparison.json")
+        self.assertTrue((ROOT / "figures" / "native_external_results.png").is_file())
+
 
 if __name__ == "__main__":
     unittest.main()
