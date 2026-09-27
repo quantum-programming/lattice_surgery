@@ -10,12 +10,14 @@ from typing import Any
 from qiskit import qasm2  # type: ignore[import-untyped]
 
 from render_structures import render  # pyright: ignore[reportImplicitRelativeImport]
+from run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARKS = ("mqt_max_parallel", "mqt_min_parallel")
 
 
-def commit(path: Path) -> str:
+def get_commit_id(path: Path) -> str:
+    """Return the HEAD commit ID of a Git repository."""
     result = subprocess.run(["git", "-c", f"safe.directory={path.as_posix()}",
                              "-C", str(path), "rev-parse", "HEAD"],
                             capture_output=True, text=True, check=True)
@@ -23,6 +25,7 @@ def commit(path: Path) -> str:
 
 
 def check_circuit(path: Path):
+    """Load a benchmark and verify its fixed size and gate set."""
     circuit = qasm2.load(path)
     if circuit.num_qubits != 6 or circuit.size() != 24 or set(circuit.count_ops()) != {"cx"}:
         raise ValueError(f"Expected a six-qubit, 24-CNOT circuit: {path}")
@@ -30,6 +33,7 @@ def check_circuit(path: Path):
 
 
 def source_hash() -> str:
+    """Hash the C++ headers used by the native comparison."""
     digest = hashlib.sha256()
     for path in sorted((ROOT.parent / "src" / "cpp").rglob("*.hpp")):
         digest.update(path.relative_to(ROOT.parent).as_posix().encode())
@@ -38,21 +42,22 @@ def source_hash() -> str:
 
 
 def main() -> None:
+    """Run both compilers, collect metrics, and render the comparison."""
     if sys.platform != "linux":
         raise SystemExit("Run this comparison under WSL/Linux.")
+    executable = ROOT / "work" / "ours_cnot"
+    if not executable.is_file():
+        raise FileNotFoundError("Compile work/ours_cnot as described in COMPARISON.md")
     work = ROOT / "work" / "comparison"
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
-    executable = work / "ours_cnot"
-    subprocess.run(["g++", "-std=c++17", "-O2", "-D_GLIBCXX_ASSERTIONS",
-                    str(ROOT / "scripts" / "ours_cnot.cpp"), "-o", str(executable)], check=True)
 
     report: dict[str, Any] = {
         "inputs": {},
-        "commits": {"this_work": commit(ROOT.parent),
-                    "topols": commit(ROOT / "external" / "TopoLS"),
-                    "mqt_qecc": commit(ROOT / "external" / "mqt_qecc")},
+        "commits": {"this_work": get_commit_id(ROOT.parent),
+                    "topols": get_commit_id(ROOT / "external" / "TopoLS"),
+                    "mqt_qecc": get_commit_id(ROOT / "external" / "mqt_qecc")},
         "this_work_source_sha256": source_hash(),
         "configuration": {
             "this_work": "one layer; outer factories; SA seed 1, 1,000,000 iterations; Double look-ahead; CareKinkParity",
@@ -88,15 +93,14 @@ def main() -> None:
         geometries[("ours", name)] = {"depth": ours["depth"], "geometry": geometry}
 
         output = work / f"topols-{name}"
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "run_topols.py"),
-                        str(qasm_path), str(output)], check=True, timeout=600)
+        run_topols(qasm_path, output)
         topols = json.loads((output / "metrics.json").read_text())
         topols.update({"tool": "topols", "benchmark": name, "status": "passed",
                        "depth_unit": "pipe-diagram time coordinate", "storage_density": None})
         report["rows"].append(topols)
         geometries[("topols", name)] = json.loads((output / "geometry.json").read_text())
 
-    results = ROOT / "results" / "comparison.json"
+    results = ROOT / "comparison.json"
     results.write_text(json.dumps(report, indent=2) + "\n")
     name = "mqt_min_parallel"
     ours_geometry = work / f"ours-{name}.json"

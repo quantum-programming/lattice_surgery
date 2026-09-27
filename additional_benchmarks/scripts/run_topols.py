@@ -10,10 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def main() -> None:
-    if len(sys.argv) != 3:
-        raise SystemExit("usage: run_topols.py INPUT.qasm OUTPUT_DIRECTORY")
-    source, output = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()
+def run(source: Path, output: Path) -> None:
+    source, output = source.resolve(), output.resolve()
     name = source.stem
     output.mkdir(parents=True, exist_ok=True)
     (output / "benchmark").mkdir()
@@ -31,18 +29,21 @@ def main() -> None:
             "vertices": graph.num_vertices(), "edges": graph.num_edges()}})
         return result
 
-    pipeline.zx_optimization = audited
     program = ROOT / "external" / "TopoLS" / "docs" / "prog.py"
-    sys.argv = [str(program), "-f", name, "-b", "10", "-zx", "1",
-                "-dir", "1", "-l", "4", "-r", "0", "-s", "5",
-                "-t", "3", "-i", "10000", "-csv", "metrics",
-                "-sp", "0", "--engine", "python"]
+    old_argv = sys.argv
     old_cwd = Path.cwd()
     try:
+        pipeline.zx_optimization = audited
+        sys.argv = [str(program), "-f", name, "-b", "10", "-zx", "1",
+                    "-dir", "1", "-l", "4", "-r", "0", "-s", "5",
+                    "-t", "3", "-i", "10000", "-csv", "metrics",
+                    "-sp", "0", "--engine", "python"]
         os.chdir(output)
         runpy.run_path(str(program), run_name="__main__")
     finally:
         os.chdir(old_cwd)
+        sys.argv = old_argv
+        pipeline.zx_optimization = original
 
     data = pickle.loads((output / "result" / "topols" / f"{name}.pkl").read_bytes())
     audit = calls[0]
@@ -59,6 +60,12 @@ def main() -> None:
                 "paths": [[list(point) for point in path] for path in data["path_hist"]]}
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
     (output / "geometry.json").write_text(json.dumps(geometry) + "\n")
+
+
+def main() -> None:
+    if len(sys.argv) != 3:
+        raise SystemExit("usage: run_topols.py INPUT.qasm OUTPUT_DIRECTORY")
+    run(Path(sys.argv[1]), Path(sys.argv[2]))
 
 
 if __name__ == "__main__":

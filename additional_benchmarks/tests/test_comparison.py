@@ -27,7 +27,7 @@ class ComparisonTest(unittest.TestCase):
             self.assertEqual(actual, generated[name])
 
     def test_checked_in_results(self):
-        rows = json.loads((ROOT / "results" / "comparison.json").read_text())["rows"]
+        rows = json.loads((ROOT / "comparison.json").read_text())["rows"]
         self.assertEqual({(row["tool"], row["benchmark"]) for row in rows},
                          {(tool, name) for tool in ("this_work", "topols")
                           for name in BENCHMARKS})
