@@ -109,7 +109,9 @@ def SELECT(ham: Any, dup: int):
     return select_circuit
 
 
-def process_SELECT(hamiltonian: Any, dup: int = 1) -> List[Dict[str, Any]]:
+def process_SELECT(
+    hamiltonian: Any, dup: int = 1, multibody_primitive: bool = False
+) -> List[Dict[str, Any]]:
     circuit = SELECT(hamiltonian, dup)
     verify(circuit)
 
@@ -148,22 +150,52 @@ def process_SELECT(hamiltonian: Any, dup: int = 1) -> List[Dict[str, Any]]:
                 control1 = gate["controls"][0]
                 control2 = gate["controls"][1]
                 target = gate["targets"][0]
-                creg = f"creg{creg_cnt}"
-                gates.append({"name": "MAGIC_MOVE", "targets": [target]})
-                gates.append(
-                    {"name": "CX", "targets": [target], "controls": [control2]}
-                )
-                gates.append({"name": "Tdag", "targets": [target]})
-                gates.append(
-                    {"name": "CX", "targets": [target], "controls": [control1]}
-                )
-                gates.append({"name": "T", "targets": [target]})
-                gates.append(
-                    {"name": "CX", "targets": [target], "controls": [control2]}
-                )
-                gates.append({"name": "Tdag", "targets": [target]})
-                gates.append({"name": "H", "targets": [target]})
-                gates.append({"name": "Sdag", "targets": [target]})
+                if multibody_primitive:
+                    gates.append({"name": "MAGIC_MOVE", "targets": [target]})
+                    gates.append({"name": "Sdag", "targets": [target]})
+                    gates.append(
+                        {
+                            "name": "MAGIC_MZ3",
+                            "targets": [control2, target],
+                            "output": f"creg{creg_cnt}",
+                        }
+                    )
+                    creg_cnt += 2
+                    gates.append(
+                        {
+                            "name": "MAGIC_MZ4",
+                            "targets": [control1, control2, target],
+                            "output": f"creg{creg_cnt}",
+                        }
+                    )
+                    creg_cnt += 2
+                    gates.append(
+                        {
+                            "name": "MAGIC_MZ3",
+                            "targets": [control1, target],
+                            "output": f"creg{creg_cnt}",
+                        }
+                    )
+                    creg_cnt += 2
+                    gates.append({"name": "H", "targets": [target]})
+                    gates.append({"name": "Sdag", "targets": [target]})
+                else:
+                    creg = f"creg{creg_cnt}"
+                    gates.append({"name": "MAGIC_MOVE", "targets": [target]})
+                    gates.append(
+                        {"name": "CX", "targets": [target], "controls": [control2]}
+                    )
+                    gates.append({"name": "Tdag", "targets": [target]})
+                    gates.append(
+                        {"name": "CX", "targets": [target], "controls": [control1]}
+                    )
+                    gates.append({"name": "T", "targets": [target]})
+                    gates.append(
+                        {"name": "CX", "targets": [target], "controls": [control2]}
+                    )
+                    gates.append({"name": "Tdag", "targets": [target]})
+                    gates.append({"name": "H", "targets": [target]})
+                    gates.append({"name": "Sdag", "targets": [target]})
             else:
                 control1 = gate["controls"][0]
                 control2 = gate["controls"][1]
@@ -249,8 +281,9 @@ def generate_SELECT(
     J2: float,
     ham: Any,
     dup: int,
+    multibody_primitive: bool = False,
 ):
-    gates = process_SELECT(ham, dup)
+    gates = process_SELECT(ham, dup, multibody_primitive=multibody_primitive)
 
     class str2idx(dict):
         def __init__(self):
@@ -299,20 +332,22 @@ def generate_SELECT(
             update_position_dict(position_dict, controls, qubit_name_2_idx)
             update_position_dict(position_dict, targets, qubit_name_2_idx)
 
-        elif gate["name"] in ["MAGIC_MOVE", "MAGIC_MZZ"]:
+        elif gate["name"] in ["MAGIC_MOVE", "MAGIC_MZZ", "MAGIC_MZ3", "MAGIC_MZ4"]:
             assert "targets" in gate
             targets = gate["targets"]
-            assert isinstance(targets, list) and len(targets) == 1
-            targetIndex = qubit_name_2_idx[targets[0]]
-            result += f"{gate['name']} {targetIndex}\n"
+            arity = {"MAGIC_MOVE": 1, "MAGIC_MZZ": 1, "MAGIC_MZ3": 2, "MAGIC_MZ4": 3}
+            assert isinstance(targets, list) and len(targets) == arity[gate["name"]]
+            target_indices = " ".join(str(qubit_name_2_idx[q]) for q in targets)
+            result += f"{gate['name']} {target_indices}\n"
             update_position_dict(position_dict, targets, qubit_name_2_idx)
 
         else:
             assert gate["name"] in ["H", "S", "MX"]
             continue
 
+    multi_suffix = "_multi" if multibody_primitive else ""
     with open(
-        f"./circuit/result_SELECT_{size}_{ham_type}_{boundary_type}_{s}_{J2}_{dup}.in",
+        f"./circuit/result_SELECT_{size}_{ham_type}_{boundary_type}_{s}_{J2}_{dup}{multi_suffix}.in",
         "w",
     ) as f:
         f.write(result)
@@ -347,7 +382,10 @@ def args2files(args: List[Any], max_dup_cnt: int) -> None:
         max_dup = min(int(np.log2(num_pauli + 1e-10)), max_dup_cnt)
         for dup in range(max_dup):
             print("generate : ", arg, dup)
-            generate_SELECT(*arg, ham=ham, dup=dup)
+            for multibody_primitive in (False, True):
+                generate_SELECT(
+                    *arg, ham=ham, dup=dup, multibody_primitive=multibody_primitive
+                )
 
 
 def generate_J1J2():
