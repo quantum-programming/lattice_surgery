@@ -16,6 +16,7 @@ from utils.run_mqt_qecc import run as run_mqt_qecc  # pyright: ignore[reportImpl
 from utils.run_surface_code_compiler import run as run_surface_code_compiler  # pyright: ignore[reportImplicitRelativeImport]
 from utils.run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
 from utils.run_tqec import run as run_tqec  # pyright: ignore[reportImplicitRelativeImport]
+from utils.tqec_interop import block_graph_metrics, build_ours_block_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARKS = ("mqt_max_parallel", "mqt_min_parallel")
@@ -121,6 +122,12 @@ def main() -> None:
                                    text=True, check=True, timeout=300)
         ours = json.loads(completed.stdout)
         geometry = ours.pop("geometry")
+        schedule = {"depth": ours["depth"], "geometry": geometry}
+        block_graph = build_ours_block_graph(circuit, schedule)
+        tqec_metrics = block_graph_metrics(block_graph)
+        if tqec_metrics["occupied_volume"] != ours["occupied_volume"]:
+            raise ValueError("TQEC and the native scheduler disagree on occupied volume.")
+        block_graph.to_bgraph(work / f"ours-{name}.bgraph", graph_name=name)
         ours.update({
             "tool": "this_work", "benchmark": name, "status": "passed",
             "depth_unit": "code beat",
@@ -130,7 +137,7 @@ def main() -> None:
             "asymptotic_data_slot_density": 0.25,
         })
         report["rows"].append(ours)
-        geometries[("ours", name)] = {"depth": ours["depth"], "geometry": geometry}
+        geometries[("ours", name)] = schedule
 
         output = work / f"topols-{name}"
         run_topols(qasm_path, output)

@@ -3,14 +3,21 @@ import sys
 import unittest
 from pathlib import Path
 
+import pyzx as zx
 from mqt.qecc.cococo.circuit_construction import (
     generate_max_parallel_circuit,
     generate_min_parallel_circuit,
 )
+from qiskit import QuantumCircuit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from run_comparison import BENCHMARKS, check_circuit  # pyright: ignore[reportMissingImports]
+from utils.tqec_interop import (  # pyright: ignore[reportMissingImports]
+    block_graph_metrics,
+    build_ours_block_graph,
+    build_ours_positioned_zx,
+)
 
 
 class ComparisonTest(unittest.TestCase):
@@ -53,6 +60,29 @@ class ComparisonTest(unittest.TestCase):
         self.assertEqual(results["tqec"]["native_example"]["status"], "passed")
         self.assertEqual(results["topols"]["source"], "comparison.json")
         self.assertTrue((ROOT / "figures" / "native_external_results.png").is_file())
+
+    def test_ours_tqec_export_for_cnot_path(self):
+        circuit = QuantumCircuit(2)
+        circuit.cx(0, 1)
+        schedule = {
+            "depth": 2,
+            "geometry": {
+                "data": [[0, 0, 0], [2, 2, 0]],
+                "paths": [[
+                    [0, 0, 0], [1, 0, 0], [1, 0, 1],
+                    [1, 1, 1], [2, 1, 1], [2, 2, 1],
+                ]],
+            },
+        }
+        graph = build_ours_block_graph(circuit, schedule)
+        metrics = block_graph_metrics(graph)
+        self.assertEqual(metrics["ports"], 4)
+        self.assertEqual(metrics["occupied_volume"], 8)
+        self.assertEqual(metrics["correlation_surfaces"], 4)
+        positioned_zx = build_ours_positioned_zx(circuit, schedule)
+        expected = zx.Circuit(2)
+        expected.add_gate("CNOT", 0, 1)
+        self.assertTrue(zx.compare_tensors(expected, positioned_zx.g))
 
 
 if __name__ == "__main__":
