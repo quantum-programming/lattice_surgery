@@ -1,125 +1,92 @@
-# Reviewer 1 comparison
+# This work and TopoLS through TQEC BlockGraph
 
-## Reproduction
+## Scope and reading order
 
-Run the following commands from this directory under Linux or WSL.
-The only system requirements are `uv`, CMake, and a C++17 compiler available as `g++`.
+We use the original mqt_max_parallel and mqt_min_parallel inputs: each has six
+qubits and 24 CNOT gates. SAT trials and the three-qubit pilot are excluded.
+This note is separate from the reviewer response; npj_reviewer1.md is untouched.
+The current manuscript has not been assessed here.
 
-```bash
-git submodule update --init --recursive
-export UV_PROJECT_ENVIRONMENT=work/venv-wsl
-uv sync --frozen
+Read scripts/run_comparison.py for the complete workflow, scripts/utils/ours_cnot.cpp
+for the call to the existing native implementation, scripts/utils/run_topols.py
+for upstream compiler options, then scripts/utils/tqec_interop.py for conversion,
+validation, and accounting. No core compiler headers or external submodule code
+are changed. Setup and commands are in [README.md](README.md).
 
-# Build the C++ implementation of our CNOT decomposition.
-mkdir -p work
-g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/utils/ours_cnot.cpp -o work/ours_cnot
+This work uses one layer, outer factories, SA seed 1 and 1,000,000 iterations,
+Double look-ahead and CareKinkParity. TopoLS uses its supplied docs/prog.py with
+block size 10, ZX and direction optimization, Python engine, seed 0 and five
+internal seeds. The ZX audit wrapper only records counts around the original
+optimization call. These are fixed reproducibility settings, not matched
+optimization budgets.
 
-# Build libLSQECC outside its pinned source tree.
-cmake -S external/liblsqecc -B work/liblsqecc-build -DCMAKE_BUILD_TYPE=Release
-cmake --build work/liblsqecc-build --target lsqecc_slicer
+## Conversion and sources
 
-# Results:
-# - benchmarks/mqt_max_parallel.qasm
-# - benchmarks/mqt_min_parallel.qasm
-# - figures/mqt_max_parallel.png
-# - figures/mqt_min_parallel.png
-uv run python benchmarks/generate_benchmarks.py
+This work's data positions become persistent time-directed ZX wires. Each CNOT
+path attaches a Z spider to its control and an X spider to its target. Intermediate
+degree-two, zero-phase spiders preserve the wire's meaning. Their colors are
+chosen to satisfy the transverse cube-wall constraints at bends. The small
+backtracking routine assigns these colors; it neither reschedules paths nor
+optimizes a new circuit. Unsupported geometry fails instead of being repaired.
+TQEC's positioned-ZX synthesis then constructs the BlockGraph.
 
-# This runs both inputs through
-# - this work and TopoLS for the direct comparison
-# - libLSQECC, Surface Code Compiler, MQT QECC, and TQEC for native results
-# - scripts/utils/render_structures.py for the comparison figure
-uv run python scripts/run_comparison.py
+The cube-wall and corner rules follow TQEC's pinned
+[positioned synthesis](https://github.com/tqec/tqec/blob/8c352c0d605c90ca7eb877e02c777198407875e3/src/tqec/interop/pyzx/synthesis/positioned.py)
+and [positioned ZX representation](https://github.com/tqec/tqec/blob/8c352c0d605c90ca7eb877e02c777198407875e3/src/tqec/interop/pyzx/positioned.py).
+The adapter is limited to this one-layer CNOT-only setting; it does not cover
+magic-state operations or inter-layer routing.
 
-# This checks that the outputs match the checked-in reference results.
-uv run python tests/test_comparison.py -v
-```
+TopoLS uses its own [build_pipe_diagram/save_bigraph exporter](https://github.com/tqec/TopoLS/blob/78aab0ef1326bdf2041b519708f28741162f45c4/src/topols/export/bgraph.py)
+and [load_block_graph loader](https://github.com/tqec/TopoLS/blob/78aab0ef1326bdf2041b519708f28741162f45c4/src/topols/tools/pipe_sim.py).
+We do not implement a second TopoLS geometry conversion. Its native .bgraph is a
+pickle of metadata; the final output is TQEC's textual BGRAPH. Only trusted local
+compiler pickle outputs are read.
 
-### TQEC interoperability prototype
+## Checks and accounting
 
-The 2D CNOT-only output of this work can be exported to TQEC's textual BGRAPH
-format. The comparison script now writes one `.bgraph` file per benchmark and
-checks that its TQEC occupied volume equals the native scheduler's count. A
-saved schedule JSON containing `depth` and `geometry` can also be converted
-directly:
+For every output we run BlockGraph.validate(), label and order ports by logical
+qubit, and compare its ZX tensor with the input circuit using PyZX 0.10.6.
+Comparison is numerical and ignores a nonzero overall scalar. We save textual
+BGRAPH, read it back, repeat equivalence checking, and require unchanged metrics.
+The this-work occupied count must also equal its native scheduler count.
 
-```bash
-uv run python scripts/export_ours_to_tqec.py \
-  benchmarks/mqt_min_parallel.qasm \
-  work/comparison/ours-mqt_min_parallel.json \
-  work/comparison/ours-mqt_min_parallel.bgraph
-```
+TQEC's [BlockGraph implementation](https://github.com/tqec/tqec/blob/8c352c0d605c90ca7eb877e02c777198407875e3/src/tqec/computation/block_graph.py)
+defines occupied spacetime_volume: ordinary cubes count 1, ports and pipes 0,
+and Y half-cubes 0.5. These CNOT exports have no Y cubes. bounding_box includes
+ports; non_port_bounding_box excludes them. Both count coordinate extents
+(maximum minus minimum plus one), and their products include unoccupied sites.
+Correlation-surface count is recorded as additional representation information.
+See also the official [BGRAPH guide](https://tqec.github.io/tqec/user_guide/bgraph.html).
 
-The exporter reconstructs the CNOT ZX graph on the compiler's spacetime paths,
-colors degree-two bend vertices subject to TQEC's cube-wall constraints, validates
-the resulting `BlockGraph`, and reports TQEC representation-level metrics.  It is
-deliberately limited to the one-layer 2D CNOT benchmarks; magic-state operations
-and 2.5D inter-layer operations are not yet supported.
+Native allocated volume, native TopoLS bounding-box volume, TQEC occupied volume,
+and TQEC bounding-box volume are distinct quantities. Native data-slot density
+also differs from active-data density. Native depth units are retained in JSON
+and are not silently equated with physical execution times.
 
-## Inputs and configurations
-
-The checked-in OpenQASM inputs are generated by MQT QECC.
-Both contain six qubits and 24 CNOTs (seed 45).
-`mqt_max_parallel` maximizes layer parallelism, while `mqt_min_parallel` uses `layer_size=2` and deliberate qubit reuse.
-
-Our configuration uses the existing one-layer outer allocator (SA seed 1, 1,000,000 iterations), Double look-ahead scheduling, `CareKinkParity`, and the native schedule validator.
-TopoLS uses block size 10, ZX and direction optimization, the Python reference engine, initial seed 0, and its five-seed search.
-Inputs and external implementations are unchanged.
+These checks support circuit meaning and a shared representation/accounting.
+They do not prove all global fault-tolerance conditions, compile these graphs to
+physical noisy circuits, or establish identical hardware conventions. Reserved
+but unused factory/storage sites are not represented by occupied BlockGraph
+cubes. A resource advantage therefore needs its metric and scope stated.
 
 ## Results
 
-| Circuit | This work: depth / allocated sites / occupied volume | TopoLS: depth / space / bounding-box volume | ZX vertices |
-| :---: | :---: | :---: | :---: |
-| max parallel | 11 / 81 / 178 | 22 / 45 / 990 | 60 → 47 |
-| min parallel | 11 / 81 / 166 | 16 / 45 / 720 | 60 → 48 |
+Fresh run: work/tqec-comparison. All four outputs passed structural validation,
+input-circuit tensor equivalence and textual BGRAPH roundtrip checks.
 
-The units and accounting boundaries differ.
-Our depth is measured in code beats.
-Its occupied volume counts persistent data storage and routed ancillary sites, whereas allocated volume is the full 9×9 grid times depth (891 for both circuits).
-TopoLS reports pipe-diagram coordinates and their geometric bounding box.
-These numbers must therefore not be divided into a cross-tool improvement factor.
+| Input | Tool | Native depth | TQEC occupied volume | Box including ports | Box excluding ports |
+| --- | --- | ---: | ---: | --- | --- |
+| mqt_max_parallel | this_work | 11 | 178 | 7 x 5 x 13 | 7 x 5 x 11 |
+| mqt_max_parallel | topols | 22 | 404 | 9 x 5 x 23 | 9 x 5 x 22 |
+| mqt_min_parallel | this_work | 11 | 166 | 5 x 6 x 13 | 5 x 6 x 11 |
+| mqt_min_parallel | topols | 16 | 303 | 9 x 5 x 17 | 9 x 5 x 15 |
 
-Our regular layout has nine candidate data slots in 81 sites (11.1% at this small size) and six active data patches (7.4%).
-Its data-slot density approaches 25% asymptotically.
-The 16 boundary MSF sites are allocated separately.
-TopoLS instead simplifies and slices a ZX graph before placing merge–split structure in 3D, so no static storage-density parameter is defined for it.
-The reductions in ZX vertices above show the pre-placement merging, but are not themselves
-volume reductions.
+Native depth units differ as described above. The table is representation
+accounting, not a calibrated physical-performance comparison. This work reserves
+81 sites for 11 beats (allocated volume 891) in both cases. TopoLS reports
+native bounding-box volumes 990 and 720; these are not occupied volumes.
+The this-work TQEC occupied volumes, 178 and 166, equal native occupied counts.
+Both tools have 12 logical ports and 12 recorded correlation surfaces per input.
 
-## Native external-tool runs
-
-The following runs show that each pinned external implementation produces a
-native result. They are not an additional ranking: the tools use different
-inputs, architectures, and resource-accounting rules. Exact commits, input
-hashes, configurations, and machine-readable outputs are recorded in
-`external_results.json`.
-
-- **libLSQECC** (`fddaecf`), using its compact layout, produced 49 slices and
-  total volume 2904 for max-parallel, and 55 slices and total volume 3102 for
-  min-parallel. Its native statistics also separate distillation, unused
-  routing, and other active volume.
-- **Surface Code Compiler** (`e5f1052`), using its Python DAG interface and a
-  fixed 6×6 QCB, produced 33 cycles for each input. Its active space-time
-  volumes were 418 and 402, respectively; the full allocated volume was 1188
-  in both cases. Upstream set traversal can make the active volumes vary between
-  processes.
-- **MQT QECC** (`f3c26db`), using `BasicRouter` on the scalable triple layout,
-  produced 9 routed layers for max-parallel and 13 for min-parallel. The native
-  routing graph had 108 nodes and 24 data locations.
-- **TQEC** (`8c352c0`) does not consume these OpenQASM circuits as an equivalent
-  place-and-route problem. Its native gallery CNOT was therefore compiled from
-  a Z-basis block graph to a distance-three Stim circuit with 81 qubits and 727
-  instructions.
-- **TopoLS** (`78aab0e`) is already exercised on both inputs in the direct
-  comparison above; its native results remain in `comparison.json` rather than
-  being duplicated.
-
-`comparison.json` records exact inputs, revisions, settings, metrics, and accounting fields.
-
-`external_results.json` records the separate native external-tool runs.
-
-`figures/native_external_results.png` shows those native outputs in independent
-panels with tool-specific units; it is not a cross-tool ranking.
-
-`figures/structure_comparison.png` renders the
-min-parallel outputs with a shared coordinate convention and drawing style.
+The same TQEC viewer writes four HTML files beside the BGRAPH exports.
+figures/structure_comparison.png shows native geometry for mqt_min_parallel.

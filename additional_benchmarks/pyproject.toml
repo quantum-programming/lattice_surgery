@@ -3,20 +3,17 @@ name = "additional-benchmarks"
 version = "0.1.0"
 description = "Comparison experiments for Reviewer 1"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "matplotlib",
-    "mqt-qecc",
     "numpy",
     "pylatexenc>=2.11",
     "qiskit",
-    "surface-code-routing",
+    "pyzx==0.10.6", # Used directly for logical-equivalence checks; also pinned by TopoLS.
     "topols",
     "tqec",
 ]
 
 [tool.uv.sources]
-mqt-qecc = { path = "external/mqt_qecc", editable = true }
-surface-code-routing = { path = "external/Surface_Code_Compiler", editable = true }
 topols = { path = "external/TopoLS", editable = true }
 tqec = { path = "external/tqec", editable = true }

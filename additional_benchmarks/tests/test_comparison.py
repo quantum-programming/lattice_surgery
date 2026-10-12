@@ -1,13 +1,10 @@
 import json
+import hashlib
 import sys
 import unittest
 from pathlib import Path
 
 import pyzx as zx
-from mqt.qecc.cococo.circuit_construction import (
-    generate_max_parallel_circuit,
-    generate_min_parallel_circuit,
-)
 from qiskit import QuantumCircuit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,21 +14,17 @@ from utils.tqec_interop import (  # pyright: ignore[reportMissingImports]
     block_graph_metrics,
     build_ours_block_graph,
     build_ours_positioned_zx,
+    verify_cnot_block_graph,
 )
 
 
 class ComparisonTest(unittest.TestCase):
-    def test_inputs_match_pinned_generators(self):
-        generated = {
-            "mqt_max_parallel": generate_max_parallel_circuit(q=6, min_depth=24, seed=45),
-            "mqt_min_parallel": generate_min_parallel_circuit(
-                q=6, min_depth=24, layer_size=2, seed=45),
-        }
+    def test_saved_inputs_match_recorded_hashes(self):
+        hashes = json.loads((ROOT / "comparison.json").read_text())["inputs"]
         for name in BENCHMARKS:
-            circuit = check_circuit(ROOT / "benchmarks" / f"{name}.qasm")
-            actual = [tuple(circuit.find_bit(q).index for q in item.qubits)
-                      for item in circuit.data]
-            self.assertEqual(actual, generated[name])
+            path = ROOT / "benchmarks" / f"{name}.qasm"
+            check_circuit(path)
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), hashes[name])
 
     def test_checked_in_results(self):
         rows = json.loads((ROOT / "comparison.json").read_text())["rows"]
@@ -40,26 +33,18 @@ class ComparisonTest(unittest.TestCase):
                           for name in BENCHMARKS})
         for row in rows:
             self.assertEqual(row["status"], "passed")
+            metrics = row["tqec"]
+            self.assertTrue(metrics["circuit_equivalent"])
+            self.assertTrue(metrics["bgraph_roundtrip"])
+            for prefix in ("", "non_port_"):
+                x, y, t = metrics[prefix + "bounding_box"]
+                self.assertEqual(metrics[prefix + "bounding_box_volume"], x * y * t)
             if row["tool"] == "this_work":
                 self.assertEqual(row["allocated_volume"],
                                  row["allocated_sites"] * row["depth"])
             else:
                 self.assertEqual(row["bounding_box_volume"],
                                  row["spatial_footprint"] * row["depth"])
-
-    def test_external_results(self):
-        results = json.loads((ROOT / "external_results.json").read_text())
-        self.assertEqual(set(results), {
-            "liblsqecc", "surface_code_compiler", "mqt_qecc", "tqec", "topols"})
-        for result in results.values():
-            self.assertRegex(result["commit"], r"^[0-9a-f]{40}$")
-        for tool in ("liblsqecc", "surface_code_compiler", "mqt_qecc"):
-            self.assertEqual(set(results[tool]["results"]), set(BENCHMARKS))
-            self.assertTrue(all(result["status"] == "passed"
-                                for result in results[tool]["results"].values()))
-        self.assertEqual(results["tqec"]["native_example"]["status"], "passed")
-        self.assertEqual(results["topols"]["source"], "comparison.json")
-        self.assertTrue((ROOT / "figures" / "native_external_results.png").is_file())
 
     def test_ours_tqec_export_for_cnot_path(self):
         circuit = QuantumCircuit(2)
@@ -75,10 +60,18 @@ class ComparisonTest(unittest.TestCase):
             },
         }
         graph = build_ours_block_graph(circuit, schedule)
+        verify_cnot_block_graph(circuit, graph)
         metrics = block_graph_metrics(graph)
         self.assertEqual(metrics["ports"], 4)
         self.assertEqual(metrics["occupied_volume"], 8)
         self.assertEqual(metrics["correlation_surfaces"], 4)
+        self.assertEqual(metrics["bounding_box"], [3, 3, 4])
+        self.assertEqual(metrics["non_port_bounding_box"], [3, 3, 2])
+        # A structurally valid graph must still reject the reversed CNOT.
+        reversed_circuit = QuantumCircuit(2)
+        reversed_circuit.cx(1, 0)
+        with self.assertRaisesRegex(ValueError, "not equivalent"):
+            verify_cnot_block_graph(reversed_circuit, graph)
         positioned_zx = build_ours_positioned_zx(circuit, schedule)
         expected = zx.Circuit(2)
         expected.add_gate("CNOT", 0, 1)

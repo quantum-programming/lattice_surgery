@@ -4,9 +4,9 @@
     "mqt_min_parallel": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
   },
   "commits": {
-    "this_work": "3fad44b79482b42e01905f0851618774f19982db",
+    "this_work": "c7ed39b921619c6319b32122706ab61120f4a0ea",
     "topols": "78aab0ef1326bdf2041b519708f28741162f45c4",
-    "mqt_qecc": "f3c26db10727174af2d2d7c02d1fbee70162a1c0"
+    "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
   },
   "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
   "configuration": {
@@ -23,6 +23,27 @@
       "active_data": 6,
       "factory_sites": 16,
       "occupied_volume": 178,
+      "tqec": {
+        "cubes": 190,
+        "pipes": 208,
+        "ports": 12,
+        "occupied_volume": 178.0,
+        "bounding_box": [
+          7,
+          5,
+          13
+        ],
+        "bounding_box_volume": 455,
+        "non_port_bounding_box": [
+          7,
+          5,
+          11
+        ],
+        "non_port_bounding_box_volume": 385,
+        "correlation_surfaces": 12,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
       "tool": "this_work",
       "benchmark": "mqt_max_parallel",
       "status": "passed",
@@ -36,7 +57,7 @@
       "depth": 22,
       "spatial_footprint": 45,
       "bounding_box_volume": 990,
-      "compilation_seconds": 82.97855639457703,
+      "compilation_seconds": 88.43664503097534,
       "zx_graph": {
         "before": {
           "vertices": 60,
@@ -46,6 +67,27 @@
           "vertices": 47,
           "edges": 65
         }
+      },
+      "tqec": {
+        "cubes": 416,
+        "pipes": 434,
+        "ports": 12,
+        "occupied_volume": 404.0,
+        "bounding_box": [
+          9,
+          5,
+          23
+        ],
+        "bounding_box_volume": 1035,
+        "non_port_bounding_box": [
+          9,
+          5,
+          22
+        ],
+        "non_port_bounding_box_volume": 990,
+        "correlation_surfaces": 12,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
       },
       "tool": "topols",
       "benchmark": "mqt_max_parallel",
@@ -62,6 +104,27 @@
       "active_data": 6,
       "factory_sites": 16,
       "occupied_volume": 166,
+      "tqec": {
+        "cubes": 178,
+        "pipes": 196,
+        "ports": 12,
+        "occupied_volume": 166.0,
+        "bounding_box": [
+          5,
+          6,
+          13
+        ],
+        "bounding_box_volume": 390,
+        "non_port_bounding_box": [
+          5,
+          6,
+          11
+        ],
+        "non_port_bounding_box_volume": 330,
+        "correlation_surfaces": 12,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
       "tool": "this_work",
       "benchmark": "mqt_min_parallel",
       "status": "passed",
@@ -75,7 +138,7 @@
       "depth": 16,
       "spatial_footprint": 45,
       "bounding_box_volume": 720,
-      "compilation_seconds": 47.129974126815796,
+      "compilation_seconds": 46.89196515083313,
       "zx_graph": {
         "before": {
           "vertices": 60,
@@ -85,6 +148,27 @@
           "vertices": 48,
           "edges": 62
         }
+      },
+      "tqec": {
+        "cubes": 315,
+        "pipes": 329,
+        "ports": 12,
+        "occupied_volume": 303.0,
+        "bounding_box": [
+          9,
+          5,
+          17
+        ],
+        "bounding_box_volume": 765,
+        "non_port_bounding_box": [
+          9,
+          5,
+          15
+        ],
+        "non_port_bounding_box_volume": 675,
+        "correlation_surfaces": 12,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
       },
       "tool": "topols",
       "benchmark": "mqt_min_parallel",

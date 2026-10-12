@@ -1,7 +1,7 @@
 """Reproduce the fixed two-circuit comparison used for Reviewer 1."""
+import argparse
 import hashlib
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -9,14 +9,9 @@ from typing import Any
 
 from qiskit import qasm2  # type: ignore[import-untyped]
 
-from utils.render_external_results import render as render_external  # pyright: ignore[reportImplicitRelativeImport]
 from utils.render_structures import render  # pyright: ignore[reportImplicitRelativeImport]
-from utils.run_liblsqecc import run as run_liblsqecc  # pyright: ignore[reportImplicitRelativeImport]
-from utils.run_mqt_qecc import run as run_mqt_qecc  # pyright: ignore[reportImplicitRelativeImport]
-from utils.run_surface_code_compiler import run as run_surface_code_compiler  # pyright: ignore[reportImplicitRelativeImport]
 from utils.run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
-from utils.run_tqec import run as run_tqec  # pyright: ignore[reportImplicitRelativeImport]
-from utils.tqec_interop import block_graph_metrics, build_ours_block_graph
+from utils.tqec_interop import build_ours_block_graph, export_verified_block_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARKS = ("mqt_max_parallel", "mqt_min_parallel")
@@ -48,63 +43,31 @@ def source_hash() -> str:
 
 
 def main() -> None:
-    """Run the comparison and the native external-tool examples."""
+    """Run the current two-tool comparison on the saved QASM inputs."""
     if sys.platform != "linux":
         raise SystemExit("Run this comparison under WSL/Linux.")
     executable = ROOT / "work" / "ours_cnot"
     if not executable.is_file():
         raise FileNotFoundError("Compile work/ours_cnot as described in COMPARISON.md")
-    liblsqecc = ROOT / "work" / "liblsqecc-build" / "lsqecc_slicer"
-    if not liblsqecc.is_file():
-        raise FileNotFoundError("Build work/liblsqecc-build as described in COMPARISON.md")
-    work = ROOT / "work" / "comparison"
-    external_work = ROOT / "work" / "external"
-    if work.exists():
-        shutil.rmtree(work)
-    if external_work.exists():
-        shutil.rmtree(external_work)
-    work.mkdir(parents=True)
-    external_work.mkdir(parents=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "work" / "tqec-comparison")
+    work = parser.parse_args().output_dir.resolve()
+    if not work.is_relative_to((ROOT / "work").resolve()):
+        raise ValueError("Output directory must be inside additional_benchmarks/work.")
+    # Preserve previous experiments; use a new directory for each run.
+    work.mkdir(parents=True, exist_ok=False)
 
     report: dict[str, Any] = {
         "inputs": {},
         "commits": {"this_work": get_commit_id(ROOT.parent),
                     "topols": get_commit_id(ROOT / "external" / "TopoLS"),
-                    "mqt_qecc": get_commit_id(ROOT / "external" / "mqt_qecc")},
+                    "tqec": get_commit_id(ROOT / "external" / "tqec")},
         "this_work_source_sha256": source_hash(),
         "configuration": {
             "this_work": "one layer; outer factories; SA seed 1, 1,000,000 iterations; Double look-ahead; CareKinkParity",
             "topols": "block 10; ZX and direction optimization enabled; Python engine; seed 0; five internal seeds",
         },
         "rows": [],
-    }
-    external_report: dict[str, Any] = {
-        "liblsqecc": {
-            "commit": get_commit_id(ROOT / "external" / "liblsqecc"),
-            "configuration": "OpenQASM input; compact layout",
-            "results": {},
-        },
-        "surface_code_compiler": {
-            "commit": get_commit_id(ROOT / "external" / "Surface_Code_Compiler"),
-            "configuration": "Python DAG adapter; fixed 6x6 QCB",
-            "notes": "Upstream set traversal can vary active volume between processes.",
-            "results": {},
-        },
-        "mqt_qecc": {
-            "commit": get_commit_id(ROOT / "external" / "mqt_qecc"),
-            "configuration": "BasicRouter; scalable triple layout; seed 0",
-            "results": {},
-        },
-        "tqec": {
-            "commit": get_commit_id(ROOT / "external" / "tqec"),
-            "configuration": "gallery CNOT; Z basis; code distance 3; depolarizing noise 0.001",
-        },
-        "topols": {
-            "commit": get_commit_id(ROOT / "external" / "TopoLS"),
-            "status": "passed",
-            "source": "comparison.json",
-            "benchmarks": list(BENCHMARKS),
-        },
     }
     geometries = {}
     for name in BENCHMARKS:
@@ -122,13 +85,16 @@ def main() -> None:
                                    text=True, check=True, timeout=300)
         ours = json.loads(completed.stdout)
         geometry = ours.pop("geometry")
-        schedule = {"depth": ours["depth"], "geometry": geometry}
+        schedule = {"width": ours["width"], "height": ours["height"],
+                    "depth": ours["depth"], "geometry": geometry}
         block_graph = build_ours_block_graph(circuit, schedule)
-        tqec_metrics = block_graph_metrics(block_graph)
+        tqec_metrics = export_verified_block_graph(
+            circuit, block_graph, work / f"ours-{name}.bgraph")
         if tqec_metrics["occupied_volume"] != ours["occupied_volume"]:
             raise ValueError("TQEC and the native scheduler disagree on occupied volume.")
-        block_graph.to_bgraph(work / f"ours-{name}.bgraph", graph_name=name)
+        (work / f"ours-{name}.json").write_text(json.dumps(schedule, indent=2) + "\n")
         ours.update({
+            "tqec": tqec_metrics,
             "tool": "this_work", "benchmark": name, "status": "passed",
             "depth_unit": "code beat",
             "allocated_volume": ours["allocated_sites"] * ours["depth"],
@@ -147,33 +113,14 @@ def main() -> None:
         report["rows"].append(topols)
         geometries[("topols", name)] = json.loads((output / "geometry.json").read_text())
 
-        input_hash = report["inputs"][name]
-        for tool, result in (
-            ("liblsqecc", run_liblsqecc(
-                qasm_path, liblsqecc, external_work / f"liblsqecc-{name}.json")),
-            ("surface_code_compiler", run_surface_code_compiler(qasm_path)),
-            ("mqt_qecc", run_mqt_qecc(qasm_path)),
-        ):
-            result.update({"status": "passed", "input_sha256": input_hash})
-            external_report[tool]["results"][name] = result
-
-    external_report["tqec"]["native_example"] = {
-        "status": "passed", **run_tqec(),
-    }
-
     results = ROOT / "comparison.json"
     results.write_text(json.dumps(report, indent=2) + "\n")
-    external_results = ROOT / "external_results.json"
-    external_results.write_text(json.dumps(external_report, indent=2) + "\n")
-    render_external(external_results, ROOT / "figures" / "native_external_results.png")
     name = "mqt_min_parallel"
     ours_geometry = work / f"ours-{name}.json"
     topols_geometry = work / f"topols-{name}.json"
-    ours_geometry.write_text(json.dumps(geometries[("ours", name)]))
     topols_geometry.write_text(json.dumps(geometries[("topols", name)]))
     render(ours_geometry, topols_geometry, ROOT / "figures" / "structure_comparison.png")
     print(results)
-    print(external_results)
 
 
 if __name__ == "__main__":

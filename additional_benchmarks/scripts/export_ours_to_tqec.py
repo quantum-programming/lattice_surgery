@@ -6,7 +6,7 @@ from pathlib import Path
 
 from qiskit import qasm2  # type: ignore[import-untyped]
 
-from utils.tqec_interop import block_graph_metrics, build_ours_block_graph
+from utils.tqec_interop import build_ours_block_graph, export_verified_block_graph
 
 
 def main() -> None:
@@ -19,11 +19,11 @@ def main() -> None:
     circuit = qasm2.load(args.qasm)
     schedule = json.loads(args.schedule.read_text())
     block_graph = build_ours_block_graph(circuit, schedule)
-    metrics = block_graph_metrics(block_graph)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    metrics = export_verified_block_graph(circuit, block_graph, args.output)
     if "occupied_volume" in schedule and metrics["occupied_volume"] != schedule["occupied_volume"]:
         raise ValueError("TQEC and the native scheduler disagree on occupied volume.")
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    block_graph.to_bgraph(args.output, graph_name=args.qasm.stem)
+    args.output.with_suffix(".metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
     print(json.dumps(metrics, indent=2))
 
 

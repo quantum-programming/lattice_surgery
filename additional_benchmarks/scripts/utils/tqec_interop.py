@@ -1,9 +1,17 @@
-"""Export the paper compiler's 2D CNOT schedules as TQEC block graphs."""
+"""Minimal adapters for this work and the pinned TopoLS, restricted to 2D CNOTs.
+
+Source links and the accounting boundary are documented in COMPARISON.md.
+Only this work needs a geometric ZX reconstruction; TopoLS uses its own exporter.
+"""
 
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 from typing import Any
+
+import pyzx as zx
+from qiskit import qasm2
 
 from pyzx import EdgeType, VertexType
 from pyzx.graph.graph_s import GraphS
@@ -26,7 +34,13 @@ def _axis(first: Position3D, second: Position3D) -> int:
 
 
 def _corner_kind(direction_axes: frozenset[int], spider: int) -> tuple[int, int, int]:
-    """Return a TQEC corner cube's X/Z walls, encoded as zero/one."""
+    """TQEC's _handle_corners rule, with X walls=0 and Z walls=1.
+
+    A Z spider has a Z wall on the normal axis and X walls on the two route
+    axes; an X spider has the opposite pattern. This describes the cube's
+    walls, rather than assigning an X/Z label to each coordinate direction.
+    Source: external/tqec/src/tqec/interop/pyzx/synthesis/positioned.py.
+    """
     normal_axis = next(iter({0, 1, 2} - direction_axes))
     common_basis = 0 if spider == 0 else 1
     bases = [common_basis] * 3
@@ -39,11 +53,14 @@ def _solve_corner_types(
     positions: Mapping[int, Position3D],
     fixed_types: Mapping[int, VertexType],
 ) -> dict[int, int]:
-    """Color degree-two bends so TQEC can join them without Hadamard pipes.
+    """Choose identity-spider colors so adjacent TQEC cube walls agree.
 
     Zero and one encode zero-phase Z and X spiders.  Either spider is an
     identity when inserted as a degree-two subdivision of a wire, so choosing
     these colors does not change the represented CNOT circuit.
+    Branching CNOT spiders remain fixed. No Hadamard edges are introduced.
+    Sources: TQEC's _handle_corners and _infer_cube_kind_from_pipe in
+    interop/pyzx/synthesis/positioned.py; block_graph.py validate().
     """
 
     def directions(vertex: int) -> frozenset[int]:
@@ -59,6 +76,8 @@ def _solve_corner_types(
         if graph.type(vertex) != VertexType.BOUNDARY and len(direction_sets[vertex]) == 2
     }
 
+    # Straight degree-two sections inherit their wall orientation from their
+    # ends. Each constraint below connects the corners at those two ends.
     constraints: set[tuple[int, int, int]] = set()
     for start in corners:
         for neighbor in graph.neighbors(start):
@@ -85,10 +104,19 @@ def _solve_corner_types(
         adjacency[first].append((second, segment_axis))
         adjacency[second].append((first, segment_axis))
 
-    def compatible(first: int, first_type: int, second: int, second_type: int, axis: int) -> bool:
+    def compatible(first: int, first_type: int, second: int, second_type: int,
+                   axis: int) -> bool:
         first_kind = _corner_kind(direction_sets[first], first_type)
         second_kind = _corner_kind(direction_sets[second], second_type)
-        return all(first_kind[index] == second_kind[index] for index in range(3) if index != axis)
+        # A pipe is open along its own axis; the other two wall bases must
+        # agree. This is the non-Hadamard case of TQEC's pipe construction.
+        return all(first_kind[index] == second_kind[index]
+                   for index in range(3) if index != axis)
+
+    for first, second, axis in constraints:
+        if first in assignments and second in assignments and not compatible(
+                first, assignments[first], second, assignments[second], axis):
+            raise ValueError("Fixed spiders have incompatible TQEC walls.")
 
     def solve(index: int) -> bool:
         if index == len(variables):
@@ -115,13 +143,19 @@ def _solve_corner_types(
 
     if not solve(0):
         raise ValueError(
-            "The schedule has no TQEC-compatible corner coloring without Hadamard pipes."
+            "The graph has no TQEC-compatible corner coloring with its existing pipes."
         )
     return assignments
 
 
 def build_ours_positioned_zx(circuit: Any, schedule: Mapping[str, Any]) -> PositionedZX:
-    """Embed one 2D, CNOT-only scheduler result as a positioned ZX graph."""
+    """Keep the scheduler's coordinates and embed each CNOT as Z--X.
+
+    Data are persistent pillars. CX control/target are the Z/X branching
+    spiders; internal route points are zero-phase degree-two identities.
+    See PyZX's CNOT.to_graph and scripts/utils/ours_cnot.cpp for the two
+    input contracts. Full-circuit tensor comparison checks this reconstruction.
+    """
     if circuit.num_qubits != len(schedule["geometry"]["data"]):
         raise ValueError("The circuit and schedule have different numbers of data qubits.")
 
@@ -171,6 +205,8 @@ def build_ours_positioned_zx(circuit: Any, schedule: Mapping[str, Any]) -> Posit
     inputs: list[int] = []
     outputs: list[int] = []
     for x, y in data_positions:
+        # Native occupied storage runs at t=0..depth-1. The two extra boundary
+        # vertices expose the logical inputs/outputs and have zero TQEC volume.
         input_vertex = vertex((x, y, -1), VertexType.BOUNDARY, fixed=True)
         inputs.append(input_vertex)
         previous = input_vertex
@@ -185,6 +221,9 @@ def build_ours_positioned_zx(circuit: Any, schedule: Mapping[str, Any]) -> Posit
     graph.set_outputs(tuple(outputs))
 
     for (control, target), path in zip(operations, paths, strict=True):
+        # The scheduler stores surgery_paths[inst.instId], even after dependency
+        # reordering: doubleTimeSlice.hpp look_ahead_schedule(). Path direction
+        # need not be control-to-target, so identify it by its data endpoints.
         expected_endpoints = {data_positions[control], data_positions[target]}
         actual_endpoints = {path[0][:2], path[-1][:2]}
         if actual_endpoints != expected_endpoints:
@@ -216,12 +255,91 @@ def build_ours_block_graph(circuit: Any, schedule: Mapping[str, Any]) -> BlockGr
     block_graph = positioned_block_synthesis(build_ours_positioned_zx(circuit, schedule))
     block_graph.name = "bounded_depth_schedule"
     block_graph.validate()
-    return block_graph
+    depth = int(schedule["depth"])
+    labels = {}
+    for qubit, point in enumerate(schedule["geometry"]["data"]):
+        x, y = int(point[0]), int(point[1])
+        labels[Position3D(x, y, -1)] = f"input_{qubit}"
+        labels[Position3D(x, y, depth)] = f"output_{qubit}"
+    return label_ports(block_graph, labels)
+
+
+def label_ports(block_graph: BlockGraph, labels: Mapping[Position3D, str]) -> BlockGraph:
+    """Copy a graph with explicit logical-qubit labels on every port."""
+    if set(labels) != set(block_graph.ports.values()):
+        raise ValueError("The labels must identify every port exactly once.")
+    result = BlockGraph(block_graph.name)
+    for cube in block_graph.cubes:
+        result.add_cube(cube.position, cube.kind, labels.get(cube.position, cube.label))
+    for pipe in block_graph.pipes:
+        result.add_pipe(pipe.u.position, pipe.v.position, pipe.kind)
+    result.validate()
+    return result
+
+
+def verify_cnot_block_graph(circuit: Any, block_graph: BlockGraph) -> None:
+    """Compare a small CNOT circuit with the exported graph, up to scalar.
+
+    Port order is logical-qubit order, not spatial order. This is a
+    numerical tensor comparison after ZX simplification, not physical-circuit validation.
+    PyZX full_reduce only simplifies the verification copy, never the exported
+    geometry. compare_tensors uses numerical tolerances and ignores global scalar.
+    Sources: TQEC PositionedZX.from_block_graph; PyZX tensor.compare_tensors.
+    """
+    if circuit.num_qubits > 8 or any(item.operation.name != "cx" for item in circuit.data):
+        raise ValueError("Tensor verification is limited to at most eight CNOT-only qubits.")
+    block_graph.validate()
+    positioned = PositionedZX.from_block_graph(block_graph)
+    expected_labels = {f"{role}_{q}" for role in ("input", "output")
+                       for q in range(circuit.num_qubits)}
+    if set(block_graph.ports) != expected_labels:
+        raise ValueError("The exported graph does not have the expected logical ports.")
+    graph = positioned.g
+    graph.set_inputs(tuple(positioned.p2v[block_graph.ports[f"input_{q}"]]
+                           for q in range(circuit.num_qubits)))
+    graph.set_outputs(tuple(positioned.p2v[block_graph.ports[f"output_{q}"]]
+                            for q in range(circuit.num_qubits)))
+    zx.full_reduce(graph)
+    expected = zx.Circuit.from_qasm(qasm2.dumps(circuit))
+    if not zx.compare_tensors(expected, graph, preserve_scalar=False):
+        raise ValueError("The exported BlockGraph is not equivalent to the input CNOT circuit.")
+
+
+def build_topols_block_graph(compilation: Path) -> BlockGraph:
+    """Use both parts of the pinned TopoLS's official TQEC export workflow.
+
+    TopoLS's native .bgraph is a pickle, not TQEC's textual BGRAPH format.
+    The metadata pickle is kept beside the trusted local compilation in work/.
+    No paths, colors, or port labels are reconstructed by our adapter.
+    Sources: TopoLS export/bgraph.py build_pipe_diagram/save_bigraph;
+    tools/pipe_sim.py load_block_graph (commit 78aab0e).
+    """
+    from topols.export.bgraph import build_pipe_diagram, save_bigraph
+    from topols.tools.pipe_sim import load_block_graph
+
+    native_export = compilation.with_suffix(".topols.bgraph")
+    nodes, edges = build_pipe_diagram(compilation)
+    save_bigraph(native_export, nodes, edges)
+    result = load_block_graph(native_export)
+    result.validate()
+    return result
 
 
 def block_graph_metrics(block_graph: BlockGraph) -> dict[str, int | float | list[int]]:
-    """Return representation-level TQEC metrics without physical lowering."""
+    """Representation metrics with the port boundary explicitly separated.
+
+    TQEC spacetime_volume counts ordinary cubes as 1, ports/pipes as 0, and
+    Y half-cubes as 1/2. bounding_box_size includes ports. The additional
+    non_port fields describe only occupied computation cubes; their time
+    extent is a coordinate range, not a calibrated execution duration.
+    Source: external/tqec/src/tqec/computation/block_graph.py.
+    """
     bounding_box = list(block_graph.bounding_box_size())
+    positions = [cube.position for cube in block_graph.cubes if not cube.is_port]
+    if not positions:
+        raise ValueError("The comparison requires at least one non-port cube.")
+    non_port_box = [max(getattr(p, axis) for p in positions) -
+                    min(getattr(p, axis) for p in positions) + 1 for axis in ("x", "y", "z")]
     return {
         "cubes": block_graph.num_cubes,
         "pipes": block_graph.num_pipes,
@@ -229,5 +347,26 @@ def block_graph_metrics(block_graph: BlockGraph) -> dict[str, int | float | list
         "occupied_volume": block_graph.spacetime_volume,
         "bounding_box": bounding_box,
         "bounding_box_volume": bounding_box[0] * bounding_box[1] * bounding_box[2],
+        "non_port_bounding_box": non_port_box,
+        "non_port_bounding_box_volume": non_port_box[0] * non_port_box[1] * non_port_box[2],
         "correlation_surfaces": len(block_graph.find_correlation_surfaces()),
     }
+
+
+def export_verified_block_graph(circuit: Any, graph: BlockGraph, destination: Path) -> dict[str, Any]:
+    """Validate meaning and textual BGRAPH roundtrip before reporting metrics.
+
+    BGRAPH is TQEC's official interchange format. Both original and reloaded
+    graphs must represent the input circuit, and their accounting must agree.
+    Source: tqec/docs/user_guide/bgraph.rst; block_graph.py from_bgraph/to_bgraph.
+    """
+    verify_cnot_block_graph(circuit, graph)
+    metrics = block_graph_metrics(graph)
+    graph.to_bgraph(destination, graph_name=circuit.name)
+    reloaded = BlockGraph.from_bgraph(destination)
+    verify_cnot_block_graph(circuit, reloaded)
+    if block_graph_metrics(reloaded) != metrics:
+        raise ValueError("BGRAPH roundtrip changed the representation metrics.")
+    # Use the same official viewer for both tools; it does not alter the graph.
+    reloaded.view_as_html(destination.with_suffix(".html"))
+    return {**metrics, "circuit_equivalent": True, "bgraph_roundtrip": True}

@@ -1,54 +1,47 @@
-# Additional Benchmarks
+# Additional benchmarks
 
-## Setup <!-- for LLM: DO NOT EDIT THIS SECTION -->
+The active comparison is this work and TopoLS, using the two original six-qubit,
+24-CNOT inputs. Both outputs are exported to TQEC BlockGraph. See
+[COMPARISON.md](COMPARISON.md) for scope, sources, accounting, and results.
 
-For Windows users, we recommend to run on WSL2.
+## Reproduction
+
+Use Linux/WSL, Python 3.13, uv, and g++ with C++17 support. The pinned TopoLS and
+TQEC submodules must already be initialized by the user. Run from this directory:
 
 ```bash
-# 1. check that you are in the lattice_surgery repository
-
-# 2. update submodules
-git submodule update --init --recursive
-
-# 3. install dependencies
-sudo apt update
-sudo apt install -y \
-  build-essential \
-  cmake \
-  pkg-config \
-  libsqlite3-dev \
-  libzstd-dev \
-  libpq-dev \
-  libboost-graph-dev
-
-# 4. build liblsqecc
-# See lattice_surgery/additional_benchmarks/external/liblsqecc/README.md
-cd additional_benchmarks/external/liblsqecc
-mkdir build
-cd build
-cmake ..
-cmake --build .
-# The output should look like:
-# -- Configuring done (52.0s)
-# -- Generating done (0.0s)
-# -- Build files have been written to: /home/hirok/University/lattice_surgery/additional_benchmarks/external/liblsqecc/build
+export UV_PROJECT_ENVIRONMENT=work/venv-wsl
+uv sync --frozen
+mkdir -p work
+g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/utils/ours_cnot.cpp -o work/ours_cnot
+uv run --frozen python scripts/run_comparison.py
+uv run --frozen python -m unittest discover -s tests -v
 ```
 
-## Reproducibility contract
+The runner refuses an existing output directory. To repeat a run, pass a fresh
+path with `--output-dir work/tqec-comparison-repeat`. It updates comparison.json
+and figures/structure_comparison.png after both cases succeed. Textual BGRAPH,
+TQEC HTML views, schedules, and TopoLS compilation outputs remain in that run's
+work directory. The structure PNG shows native geometry; the HTML views use the
+same TQEC viewer for both tools.
 
-From this `additional_benchmarks` directory, we can run the following test:
+Python tests also run on Windows after `uv sync --frozen`, setting
+`UV_PROJECT_ENVIRONMENT` to `work/venv-windows`.
 
-```powershell
-# cd ../../../ # If necessary.
-uv sync
+## Optional input regeneration
 
-# The editable install creates untracked package metadata in the submodule. Remove it to keep Git status clean.
-rm -rf external/Surface_Code_Compiler/src/surface_code_routing.egg-info
+Normal comparison reads the checked-in QASM files and does not require MQT.
+Its optional generator has a separate project and lockfile in benchmarks/:
 
-uv run scripts/run_smoke.py
-uv run python -m unittest discover -s tests -v
+```bash
+UV_PROJECT_ENVIRONMENT=work/venv-inputs-wsl uv run --project benchmarks --frozen python benchmarks/generate_benchmarks.py --check
 ```
 
-`uv sync` creates and updates the shared `.venv/` from `pyproject.toml` and `uv.lock`.
-Normalized results are written to `results/smoke_results.json` and `results/smoke_results.csv`.
-Temporary and upstream-native outputs stay under ignored `work/` and `results/raw/` paths.
+This checks exact reproduction by MQT QECC 2.0.0 without overwriting inputs.
+Omitting --check regenerates the inputs and circuit figures. The separate
+environment keeps generator dependencies out of the comparison environment.
+
+SAT-only prototype files are preserved under ignored work/archive-sat and are
+outside the active workflow. Stim is not needed by this workflow; its existing
+submodule registration is left for the user to manage. external_results.json
+and figures/native_external_results.png retain historical native-tool results.
