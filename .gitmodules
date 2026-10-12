@@ -1,18 +1,12 @@
 [submodule "TeleportRouter.jl"]
 	path = TeleportRouter.jl
 	url = https://github.com/eddieschoute/TeleportRouter.jl.git
-[submodule "additional_benchmarks/external/liblsqecc"]
-	path = additional_benchmarks/external/liblsqecc
-	url = https://github.com/latticesurgery-com/liblsqecc.git
 [submodule "additional_benchmarks/external/TopoLS"]
 	path = additional_benchmarks/external/TopoLS
 	url = https://github.com/tqec/TopoLS.git
-[submodule "additional_benchmarks/external/Surface_Code_Compiler"]
-	path = additional_benchmarks/external/Surface_Code_Compiler
-	url = https://github.com/Alan-Robertson/Surface_Code_Compiler.git
 [submodule "additional_benchmarks/external/tqec"]
 	path = additional_benchmarks/external/tqec
 	url = https://github.com/tqec/tqec.git
-[submodule "additional_benchmarks/external/mqt_qecc"]
-	path = additional_benchmarks/external/mqt_qecc
-	url = https://github.com/munich-quantum-toolkit/qecc.git
+[submodule "additional_benchmarks/external/Stim"]
+	path = additional_benchmarks/external/Stim
+	url = https://github.com/quantumlib/Stim.git
