@@ -34,14 +34,13 @@ Normal comparison reads the checked-in QASM files and does not require MQT.
 Its optional generator has a separate project and lockfile in benchmarks/:
 
 ```bash
-UV_PROJECT_ENVIRONMENT=work/venv-inputs-wsl uv run --project benchmarks --frozen python benchmarks/generate_benchmarks.py --check
+UV_PROJECT_ENVIRONMENT=work/venv-inputs-wsl uv run --project benchmarks --frozen python benchmarks/generate_benchmarks.py
 ```
 
-This checks exact reproduction by MQT QECC 2.0.0 without overwriting inputs.
-Omitting --check regenerates the inputs and circuit figures. The separate
-environment keeps generator dependencies out of the comparison environment.
+This always regenerates both QASM inputs and figures/mqt_max_parallel.png and
+figures/mqt_min_parallel.png using MQT QECC 2.0.0. The separate environment
+keeps generator dependencies out of the comparison environment.
 
-SAT-only prototype files are preserved under ignored work/archive-sat and are
-outside the active workflow. Stim is not needed by this workflow; its existing
-submodule registration is left for the user to manage. external_results.json
-and figures/native_external_results.png retain historical native-tool results.
+Ignored work/ contains older experiments that are not preserved by Git.
+The current comparison artifacts are in work/tqec-comparison.
+Stim is unused; the user manages removal of its submodule registration.

@@ -4,7 +4,7 @@
 
 We use the original mqt_max_parallel and mqt_min_parallel inputs: each has six
 qubits and 24 CNOT gates. SAT trials and the three-qubit pilot are excluded.
-This note is separate from the reviewer response; npj_reviewer1.md is untouched.
+This note documents the current comparison separately from the manuscript.
 The current manuscript has not been assessed here.
 
 Read scripts/run_comparison.py for the complete workflow, scripts/utils/ours_cnot.cpp
