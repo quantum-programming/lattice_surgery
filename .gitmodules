@@ -7,6 +7,3 @@
 [submodule "additional_benchmarks/external/tqec"]
 	path = additional_benchmarks/external/tqec
 	url = https://github.com/tqec/tqec.git
-[submodule "additional_benchmarks/external/Stim"]
-	path = additional_benchmarks/external/Stim
-	url = https://github.com/quantumlib/Stim.git
