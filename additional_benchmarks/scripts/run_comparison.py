@@ -64,7 +64,7 @@ def main() -> None:
                     "tqec": get_commit_id(ROOT / "external" / "tqec")},
         "this_work_source_sha256": source_hash(),
         "configuration": {
-            "this_work": "one layer; outer factories; SA seed 1, 1,000,000 iterations; Double look-ahead; CareKinkParity",
+            "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
             "topols": "block 10; ZX and direction optimization enabled; Python engine; seed 0; five internal seeds",
         },
         "rows": [],
@@ -112,7 +112,7 @@ def main() -> None:
 
     results = ROOT / "comparison.json"
     results.write_text(json.dumps(report, indent=2) + "\n")
-    # Publish the official TQEC views after both benchmark cases succeed.
+    # Publish official TQEC HTML views after both benchmark cases succeed.
     figures = ROOT / "figures"
     figures.mkdir(exist_ok=True)
     for name in BENCHMARKS:

@@ -367,6 +367,6 @@ def export_verified_block_graph(circuit: Any, graph: BlockGraph, destination: Pa
     verify_cnot_block_graph(circuit, reloaded)
     if block_graph_metrics(reloaded) != metrics:
         raise ValueError("BGRAPH roundtrip changed the representation metrics.")
-    # Use the same official viewer for both tools; it does not alter the graph.
+    # The official cube-face viewer is the source for manuscript screenshots.
     reloaded.view_as_html(destination.with_suffix(".html"))
     return {**metrics, "circuit_equivalent": True, "bgraph_roundtrip": True}

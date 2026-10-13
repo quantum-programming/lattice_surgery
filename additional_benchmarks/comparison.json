@@ -4,24 +4,24 @@
     "mqt_min_parallel": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
   },
   "commits": {
-    "this_work": "c7ed39b921619c6319b32122706ab61120f4a0ea",
+    "this_work": "176c3e076df53f33d83c94f241338928ff1923e8",
     "topols": "78aab0ef1326bdf2041b519708f28741162f45c4",
     "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
   },
   "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
   "configuration": {
-    "this_work": "one layer; outer factories; SA seed 1, 1,000,000 iterations; Double look-ahead; CareKinkParity",
+    "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
     "topols": "block 10; ZX and direction optimization enabled; Python engine; seed 0; five internal seeds"
   },
   "rows": [
     {
       "depth": 11,
-      "width": 9,
-      "height": 9,
-      "allocated_sites": 81,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
       "data_slots": 9,
       "active_data": 6,
-      "factory_sites": 16,
+      "factory_sites": 0,
       "occupied_volume": 178,
       "tqec": {
         "cubes": 190,
@@ -48,16 +48,16 @@
       "benchmark": "mqt_max_parallel",
       "status": "passed",
       "depth_unit": "code beat",
-      "allocated_volume": 891,
-      "active_data_density": 0.07407407407407407,
-      "finite_data_slot_density": 0.1111111111111111,
+      "allocated_volume": 539,
+      "active_data_density": 0.12244897959183673,
+      "finite_data_slot_density": 0.1836734693877551,
       "asymptotic_data_slot_density": 0.25
     },
     {
       "depth": 22,
       "spatial_footprint": 45,
       "bounding_box_volume": 990,
-      "compilation_seconds": 88.43664503097534,
+      "compilation_seconds": 96.78136992454529,
       "zx_graph": {
         "before": {
           "vertices": 60,
@@ -97,12 +97,12 @@
     },
     {
       "depth": 11,
-      "width": 9,
-      "height": 9,
-      "allocated_sites": 81,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
       "data_slots": 9,
       "active_data": 6,
-      "factory_sites": 16,
+      "factory_sites": 0,
       "occupied_volume": 166,
       "tqec": {
         "cubes": 178,
@@ -129,16 +129,16 @@
       "benchmark": "mqt_min_parallel",
       "status": "passed",
       "depth_unit": "code beat",
-      "allocated_volume": 891,
-      "active_data_density": 0.07407407407407407,
-      "finite_data_slot_density": 0.1111111111111111,
+      "allocated_volume": 539,
+      "active_data_density": 0.12244897959183673,
+      "finite_data_slot_density": 0.1836734693877551,
       "asymptotic_data_slot_density": 0.25
     },
     {
       "depth": 16,
       "spatial_footprint": 45,
       "bounding_box_volume": 720,
-      "compilation_seconds": 46.89196515083313,
+      "compilation_seconds": 54.865962505340576,
       "zx_graph": {
         "before": {
           "vertices": 60,

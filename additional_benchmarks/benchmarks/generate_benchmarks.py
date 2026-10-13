@@ -20,7 +20,12 @@ def write(name: str, operations: list[tuple[int, int]]) -> None:
     circuit = QuantumCircuit(6, name=name.replace("_", " ").title())
     for control, target in operations:
         circuit.cx(control, target)
-    circuit.draw(output="mpl", filename=str(FIGURES / f"{name}.png"), fold=-1)
+    FIGURES.mkdir(exist_ok=True)
+    # Qiskit generates Q-circuit code, including a standalone document wrapper.
+    # Keep only its body so the manuscript owns the class and package imports.
+    source = circuit.draw(output="latex_source")
+    body = source.split(r"\begin{document}", 1)[1].split(r"\end{document}", 1)[0]
+    (FIGURES / f"{name}.tex").write_text(body.strip() + "\n", newline="\n")
 
 
 if __name__ == "__main__":

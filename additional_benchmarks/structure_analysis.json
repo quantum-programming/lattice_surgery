@@ -1,0 +1,137 @@
+{
+  "mqt_max_parallel": {
+    "ours": {
+      "occupied": 178,
+      "cube_categories": {
+        "junction": 48,
+        "bend": 100,
+        "straight_space": 12,
+        "straight_time": 18
+      },
+      "pipe_axes": {
+        "y": 52,
+        "z": 98,
+        "x": 58
+      },
+      "occupied_by_time": {
+        "0": 13,
+        "1": 17,
+        "2": 20,
+        "3": 25,
+        "4": 14,
+        "5": 14,
+        "6": 15,
+        "7": 17,
+        "8": 20,
+        "9": 14,
+        "10": 9
+      },
+      "data_pillar_cubes": 66,
+      "off_pillar_route_cubes": 112
+    },
+    "topols": {
+      "occupied": 404,
+      "cube_categories": {
+        "bend": 214,
+        "straight_space": 82,
+        "junction": 45,
+        "straight_time": 63
+      },
+      "pipe_axes": {
+        "z": 167,
+        "y": 110,
+        "x": 157
+      },
+      "occupied_by_time": {
+        "1": 23,
+        "2": 23,
+        "3": 28,
+        "4": 27,
+        "5": 13,
+        "6": 23,
+        "7": 19,
+        "8": 31,
+        "9": 26,
+        "10": 30,
+        "11": 21,
+        "12": 14,
+        "13": 18,
+        "14": 15,
+        "15": 13,
+        "16": 12,
+        "17": 15,
+        "18": 12,
+        "19": 18,
+        "20": 9,
+        "21": 11,
+        "22": 3
+      },
+      "identifiable_lift_paths": 48,
+      "cubes_on_identifiable_lifts": 184
+    }
+  },
+  "mqt_min_parallel": {
+    "ours": {
+      "occupied": 166,
+      "cube_categories": {
+        "junction": 48,
+        "straight_time": 18,
+        "bend": 96,
+        "straight_space": 4
+      },
+      "pipe_axes": {
+        "z": 96,
+        "x": 50,
+        "y": 50
+      },
+      "occupied_by_time": {
+        "0": 12,
+        "1": 15,
+        "2": 18,
+        "3": 16,
+        "4": 14,
+        "5": 14,
+        "6": 19,
+        "7": 12,
+        "8": 19,
+        "9": 15,
+        "10": 12
+      },
+      "data_pillar_cubes": 66,
+      "off_pillar_route_cubes": 100
+    },
+    "topols": {
+      "occupied": 303,
+      "cube_categories": {
+        "bend": 147,
+        "junction": 39,
+        "straight_space": 75,
+        "straight_time": 42
+      },
+      "pipe_axes": {
+        "z": 124,
+        "y": 79,
+        "x": 126
+      },
+      "occupied_by_time": {
+        "1": 31,
+        "2": 26,
+        "3": 13,
+        "4": 24,
+        "5": 18,
+        "6": 21,
+        "7": 16,
+        "8": 19,
+        "9": 24,
+        "10": 29,
+        "11": 28,
+        "12": 19,
+        "13": 12,
+        "14": 12,
+        "15": 11
+      },
+      "identifiable_lift_paths": 36,
+      "cubes_on_identifiable_lifts": 127
+    }
+  }
+}

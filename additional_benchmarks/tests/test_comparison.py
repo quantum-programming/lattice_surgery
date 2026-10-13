@@ -40,6 +40,9 @@ class ComparisonTest(unittest.TestCase):
                 x, y, t = metrics[prefix + "bounding_box"]
                 self.assertEqual(metrics[prefix + "bounding_box_volume"], x * y * t)
             if row["tool"] == "this_work":
+                self.assertEqual((row["width"], row["height"]), (7, 7))
+                self.assertEqual(row["factory_sites"], 0)
+                self.assertEqual(row["data_slots"], 9)
                 self.assertEqual(row["allocated_volume"],
                                  row["allocated_sites"] * row["depth"])
             else:
