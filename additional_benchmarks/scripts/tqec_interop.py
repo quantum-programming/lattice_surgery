@@ -153,7 +153,7 @@ def build_ours_positioned_zx(circuit: Any, schedule: Mapping[str, Any]) -> Posit
 
     Data are persistent pillars. CX control/target are the Z/X branching
     spiders; internal route points are zero-phase degree-two identities.
-    See PyZX's CNOT.to_graph and scripts/utils/ours_cnot.cpp for the two
+    See PyZX's CNOT.to_graph and scripts/ours_cnot.cpp for the two
     input contracts. Full-circuit tensor comparison checks this reconstruction.
     """
     if circuit.num_qubits != len(schedule["geometry"]["data"]):

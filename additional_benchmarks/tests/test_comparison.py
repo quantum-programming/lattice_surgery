@@ -10,7 +10,7 @@ from qiskit import QuantumCircuit
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from run_comparison import BENCHMARKS, check_circuit  # pyright: ignore[reportMissingImports]
-from utils.tqec_interop import (  # pyright: ignore[reportMissingImports]
+from tqec_interop import (  # pyright: ignore[reportMissingImports]
     block_graph_metrics,
     build_ours_block_graph,
     build_ours_positioned_zx,

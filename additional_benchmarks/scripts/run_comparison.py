@@ -1,7 +1,7 @@
 """Reproduce the fixed two-circuit comparison used for Reviewer 1."""
-import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -9,9 +9,8 @@ from typing import Any
 
 from qiskit import qasm2  # type: ignore[import-untyped]
 
-from utils.render_structures import render  # pyright: ignore[reportImplicitRelativeImport]
-from utils.run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
-from utils.tqec_interop import build_ours_block_graph, export_verified_block_graph
+from run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
+from tqec_interop import build_ours_block_graph, export_verified_block_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARKS = ("mqt_max_parallel", "mqt_min_parallel")
@@ -49,13 +48,14 @@ def main() -> None:
     executable = ROOT / "work" / "ours_cnot"
     if not executable.is_file():
         raise FileNotFoundError("Compile work/ours_cnot as described in COMPARISON.md")
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "work" / "tqec-comparison")
-    work = parser.parse_args().output_dir.resolve()
-    if not work.is_relative_to((ROOT / "work").resolve()):
-        raise ValueError("Output directory must be inside additional_benchmarks/work.")
-    # Preserve previous experiments; use a new directory for each run.
-    work.mkdir(parents=True, exist_ok=False)
+    work = ROOT / "work" / "tqec-comparison"
+    # Replace only this run's artifacts, preserving all other work/ contents.
+    # Reject redirected paths before recursive deletion.
+    if work.resolve() != ROOT.resolve() / "work" / "tqec-comparison":
+        raise ValueError("The fixed output directory must not be redirected.")
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
 
     report: dict[str, Any] = {
         "inputs": {},
@@ -69,7 +69,6 @@ def main() -> None:
         },
         "rows": [],
     }
-    geometries = {}
     for name in BENCHMARKS:
         qasm_path = ROOT / "benchmarks" / f"{name}.qasm"
         circuit = check_circuit(qasm_path)
@@ -103,7 +102,6 @@ def main() -> None:
             "asymptotic_data_slot_density": 0.25,
         })
         report["rows"].append(ours)
-        geometries[("ours", name)] = schedule
 
         output = work / f"topols-{name}"
         run_topols(qasm_path, output)
@@ -111,15 +109,16 @@ def main() -> None:
         topols.update({"tool": "topols", "benchmark": name, "status": "passed",
                        "depth_unit": "pipe-diagram time coordinate", "storage_density": None})
         report["rows"].append(topols)
-        geometries[("topols", name)] = json.loads((output / "geometry.json").read_text())
 
     results = ROOT / "comparison.json"
     results.write_text(json.dumps(report, indent=2) + "\n")
-    name = "mqt_min_parallel"
-    ours_geometry = work / f"ours-{name}.json"
-    topols_geometry = work / f"topols-{name}.json"
-    topols_geometry.write_text(json.dumps(geometries[("topols", name)]))
-    render(ours_geometry, topols_geometry, ROOT / "figures" / "structure_comparison.png")
+    # Publish the official TQEC views after both benchmark cases succeed.
+    figures = ROOT / "figures"
+    figures.mkdir(exist_ok=True)
+    for name in BENCHMARKS:
+        shutil.copy2(work / f"ours-{name}.html", figures / f"ours-{name}.html")
+        shutil.copy2(work / f"topols-{name}" / f"{name}.html",
+                     figures / f"topols-{name}.html")
     print(results)
 
 

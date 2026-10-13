@@ -7,9 +7,9 @@ qubits and 24 CNOT gates. SAT trials and the three-qubit pilot are excluded.
 This note documents the current comparison separately from the manuscript.
 The current manuscript has not been assessed here.
 
-Read scripts/run_comparison.py for the complete workflow, scripts/utils/ours_cnot.cpp
-for the call to the existing native implementation, scripts/utils/run_topols.py
-for upstream compiler options, then scripts/utils/tqec_interop.py for conversion,
+Read scripts/run_comparison.py for the complete workflow, scripts/ours_cnot.cpp
+for the call to the existing native implementation, scripts/run_topols.py
+for upstream compiler options, then scripts/tqec_interop.py for conversion,
 validation, and accounting. No core compiler headers or external submodule code
 are changed. Setup and commands are in [README.md](README.md).
 
@@ -89,4 +89,5 @@ The this-work TQEC occupied volumes, 178 and 166, equal native occupied counts.
 Both tools have 12 logical ports and 12 recorded correlation surfaces per input.
 
 The same TQEC viewer writes four HTML files beside the BGRAPH exports.
-figures/structure_comparison.png shows native geometry for mqt_min_parallel.
+These four HTML views are also copied to figures/ with ours- and topols-
+filename prefixes. The custom native-geometry PNG is no longer generated.

@@ -13,17 +13,18 @@ TQEC submodules must already be initialized by the user. Run from this directory
 export UV_PROJECT_ENVIRONMENT=work/venv-wsl
 uv sync --frozen
 mkdir -p work
-g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/utils/ours_cnot.cpp -o work/ours_cnot
+g++ -std=c++17 -O2 -D_GLIBCXX_ASSERTIONS scripts/ours_cnot.cpp -o work/ours_cnot
 uv run --frozen python scripts/run_comparison.py
 uv run --frozen python -m unittest discover -s tests -v
 ```
 
-The runner refuses an existing output directory. To repeat a run, pass a fresh
-path with `--output-dir work/tqec-comparison-repeat`. It updates comparison.json
-and figures/structure_comparison.png after both cases succeed. Textual BGRAPH,
+Each run recreates only work/tqec-comparison, replacing its previous contents.
+Other work/ directories are retained. It updates comparison.json
+after both cases succeed. Textual BGRAPH,
 TQEC HTML views, schedules, and TopoLS compilation outputs remain in that run's
-work directory. The structure PNG shows native geometry; the HTML views use the
-same TQEC viewer for both tools.
+work directory. The four HTML views are also copied to figures/ as
+ours-mqt_{max,min}_parallel.html and topols-mqt_{max,min}_parallel.html.
+Both tools use the same official TQEC viewer. Open these HTML files in a browser.
 
 Python tests also run on Windows after `uv sync --frozen`, setting
 `UV_PROJECT_ENVIRONMENT` to `work/venv-windows`.
