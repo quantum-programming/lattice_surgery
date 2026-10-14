@@ -84,8 +84,8 @@ The latter is the smallest nonserial group size, retaining limited parallelism a
 For our compiler, we use SA-based mapping followed by double-slice routing with instruction look-ahead and kink-parity correction.
 For these CNOT-only circuits, the planar layout is a $7 \times 7$ grid with six data patches and 43 routing sites, obtained by removing the outer MSF ring.
 Six of the 49 sites hold data in this finite instance.
-TopoLS uses its default search settings, including ZX and direction optimization and a five-seed search, on a $9 \times 5$ footprint.
-The total spatial allocations are therefore close, although their placement constraints and search budgets differ.
+TopoLS uses three input qubits per row, giving a $7 \times 5$ footprint, with the Python engine and default search settings, including ZX and direction optimization and a five-seed search.
+These settings allocate 49 sites to our compiler and 35 to TopoLS, with each compiler retaining its placement constraints and search strategy.
 
 We evaluate both outputs using TQEC's official BlockGraph spacetime volume and bounding-box dimensions.
 For these circuits, the volume counts computation and storage cubes, with ports and pipes contributing zero volume.
@@ -94,9 +94,9 @@ All exported graphs satisfy TQEC's local BlockGraph constraints and reproduce th
 The occupied volumes of our exports equal the native scheduler's counts, preserving its storage and routing accounting.
 \Cref{fig:comparison_embeddings} shows the resulting spacetime geometries, and \cref{tab:topols_comparison} reports their dimensions and volumes alongside the available spatial allocations.
 
-Double-slice routing yields occupied volumes of 178 and 166, compared with 404 and 303 for TopoLS, corresponding to reductions of approximately $56\%$ and $45\%$ on these instances.
-The exported geometries also have smaller time-coordinate extents of 13 for both circuits, compared with 23 and 17 for TopoLS.
-Under the similar total spatial allocations considered here, double-slice routing achieves more compact occupied geometry on both benchmark circuits.
+Double-slice routing yields occupied volumes of 178 and 166, compared with 343 and 261 for TopoLS, corresponding to reductions of approximately $48\%$ and $36\%$ on these instances.
+The exported geometries also have smaller time-coordinate extents of 13 for both circuits, compared with 21 and 17 for TopoLS.
+With the spatial allocations specified above, double-slice routing achieves more compact occupied geometry on both benchmark circuits.
 These results support bounded-depth routing as a useful optimization within an automated compilation pipeline and motivate its integration with ZX-level preprocessing.
 
 \input{figures/block_graph_comparison.tex}
@@ -140,7 +140,7 @@ These results support bounded-depth routing as a useful optimization within an a
         \includegraphics[width=\linewidth]{figures/topols-mqt_min_parallel.png}
         \caption{TopoLS, min-parallel.}
     \end{subfigure}
-    \caption{Compiled spacetime geometries for the two benchmark circuits, displayed using TQEC. The time direction is vertical, and blue and red faces indicate block boundary bases. The displayed blocks represent occupied geometry. Each panel is independently fitted to its coordinate extent, while \cref{tab:topols_comparison} provides the quantitative volume comparison.}
+    \caption{Compiled spacetime geometries for the two benchmark circuits, rendered from TQEC BlockGraphs using TopoLS's renderer. The time direction is vertical, and blue and red faces indicate block boundary bases. Grey blocks indicate input/output ports and contribute zero volume. Each panel is independently fitted to its coordinate extent, while \cref{tab:topols_comparison} provides the quantitative volume comparison.}
     \label{fig:comparison_embeddings}
 \end{figure*}
 

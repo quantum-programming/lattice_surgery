@@ -13,7 +13,7 @@ from tqec_interop import build_topols_block_graph, export_verified_block_graph
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def run(source: Path, output: Path, bgraph_path: Path, html_path: Path) -> None:
+def run(source: Path, output: Path, bgraph_path: Path) -> None:
     source, output = source.resolve(), output.resolve()
     name = source.stem
     output.mkdir(parents=True, exist_ok=True)
@@ -40,10 +40,7 @@ def run(source: Path, output: Path, bgraph_path: Path, html_path: Path) -> None:
         pipeline.zx_optimization = audited
         # Use the supplied CLI, including its seed and search settings.
         # Source: external/TopoLS/docs/prog.py argument definitions.
-        sys.argv = [str(program), "-f", name, "-b", "10", "-zx", "1",
-                    "-dir", "1", "-l", "4", "-r", "0", "-s", "5",
-                    "-t", "3", "-i", "10000", "-csv", "metrics",
-                    "-sp", "0", "--engine", "python"]
+        sys.argv = [str(program), "-f", name, "-l", "3", "--engine", "python"]
         os.chdir(output)
         runpy.run_path(str(program), run_name="__main__")
     finally:
@@ -62,5 +59,5 @@ def run(source: Path, output: Path, bgraph_path: Path, html_path: Path) -> None:
     }
     block_graph = build_topols_block_graph(output / "result" / "topols" / f"{name}.pkl")
     metrics["tqec"] = export_verified_block_graph(
-        qasm2.load(source), block_graph, bgraph_path, html_path)
+        qasm2.load(source), block_graph, bgraph_path)
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")

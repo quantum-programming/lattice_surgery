@@ -2,7 +2,8 @@
 
 The active comparison is this work and TopoLS, using the two original six-qubit,
 24-CNOT inputs. This work uses a 7x7 CNOT-only grid without MSF sites;
-TopoLS keeps its standard 9x5 footprint. Both outputs are exported to TQEC BlockGraph. See
+TopoLS uses three input qubits per row (-l 3), giving a 7x5 footprint.
+Both outputs are exported to TQEC BlockGraph. See
 [COMPARISON.md](COMPARISON.md) for scope, sources, accounting, and results.
 
 ## Reproduction
@@ -23,20 +24,18 @@ Each run recreates only work/tqec-comparison, replacing its previous contents.
 Other work/ directories are retained. It updates comparison.json
 after both cases succeed. Schedules and TopoLS intermediate compilation outputs
 remain in that run's work directory. tqec_interop.py saves verified textual
-BGRAPHs directly to results/ and official HTML views directly to figures/ as
-ours-mqt_{max,min}_parallel.html and topols-mqt_{max,min}_parallel.html.
-These files are updated per case, so a failed run may leave a partial update.
-To capture the same official cube-and-pipe display for LaTeX, run on Windows:
+BGRAPHs directly to results/. These files are updated per case.
+To render the four manuscript images from saved graphs, run:
 
 ```powershell
-python scripts/render_html_figures.py
+python scripts/render_figures.py
 ```
 
-This uses existing Chrome/Edge and writes the four matching PNG files to figures/.
-It hides only viewer controls and preserves TQEC's model, colors and default camera.
-The browser needs network access to load the official viewer's three.js imports.
-No browser package installation or custom geometric renderer is needed.
-The manuscript uses these PNG captures and the two Q-circuit diagrams.
+This uses TopoLS's upstream Matplotlib cube-and-pipe renderer for both methods
+and writes PNGs directly to figures/. A small adapter supplies graph metadata.
+Renderer geometry, colours and camera use upstream defaults. No browser or
+network connection is required. The manuscript uses these PNGs and the two
+Q-circuit diagrams.
 
 Python tests also run on Windows after `uv sync --frozen`, setting
 `UV_PROJECT_ENVIRONMENT` to `work/venv-windows`.
@@ -80,7 +79,7 @@ The standalone draft topols_comparison.tex uses that generated table and the
 same preamble as the supplied manuscript, with qcircuit added. Compile it from this directory.
 Its citation keys are provisional until the references are added via Zotero.
 
-The manuscript draft includes both input circuits and all four TQEC HTML-derived PNG figures.
+The manuscript draft includes both input circuits and all four BlockGraph PNGs rendered with TopoLS.
 Its compiled PDF belongs at topols_comparison.pdf beside the .tex, not in figures/.
 Compile with `pdflatex -output-directory=work/latex-check topols_comparison.tex`
 (twice for cross-references), then copy work/latex-check/topols_comparison.pdf

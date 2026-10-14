@@ -286,8 +286,8 @@ def verify_cnot_block_graph(circuit: Any, block_graph: BlockGraph) -> None:
     geometry. compare_tensors uses numerical tolerances and ignores global scalar.
     Sources: TQEC PositionedZX.from_block_graph; PyZX tensor.compare_tensors.
     """
-    if circuit.num_qubits > 8 or any(item.operation.name != "cx" for item in circuit.data):
-        raise ValueError("Tensor verification is limited to at most eight CNOT-only qubits.")
+    if circuit.num_qubits > 9 or any(item.operation.name != "cx" for item in circuit.data):
+        raise ValueError("Tensor verification is limited to at most nine CNOT-only qubits.")
     block_graph.validate()
     positioned = PositionedZX.from_block_graph(block_graph)
     expected_labels = {f"{role}_{q}" for role in ("input", "output")
@@ -346,9 +346,9 @@ def block_graph_metrics(block_graph: BlockGraph) -> dict[str, int | float | list
 
 
 def export_verified_block_graph(
-    circuit: Any, graph: BlockGraph, bgraph_path: Path, html_path: Path,
+    circuit: Any, graph: BlockGraph, bgraph_path: Path,
 ) -> dict[str, Any]:
-    """Verify and save BGRAPH and official viewer HTML at their final paths.
+    """Verify and save BGRAPH at its final path.
 
     BGRAPH is TQEC's official interchange format. Both original and reloaded
     graphs must represent the input circuit, and their accounting must agree.
@@ -362,7 +362,4 @@ def export_verified_block_graph(
     verify_cnot_block_graph(circuit, reloaded)
     if block_graph_metrics(reloaded) != metrics:
         raise ValueError("BGRAPH roundtrip changed the representation metrics.")
-    # The official cube-face viewer is the source for manuscript screenshots.
-    html_path.parent.mkdir(parents=True, exist_ok=True)
-    reloaded.view_as_html(html_path)
     return {**metrics, "circuit_equivalent": True, "bgraph_roundtrip": True}

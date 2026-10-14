@@ -32,8 +32,8 @@ def get_commit_id(path: Path) -> str:
 def check_circuit(path: Path):
     """Load a benchmark and verify its fixed size and gate set."""
     circuit = qasm2.load(path)
-    if circuit.num_qubits != 6 or circuit.size() != 24 or set(circuit.count_ops()) != {"cx"}:
-        raise ValueError(f"Expected a six-qubit, 24-CNOT circuit: {path}")
+    if circuit.num_qubits != 9 or circuit.size() != 36 or set(circuit.count_ops()) != {"cx"}:
+        raise ValueError(f"Expected a nine-qubit, 36-CNOT circuit: {path}")
     return circuit
 
 
@@ -70,7 +70,7 @@ def main() -> None:
         "this_work_source_sha256": source_hash(),
         "configuration": {
             "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
-            "topols": "block 10; ZX and direction optimization enabled; Python engine; seed 0; five internal seeds",
+            "topols": "three qubits per row (-l 3); Python engine; remaining search settings use upstream defaults (block 10; ZX and direction optimization enabled; seed 0; five internal seeds)",
         },
         "rows": [],  # One result per benchmark and compiler (four in total).
     }
@@ -90,8 +90,7 @@ def main() -> None:
         block_graph = build_ours_block_graph(circuit, schedule)
         tqec_metrics = export_verified_block_graph(
             circuit, block_graph,
-            bgraph_path=ROOT / "results" / f"ours-{name}.bgraph",
-            html_path=ROOT / "figures" / f"ours-{name}.html")
+            bgraph_path=ROOT / "results" / f"ours-{name}.bgraph")
         if tqec_metrics["occupied_volume"] != ours["occupied_volume"]:
             raise ValueError("TQEC and the native scheduler disagree on occupied volume.")
         (work / f"ours-{name}.json").write_text(json.dumps(schedule, indent=2) + "\n")
@@ -108,8 +107,7 @@ def main() -> None:
 
         output = work / f"topols-{name}"
         run_topols(qasm_path, output,
-                   bgraph_path=ROOT / "results" / f"topols-{name}.bgraph",
-                   html_path=ROOT / "figures" / f"topols-{name}.html")
+                   bgraph_path=ROOT / "results" / f"topols-{name}.bgraph")
         topols = json.loads((output / "metrics.json").read_text())
         topols.update({"tool": "topols", "benchmark": name, "status": "passed",
                        "depth_unit": "pipe-diagram time coordinate", "storage_density": None})

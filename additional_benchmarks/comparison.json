@@ -4,14 +4,14 @@
     "mqt_min_parallel": "33e3b444ef246a47e02fad8e1385b4bc61fd98c6686b238d0284d167b8774339"
   },
   "commits": {
-    "this_work": "176c3e076df53f33d83c94f241338928ff1923e8",
+    "this_work": "cd2ce0e42799331ba165a932f7693539fa48cd71",
     "topols": "78aab0ef1326bdf2041b519708f28741162f45c4",
     "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
   },
   "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
   "configuration": {
     "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
-    "topols": "block 10; ZX and direction optimization enabled; Python engine; seed 0; five internal seeds"
+    "topols": "three qubits per row (-l 3); Python engine; remaining search settings use upstream defaults (block 10; ZX and direction optimization enabled; seed 0; five internal seeds)"
   },
   "rows": [
     {
@@ -48,10 +48,10 @@
       "asymptotic_data_slot_density": 0.25
     },
     {
-      "depth": 22,
-      "spatial_footprint": 45,
-      "bounding_box_volume": 990,
-      "compilation_seconds": 96.78136992454529,
+      "depth": 20,
+      "spatial_footprint": 35,
+      "bounding_box_volume": 700,
+      "compilation_seconds": 104.19169759750366,
       "zx_graph": {
         "before": {
           "vertices": 60,
@@ -63,16 +63,16 @@
         }
       },
       "tqec": {
-        "cubes": 416,
-        "pipes": 434,
+        "cubes": 355,
+        "pipes": 373,
         "ports": 12,
-        "occupied_volume": 404.0,
+        "occupied_volume": 343.0,
         "bounding_box": [
-          9,
+          7,
           5,
-          23
+          21
         ],
-        "bounding_box_volume": 1035,
+        "bounding_box_volume": 735,
         "correlation_surfaces": 12,
         "circuit_equivalent": true,
         "bgraph_roundtrip": true
@@ -118,9 +118,9 @@
     },
     {
       "depth": 16,
-      "spatial_footprint": 45,
-      "bounding_box_volume": 720,
-      "compilation_seconds": 54.865962505340576,
+      "spatial_footprint": 35,
+      "bounding_box_volume": 560,
+      "compilation_seconds": 97.03013348579407,
       "zx_graph": {
         "before": {
           "vertices": 60,
@@ -132,16 +132,16 @@
         }
       },
       "tqec": {
-        "cubes": 315,
-        "pipes": 329,
+        "cubes": 273,
+        "pipes": 287,
         "ports": 12,
-        "occupied_volume": 303.0,
+        "occupied_volume": 261.0,
         "bounding_box": [
-          9,
+          7,
           5,
           17
         ],
-        "bounding_box_volume": 765,
+        "bounding_box_volume": 595,
         "correlation_surfaces": 12,
         "circuit_equivalent": true,
         "bgraph_roundtrip": true

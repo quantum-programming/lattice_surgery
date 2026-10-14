@@ -16,8 +16,8 @@ are changed. Setup and commands are in [README.md](README.md).
 This work uses one layer, SA seed 1 and 1,000,000 iterations, Double look-ahead
 and CareKinkParity. The CNOT-only wrapper removes the MSF outer ring before
 scheduling and translates data coordinates by (-1,-1), producing a 7x7 grid
-with six data sites, no MSF sites and 43 empty routing sites. TopoLS retains
-its default 9x5 footprint (45 sites). The total spatial budgets are close;
+with six data sites, no MSF sites and 43 empty routing sites. TopoLS uses
+three input qubits per row (-l 3), giving a 7x5 footprint (35 sites versus our 49);
 fixed data locations, ZX optimization and search budgets still differ. TopoLS uses its supplied docs/prog.py with
 block size 10, ZX and direction optimization, Python engine, seed 0 and five
 internal seeds. The ZX audit wrapper only records counts around the original
@@ -81,9 +81,9 @@ input-circuit tensor equivalence and textual BGRAPH roundtrip checks.
 | Input | Tool | Allocated footprint | Native depth | TQEC occupied volume | Official box including ports |
 | --- | --- | --- | ---: | ---: | --- |
 | mqt_max_parallel | this_work | 7 x 7 | 11 | 178 | 7 x 5 x 13 |
-| mqt_max_parallel | topols | 9 x 5 | 22 | 404 | 9 x 5 x 23 |
+| mqt_max_parallel | topols | 7 x 5 | 20 | 343 | 7 x 5 x 21 |
 | mqt_min_parallel | this_work | 7 x 7 | 11 | 166 | 5 x 6 x 13 |
-| mqt_min_parallel | topols | 9 x 5 | 16 | 303 | 9 x 5 x 17 |
+| mqt_min_parallel | topols | 7 x 5 | 16 | 261 | 7 x 5 x 17 |
 
 Native depth units differ as described above; this is representation accounting,
 not a calibrated physical-performance comparison. This work now reserves 49 sites
@@ -92,19 +92,18 @@ The occupied-volume counts agree with the native scheduler for both inputs.
 Both tools have 12 logical ports and 12 recorded correlation surfaces per input.
 
 The previous 9x9/MSF comparison is retained in work/comparison-msf-baseline/.
-The official TQEC HTML cube-and-pipe views are saved directly in figures/ with ours-
-and topols- prefixes. Run python scripts/render_html_figures.py on Windows to
-capture the four HTML views using an existing Chrome/Edge browser. Only viewer
-controls are hidden in work copies. Model data, colors and camera are unchanged.
-The generated PNGs and the two Q-circuit LaTeX bodies are included in topols_comparison.tex.
-Each model is independently fitted to the viewport, so image height is not a
-common execution-time scale.
+Run python scripts/render_figures.py to draw the four saved BlockGraphs
+with TopoLS's upstream Matplotlib renderer (export/visualize.py).
+The adapter retains positions, cube types and connections, with ports drawn grey.
+Both methods use upstream renderer defaults. PNGs are saved directly in figures/.
+Each model is independently fitted to its axes, so displayed sizes do not share
+a common scale. The PNGs and Q-circuit diagrams are included in topols_comparison.tex.
 
 ## Reproducing the official-metric table
 
 The four textual BlockGraphs are preserved in results/*.bgraph together with
 comparison.json. tqec_interop.py writes the graphs directly to their final paths
-as each case completes. A failed run may update only some graphs and HTML files.
+as each case completes. A failed run may update only some graphs.
 Run python scripts/analyze_structure.py to generate figures/block_graph_comparison.tex.
 The script uses BlockGraph.from_bgraph(), validate(), bounding_box_size() and
 spacetime_volume from TQEC, and checks dimensions and volume against comparison.json.
