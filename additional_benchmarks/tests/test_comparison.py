@@ -36,9 +36,8 @@ class ComparisonTest(unittest.TestCase):
             metrics = row["tqec"]
             self.assertTrue(metrics["circuit_equivalent"])
             self.assertTrue(metrics["bgraph_roundtrip"])
-            for prefix in ("", "non_port_"):
-                x, y, t = metrics[prefix + "bounding_box"]
-                self.assertEqual(metrics[prefix + "bounding_box_volume"], x * y * t)
+            x, y, t = metrics["bounding_box"]
+            self.assertEqual(metrics["bounding_box_volume"], x * y * t)
             if row["tool"] == "this_work":
                 self.assertEqual((row["width"], row["height"]), (7, 7))
                 self.assertEqual(row["factory_sites"], 0)
@@ -69,7 +68,6 @@ class ComparisonTest(unittest.TestCase):
         self.assertEqual(metrics["occupied_volume"], 8)
         self.assertEqual(metrics["correlation_surfaces"], 4)
         self.assertEqual(metrics["bounding_box"], [3, 3, 4])
-        self.assertEqual(metrics["non_port_bounding_box"], [3, 3, 2])
         # A structurally valid graph must still reject the reversed CNOT.
         reversed_circuit = QuantumCircuit(2)
         reversed_circuit.cx(1, 0)

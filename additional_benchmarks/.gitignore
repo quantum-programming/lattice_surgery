@@ -3,4 +3,6 @@ work/
 results/raw/
 __pycache__/
 *.pyc
+!benchmarks/.vscode/
+!benchmarks/.vscode/settings.json
 

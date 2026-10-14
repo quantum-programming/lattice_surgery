@@ -22,6 +22,9 @@ if BROWSER is None:
 work = ROOT / "work/html-figures"
 work.mkdir(parents=True, exist_ok=True)
 # Presentation-only CSS, applied to a work copy of TQEC's original HTML.
+# Official viewer: tqec/interop/collada/html_viewer.py and its viewer template.
+# https://tqec.github.io/tqec/user_guide/build_computation.html
+# The viewport sizing below is our figure layout, not a TQEC default.
 css = """body { margin: 0; font-size: 0; }
 body > a, body > br { display: none; }
 body > div { width: 100vw !important; height: 100vh !important; font-size: 16px; }
@@ -33,6 +36,13 @@ for name in ("mqt_max_parallel", "mqt_min_parallel"):
         prepared = work / f"{stem}.html"
         prepared.write_text(html.replace("</style>", css), encoding="utf-8")
         captured = work / f"{stem}.png"
+        # Official Chrome screenshot / DOM / virtual-time options:
+        # https://developer.chrome.com/docs/automation-and-testing/headless
+        # Software WebGL renderer for headless environments without a usable GPU:
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/gpu/swiftshader.md
+        # 1800x1600 and the 10,000 ms virtual-time budget are our export settings.
+        # Virtual time lets JavaScript run before capture; it is not a readiness check.
+        # A separate profile keeps this process independent of the user's browser.
         completed = subprocess.run([
             str(BROWSER), "--headless=new", "--disable-background-networking",
             "--enable-unsafe-swiftshader", "--use-angle=swiftshader",

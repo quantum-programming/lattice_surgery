@@ -10,3 +10,19 @@ dependencies = [
 
 [tool.uv]
 package = false
+
+[tool.mypy]
+files = ["generate_benchmarks.py"]
+python_version = "3.13"
+python_executable = "work/venv-inputs-windows/Scripts/python.exe"
+follow_imports = "silent"
+
+[[tool.mypy.overrides]]
+module = ["qiskit.*"]
+ignore_missing_imports = true
+
+[tool.pyright]
+include = ["generate_benchmarks.py"]
+exclude = ["work"]
+pythonVersion = "3.13"
+extraPaths = ["work/venv-inputs-windows/Lib/site-packages"]

@@ -12,6 +12,11 @@ FIGURES = OUTPUT.parent / "figures"
 
 
 def write(name: str, operations: list[tuple[int, int]]) -> None:
+    # OpenQASM 2.0 specification: Sec. 2 / Table 1 for these declarations,
+    # Sec. 3.1 for qelib1.inc and its lowercase cx gate (control, then target).
+    # https://arxiv.org/pdf/1707.03429v2
+    # OPENQASM declares the version; include loads gate definitions;
+    # qreg q[6] declares six qubits, indexed q[0] through q[5].
     lines = ["OPENQASM 2.0;", 'include "qelib1.inc";', "qreg q[6];"]
     lines += [f"cx q[{control}],q[{target}];" for control, target in operations]
     text = "\n".join(lines) + "\n"
@@ -24,11 +29,20 @@ def write(name: str, operations: list[tuple[int, int]]) -> None:
     # Qiskit generates Q-circuit code, including a standalone document wrapper.
     # Keep only its body so the manuscript owns the class and package imports.
     source = circuit.draw(output="latex_source")
+    if not isinstance(source, str):
+        raise TypeError("Qiskit latex_source output must be a string.")
     body = source.split(r"\begin{document}", 1)[1].split(r"\end{document}", 1)[0]
     (FIGURES / f"{name}.tex").write_text(body.strip() + "\n", newline="\n")
 
 
 if __name__ == "__main__":
-    write("mqt_max_parallel", generate_max_parallel_circuit(q=6, min_depth=24, seed=45))
+    # Use the upstream default seed in both MQT QECC generators.
+    # Parallelism families and 4q gate counts: Herzog et al., Sec. VII.B / Fig. 10.
+    # https://arxiv.org/html/2504.10591v2
+    # For q=6, the max-parallel generator creates groups of three disjoint CXs.
+    # layer_size=2 is our choice: the smallest group size above the serial case.
+    # The min-parallel generator also enforces overlap between successive groups.
+    # min_depth is a gate-count target here: 24 gives 8 groups of 3 or 12 of 2.
+    write("mqt_max_parallel", generate_max_parallel_circuit(q=6, min_depth=24))
     write("mqt_min_parallel", generate_min_parallel_circuit(
-        q=6, min_depth=24, layer_size=2, seed=45))
+        q=6, min_depth=24, layer_size=2))

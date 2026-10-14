@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "name": "comparison",
+      "path": "."
+    },
+    {
+      "name": "benchmark-inputs",
+      "path": "benchmarks"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder:comparison}/work/venv-windows/Scripts/python.exe",
+    "mypy-type-checker.cwd": "${workspaceFolder}"
+  }
+}

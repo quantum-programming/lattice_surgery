@@ -70,42 +70,48 @@ Our focus is automated compilation on explicitly specified patch resources, comp
 
 We focus on TopoLS to relate ZX-level circuit optimization to bounded-depth spacetime routing.
 TopoLS simplifies a ZX graph before embedding it in three-dimensional spacetime, allowing spiders to merge and storage locations to be chosen during embedding.
-Our compiler optimizes spacetime paths on a regular patch layout, whose asymptotic data-slot density of $25\%$ specifies a fixed spatial allocation for storage and routing.
+Our compiler optimizes spacetime paths on a regular patch layout that asymptotically reserves one in four sites for data storage and the remaining sites for routing.
 These optimizations act at different stages: ZX simplification changes the computational topology before placement, whereas double-slice routing controls the geometry and depth of individual paths.
 They are therefore complementary candidates for a combined compilation pipeline, with a lowering step from simplified ZX structures to the measurement primitives supported by the router.
 Both outputs can be represented as TQEC BlockGraphs~\citep{tqecSoftware}, with TopoLS providing an official conversion, which enables the occupied geometries to be evaluated consistently.
 
-We use the two six-qubit, 24-CNOT circuits shown in \cref{fig:comparison_input_max,fig:comparison_input_min}, generated with the max-parallel and min-parallel generators of MQT QECC~\citep{mqtQECCSoftware} using seed 45.
+We use the two six-qubit, 24-CNOT synthetic circuits shown in \cref{fig:comparison_input_max,fig:comparison_input_min}, generated with the max-parallel and min-parallel generators of MQT QECC~\citep{mqtQECCSoftware}.
+These families follow the contrasting initial parallelism studied in the MQT QECC compilation benchmarks~\citep[Section~VII.B]{herzogCompilationBeyondSurfaceCode2025}, with the same gate-count scaling of four CNOTs per qubit.
+We use the generators' default random seed to obtain reproducible instances from an existing public implementation.
+The max-parallel generator forms groups of three disjoint CNOTs, while the min-parallel generator uses groups of two with enforced qubit overlap between successive groups.
+The latter is the smallest nonserial group size, retaining limited parallelism and providing a contrast in dependency structure at fixed circuit size.
+
 For our compiler, we use SA-based mapping followed by double-slice routing with instruction look-ahead and kink-parity correction.
 For these CNOT-only circuits, the planar layout is a $7 \times 7$ grid with six data patches and 43 routing sites, obtained by removing the outer MSF ring.
-Here, $25\%$ describes the asymptotic density of data slots, while the active-data density of this finite instance is $6/49$.
+Six of the 49 sites hold data in this finite instance.
 TopoLS uses its default search settings, including ZX and direction optimization and a five-seed search, on a $9 \times 5$ footprint.
 The total spatial allocations are therefore close, although their placement constraints and search budgets differ.
 
-For these circuits, the occupied BlockGraph volume counts computation and storage cubes, with ports and pipes contributing zero volume.
+We evaluate both outputs using TQEC's official BlockGraph spacetime volume and bounding-box dimensions.
+For these circuits, the volume counts computation and storage cubes, with ports and pipes contributing zero volume.
+The bounding box includes input/output ports, and its $z$ dimension measures the time-coordinate extent of the exported geometry.
 All exported graphs satisfy TQEC's local BlockGraph constraints and reproduce the input CNOT tensors up to an overall nonzero scalar within numerical precision.
 The occupied volumes of our exports equal the native scheduler's counts, preserving its storage and routing accounting.
-\Cref{fig:comparison_embeddings} shows the resulting spacetime geometries, and \cref{tab:topols_comparison} summarizes their occupied volumes and geometric breakdown.
+\Cref{fig:comparison_embeddings} shows the resulting spacetime geometries, and \cref{tab:topols_comparison} reports their dimensions and volumes alongside the available spatial allocations.
 
 Double-slice routing yields occupied volumes of 178 and 166, compared with 404 and 303 for TopoLS, corresponding to reductions of approximately $56\%$ and $45\%$ on these instances.
-TopoLS produces fewer junction cubes and more degree-two cubes along spatial and time-directed connections.
-The reduction in computational junctions thus coexists with longer connecting geometry, illustrating the distinct contributions of topology optimization and routing.
+The exported geometries also have smaller time-coordinate extents of 13 for both circuits, compared with 23 and 17 for TopoLS.
 Under the similar total spatial allocations considered here, double-slice routing achieves more compact occupied geometry on both benchmark circuits.
 These results support bounded-depth routing as a useful optimization within an automated compilation pipeline and motivate its integration with ZX-level preprocessing.
 
-\input{figures/block_graph_breakdown.tex}
+\input{figures/block_graph_comparison.tex}
 
 \begin{figure*}[t]
     \centering
     \resizebox{\linewidth}{!}{\input{figures/mqt_max_parallel.tex}}
-    \caption{Max-parallel benchmark circuit with six qubits and 24 CNOT instructions, generated with MQT QECC using seed 45.}
+    \caption{Max-parallel benchmark circuit with six qubits and 24 CNOT instructions, generated with MQT QECC using its default random seed.}
     \label{fig:comparison_input_max}
 \end{figure*}
 
 \begin{figure*}[t]
     \centering
     \resizebox{\linewidth}{!}{\input{figures/mqt_min_parallel.tex}}
-    \caption{Min-parallel benchmark circuit with six qubits and 24 CNOT instructions, generated with MQT QECC using seed 45.}
+    \caption{Min-parallel benchmark circuit with six qubits and 24 CNOT instructions, generated with MQT QECC using its default random seed.}
     \label{fig:comparison_input_min}
 \end{figure*}
 

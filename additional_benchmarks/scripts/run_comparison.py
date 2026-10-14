@@ -9,6 +9,7 @@ from typing import Any
 
 from qiskit import qasm2  # type: ignore[import-untyped]
 
+from qasm2in import qasm2in
 from run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
 from tqec_interop import build_ours_block_graph, export_verified_block_graph
 
@@ -18,6 +19,10 @@ BENCHMARKS = ("mqt_max_parallel", "mqt_min_parallel")
 
 def get_commit_id(path: Path) -> str:
     """Return the HEAD commit ID of a Git repository."""
+    # path: repository directory; for a submodule, this records its own HEAD.
+    # git -c safe.directory=...: trust this directory for this invocation only.
+    # -C path: run Git in this directory, independently of Python's working directory.
+    # rev-parse HEAD: resolve the currently checked-out commit to its full ID.
     result = subprocess.run(["git", "-c", f"safe.directory={path.as_posix()}",
                              "-C", str(path), "rev-parse", "HEAD"],
                             capture_output=True, text=True, check=True)
@@ -67,18 +72,14 @@ def main() -> None:
             "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
             "topols": "block 10; ZX and direction optimization enabled; Python engine; seed 0; five internal seeds",
         },
-        "rows": [],
+        "rows": [],  # One result per benchmark and compiler (four in total).
     }
     for name in BENCHMARKS:
         qasm_path = ROOT / "benchmarks" / f"{name}.qasm"
         circuit = check_circuit(qasm_path)
         report["inputs"][name] = hashlib.sha256(qasm_path.read_bytes()).hexdigest()
         native_input = work / f"{name}.in"
-        operations = []
-        for instruction in circuit.data:
-            control, target = (circuit.find_bit(q).index for q in instruction.qubits)
-            operations.append(f"CX {control} {target}\n")
-        native_input.write_text("".join(operations))
+        native_input.write_text(qasm2in(circuit))
 
         completed = subprocess.run([str(executable), str(native_input)], capture_output=True,
                                    text=True, check=True, timeout=300)
@@ -88,7 +89,9 @@ def main() -> None:
                     "depth": ours["depth"], "geometry": geometry}
         block_graph = build_ours_block_graph(circuit, schedule)
         tqec_metrics = export_verified_block_graph(
-            circuit, block_graph, work / f"ours-{name}.bgraph")
+            circuit, block_graph,
+            bgraph_path=ROOT / "results" / f"ours-{name}.bgraph",
+            html_path=ROOT / "figures" / f"ours-{name}.html")
         if tqec_metrics["occupied_volume"] != ours["occupied_volume"]:
             raise ValueError("TQEC and the native scheduler disagree on occupied volume.")
         (work / f"ours-{name}.json").write_text(json.dumps(schedule, indent=2) + "\n")
@@ -104,7 +107,9 @@ def main() -> None:
         report["rows"].append(ours)
 
         output = work / f"topols-{name}"
-        run_topols(qasm_path, output)
+        run_topols(qasm_path, output,
+                   bgraph_path=ROOT / "results" / f"topols-{name}.bgraph",
+                   html_path=ROOT / "figures" / f"topols-{name}.html")
         topols = json.loads((output / "metrics.json").read_text())
         topols.update({"tool": "topols", "benchmark": name, "status": "passed",
                        "depth_unit": "pipe-diagram time coordinate", "storage_density": None})
@@ -112,13 +117,6 @@ def main() -> None:
 
     results = ROOT / "comparison.json"
     results.write_text(json.dumps(report, indent=2) + "\n")
-    # Publish official TQEC HTML views after both benchmark cases succeed.
-    figures = ROOT / "figures"
-    figures.mkdir(exist_ok=True)
-    for name in BENCHMARKS:
-        shutil.copy2(work / f"ours-{name}.html", figures / f"ours-{name}.html")
-        shutil.copy2(work / f"topols-{name}" / f"{name}.html",
-                     figures / f"topols-{name}.html")
     print(results)
 
 

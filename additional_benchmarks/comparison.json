@@ -34,12 +34,6 @@
           13
         ],
         "bounding_box_volume": 455,
-        "non_port_bounding_box": [
-          7,
-          5,
-          11
-        ],
-        "non_port_bounding_box_volume": 385,
         "correlation_surfaces": 12,
         "circuit_equivalent": true,
         "bgraph_roundtrip": true
@@ -79,12 +73,6 @@
           23
         ],
         "bounding_box_volume": 1035,
-        "non_port_bounding_box": [
-          9,
-          5,
-          22
-        ],
-        "non_port_bounding_box_volume": 990,
         "correlation_surfaces": 12,
         "circuit_equivalent": true,
         "bgraph_roundtrip": true
@@ -115,12 +103,6 @@
           13
         ],
         "bounding_box_volume": 390,
-        "non_port_bounding_box": [
-          5,
-          6,
-          11
-        ],
-        "non_port_bounding_box_volume": 330,
         "correlation_surfaces": 12,
         "circuit_equivalent": true,
         "bgraph_roundtrip": true
@@ -160,12 +142,6 @@
           17
         ],
         "bounding_box_volume": 765,
-        "non_port_bounding_box": [
-          9,
-          5,
-          15
-        ],
-        "non_port_bounding_box_volume": 675,
         "correlation_surfaces": 12,
         "circuit_equivalent": true,
         "bgraph_roundtrip": true

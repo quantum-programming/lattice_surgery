@@ -17,3 +17,26 @@ dependencies = [
 [tool.uv.sources]
 topols = { path = "external/TopoLS", editable = true }
 tqec = { path = "external/tqec", editable = true }
+
+# Check our sources only. The input generator is a separate project below.
+[tool.mypy]
+files = ["scripts", "tests"]
+python_version = "3.13"
+python_executable = "work/venv-windows/Scripts/python.exe"
+mypy_path = ["scripts"]
+follow_imports = "silent"
+
+# These upstream packages provide no py.typed marker.
+[[tool.mypy.overrides]]
+module = ["qiskit.*", "topols.*"]
+ignore_missing_imports = true
+
+[tool.pyright]
+include = ["scripts", "tests", "benchmarks/generate_benchmarks.py"]
+exclude = ["external", "work", "benchmarks/work"]
+pythonVersion = "3.13"
+extraPaths = ["scripts", "work/venv-windows/Lib/site-packages", "external/TopoLS/src", "external/tqec/src"]
+executionEnvironments = [
+    { root = "benchmarks", extraPaths = ["benchmarks/work/venv-inputs-windows/Lib/site-packages"] },
+    { root = "." },
+]

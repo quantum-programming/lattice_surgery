@@ -13,7 +13,7 @@ from tqec_interop import build_topols_block_graph, export_verified_block_graph
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def run(source: Path, output: Path) -> None:
+def run(source: Path, output: Path, bgraph_path: Path, html_path: Path) -> None:
     source, output = source.resolve(), output.resolve()
     name = source.stem
     output.mkdir(parents=True, exist_ok=True)
@@ -62,5 +62,5 @@ def run(source: Path, output: Path) -> None:
     }
     block_graph = build_topols_block_graph(output / "result" / "topols" / f"{name}.pkl")
     metrics["tqec"] = export_verified_block_graph(
-        qasm2.load(source), block_graph, output / f"{name}.bgraph")
+        qasm2.load(source), block_graph, bgraph_path, html_path)
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")

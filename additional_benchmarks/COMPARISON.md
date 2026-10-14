@@ -57,8 +57,8 @@ The this-work occupied count must also equal its native scheduler count.
 TQEC's [BlockGraph implementation](https://github.com/tqec/tqec/blob/8c352c0d605c90ca7eb877e02c777198407875e3/src/tqec/computation/block_graph.py)
 defines occupied spacetime_volume: ordinary cubes count 1, ports and pipes 0,
 and Y half-cubes 0.5. These CNOT exports have no Y cubes. bounding_box includes
-ports; non_port_bounding_box excludes them. Both count coordinate extents
-(maximum minus minimum plus one), and their products include unoccupied sites.
+ports and reports coordinate extents (maximum minus minimum plus one).
+The bounding-box product includes unoccupied sites.
 Correlation-surface count is recorded as additional representation information.
 See also the official [BGRAPH guide](https://tqec.github.io/tqec/user_guide/bgraph.html).
 
@@ -78,12 +78,12 @@ cubes. A resource advantage therefore needs its metric and scope stated.
 Fresh run: work/tqec-comparison. All four outputs passed structural validation,
 input-circuit tensor equivalence and textual BGRAPH roundtrip checks.
 
-| Input | Tool | Allocated footprint | Native depth | TQEC occupied volume | Box excluding ports |
+| Input | Tool | Allocated footprint | Native depth | TQEC occupied volume | Official box including ports |
 | --- | --- | --- | ---: | ---: | --- |
-| mqt_max_parallel | this_work | 7 x 7 | 11 | 178 | 7 x 5 x 11 |
-| mqt_max_parallel | topols | 9 x 5 | 22 | 404 | 9 x 5 x 22 |
-| mqt_min_parallel | this_work | 7 x 7 | 11 | 166 | 5 x 6 x 11 |
-| mqt_min_parallel | topols | 9 x 5 | 16 | 303 | 9 x 5 x 15 |
+| mqt_max_parallel | this_work | 7 x 7 | 11 | 178 | 7 x 5 x 13 |
+| mqt_max_parallel | topols | 9 x 5 | 22 | 404 | 9 x 5 x 23 |
+| mqt_min_parallel | this_work | 7 x 7 | 11 | 166 | 5 x 6 x 13 |
+| mqt_min_parallel | topols | 9 x 5 | 16 | 303 | 9 x 5 x 17 |
 
 Native depth units differ as described above; this is representation accounting,
 not a calibrated physical-performance comparison. This work now reserves 49 sites
@@ -92,7 +92,7 @@ The occupied-volume counts agree with the native scheduler for both inputs.
 Both tools have 12 logical ports and 12 recorded correlation surfaces per input.
 
 The previous 9x9/MSF comparison is retained in work/comparison-msf-baseline/.
-The official TQEC HTML cube-and-pipe views are copied to figures/ with ours-
+The official TQEC HTML cube-and-pipe views are saved directly in figures/ with ours-
 and topols- prefixes. Run python scripts/render_html_figures.py on Windows to
 capture the four HTML views using an existing Chrome/Edge browser. Only viewer
 controls are hidden in work copies. Model data, colors and camera are unchanged.
@@ -100,54 +100,17 @@ The generated PNGs and the two Q-circuit LaTeX bodies are included in topols_com
 Each model is independently fitted to the viewport, so image height is not a
 common execution-time scale.
 
-## Structural analysis of the saved outputs
+## Reproducing the official-metric table
 
-Read-only analysis of the four saved textual BGRAPHs classifies every non-port
-cube by its incident pipes: degree >=3 is a junction; degree 2 is a straight
-space segment, straight time segment, or bend. These are geometric categories,
-not a reconstruction of individual gates. All category totals match comparison.json.
-
-| Input | Tool | Junctions | Straight time | Straight space | Bends | Total |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| mqt_max_parallel | ours | 48 | 18 | 12 | 100 | 178 |
-| mqt_max_parallel | topols | 45 | 63 | 82 | 214 | 404 |
-| mqt_min_parallel | ours | 48 | 18 | 4 | 96 | 166 |
-| mqt_min_parallel | topols | 39 | 42 | 75 | 147 | 303 |
-
-The excess is in degree-two wire subdivisions, not in additional junctions:
-max_parallel has 229 more wire cubes and 3 fewer junctions in TopoLS (net +226);
-min_parallel has 146 more wire cubes and 9 fewer junctions (net +137).
-The spatial/time unit-pipe counts are 110/98 versus 267/167 for max_parallel,
-and 100/96 versus 205/124 for min_parallel. Pipes have zero occupied volume;
-these counts measure geometric length, not an additive volume breakdown.
-Both spatial routing and temporal extent contribute; extra time alone does not
-explain the output geometry.
-
-This work's exact native decomposition is 66 data-pillar cubes (6 x 11), plus
-112 or 100 off-pillar CNOT-route cubes. CNOT endpoints belong to the pillars,
-so this partition avoids double counting.
-
-TopoLS's saved native paths have no complete mapping to original CNOTs after
-ZX simplification. A matching <node>_old to <node> path identifies a wire lift,
-including ceiling/fallback lifts. There are 48 such paths in max_parallel and
-36 in min_parallel. Their union intersects 184 and 127 occupied export cubes,
-respectively. This includes shared endpoints and is NOT an additive partition
-or the volume that could be saved by removing lifts. Unmatched paths cannot
-all be labelled CNOT routes or data storage from this metadata alone.
-
-Sources: TopoLS embedding/ports.py ceiling and seal_brute_frontier;
-driver.py _commit_layer/_seal; export/bgraph.py merge_idle_paths.
-This work: scripts/tqec_interop.py build_ours_positioned_zx.
-Run python scripts/analyze_structure.py to reproduce the table and counts.
-The full counts by time coordinate are written to structure_analysis.json,
-and the manuscript table is generated as figures/block_graph_breakdown.tex. The active
-comparison code and results were not changed for this analysis.
-
-The measured result supports shorter connecting geometry in this-work exports.
-Why the compiler chooses it (placement, layer sealing, routing constraints or
-search budget) remains a causal hypothesis. Tensor equivalence and local
-BlockGraph validation do not establish matched global fault-tolerance conditions
-or physical timing conventions; no factor-of-two physical speedup is inferred.
+The four textual BlockGraphs are preserved in results/*.bgraph together with
+comparison.json. tqec_interop.py writes the graphs directly to their final paths
+as each case completes. A failed run may update only some graphs and HTML files.
+Run python scripts/analyze_structure.py to generate figures/block_graph_comparison.tex.
+The script uses BlockGraph.from_bgraph(), validate(), bounding_box_size() and
+spacetime_volume from TQEC, and checks dimensions and volume against comparison.json.
+Available sites come from compiler settings. No existing work/ data is required.
+The table reports available sites, port-inclusive dimensions and spacetime volume.
+The former geometric categories and their diagnostic JSON have been removed.
 
 ## Provisional citation keys for the added subsection
 
@@ -164,7 +127,7 @@ other tools is contextual discussion, not a claim that they were benchmarked.
 - molaviGeneratingCompilers2026: https://arxiv.org/abs/2508.10781 (PACMPL 10, POPL, 2026).
 - kanSparo2025: https://arxiv.org/abs/2504.21854
 - tanSATScalpel2024: https://arxiv.org/abs/2404.18369
-- tqecSoftware: https://github.com/tqec/tqec
+- tqecSoftware: Suau et al., tqec: A Python package for topological quantum error correction (JOSS, 2026). https://doi.org/10.21105/joss.09142
 - mqtQECCSoftware: https://github.com/munich-quantum-toolkit/qecc
 
 TopoLS was selected because its ZX-before-placement approach is directly relevant
@@ -186,3 +149,36 @@ ZX preprocessing followed by bounded-depth routing is a proposed integration
 requiring lowering to supported measurement primitives, not an implemented
 combined compiler in these results. Active density 6/49 and asymptotic slot
 density 25% refer to different quantities.
+
+## Input-generator parameter rationale
+
+These are synthetic circuits from MQT QECC 2.0.0's public circuit_construction.py,
+not canonical named algorithm circuits. Both calls use the upstream default random seed.
+Herzog et al., Lattice Surgery Compilation Beyond the Surface Code,
+Section VII.B and Figure 10 (https://arxiv.org/html/2504.10591v2), evaluate
+sequential, random and maximal CNOT circuit families. Figure 10 uses 24 qubits
+and 4q gates per circuit. Our six-qubit, 24-gate inputs retain that 4q scaling
+and contrast low and maximal initial parallelism. This provides a published
+benchmark-family rationale, rather than a claim that either generator is
+the most standard benchmark throughout MQT QECC.
+layer_size=2 is our choice: the smallest group size above the serial case of 1.
+For q=6, the max-parallel function generates three disjoint CNOTs per group;
+the min-parallel function generates two and enforces at least one shared qubit
+between successive groups. The returned list has no barriers, so generated
+groups do not impose a strict global bound of two concurrent operations.
+min_depth=24 denotes the gate-count target here, yielding eight groups of three
+or twelve groups of two for the saved instances, not a schedule depth of 24.
+The defaults and public generator make the examples traceable and reproducible;
+choice of family, size and layer_size remains an experimental design choice.
+These two instances illustrate the comparison at fixed size.
+
+## OpenQASM declarations used by the input writer
+
+Source: Cross et al., Open Quantum Assembly Language (2017), OpenQASM 2.0
+specification, https://arxiv.org/pdf/1707.03429v2. Section 2 and Table 1 define
+the version header, include statement, register declarations and zero-based
+indexing. Section 3.1 gives qelib1.inc, defining lowercase cx via built-in CX,
+with control first and target second. The six-qubit register size is our
+benchmark choice. The official OpenQASM repository identifies this document
+as its 2.0 specification: https://github.com/openqasm/openqasm/tree/OpenQASM2.x
+A local PDF copy is retained in ignored work/references/openqasm-2.0-spec.pdf.

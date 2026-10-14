@@ -45,7 +45,7 @@ def _corner_kind(direction_axes: frozenset[int], spider: int) -> tuple[int, int,
     common_basis = 0 if spider == 0 else 1
     bases = [common_basis] * 3
     bases[normal_axis] = 1 - common_basis
-    return tuple(bases)
+    return bases[0], bases[1], bases[2]
 
 
 def _solve_corner_types(
@@ -166,7 +166,7 @@ def build_ours_positioned_zx(circuit: Any, schedule: Mapping[str, Any]) -> Posit
         operations.append(tuple(circuit.find_bit(qubit).index for qubit in instruction.qubits))
 
     paths: list[list[Coordinate]] = [
-        [tuple(int(value) for value in point) for point in path]
+        [(int(point[0]), int(point[1]), int(point[2])) for point in path]
         for path in schedule["geometry"]["paths"]
     ]
     if len(paths) != len(operations):
@@ -326,20 +326,14 @@ def build_topols_block_graph(compilation: Path) -> BlockGraph:
 
 
 def block_graph_metrics(block_graph: BlockGraph) -> dict[str, int | float | list[int]]:
-    """Representation metrics with the port boundary explicitly separated.
+    """Representation metrics using TQEC's official BlockGraph API.
 
     TQEC spacetime_volume counts ordinary cubes as 1, ports/pipes as 0, and
-    Y half-cubes as 1/2. bounding_box_size includes ports. The additional
-    non_port fields describe only occupied computation cubes; their time
-    extent is a coordinate range, not a calibrated execution duration.
+    Y half-cubes as 1/2. bounding_box_size includes ports. Its time extent
+    is a coordinate range, not a calibrated execution duration.
     Source: external/tqec/src/tqec/computation/block_graph.py.
     """
     bounding_box = list(block_graph.bounding_box_size())
-    positions = [cube.position for cube in block_graph.cubes if not cube.is_port]
-    if not positions:
-        raise ValueError("The comparison requires at least one non-port cube.")
-    non_port_box = [max(getattr(p, axis) for p in positions) -
-                    min(getattr(p, axis) for p in positions) + 1 for axis in ("x", "y", "z")]
     return {
         "cubes": block_graph.num_cubes,
         "pipes": block_graph.num_pipes,
@@ -347,14 +341,14 @@ def block_graph_metrics(block_graph: BlockGraph) -> dict[str, int | float | list
         "occupied_volume": block_graph.spacetime_volume,
         "bounding_box": bounding_box,
         "bounding_box_volume": bounding_box[0] * bounding_box[1] * bounding_box[2],
-        "non_port_bounding_box": non_port_box,
-        "non_port_bounding_box_volume": non_port_box[0] * non_port_box[1] * non_port_box[2],
         "correlation_surfaces": len(block_graph.find_correlation_surfaces()),
     }
 
 
-def export_verified_block_graph(circuit: Any, graph: BlockGraph, destination: Path) -> dict[str, Any]:
-    """Validate meaning and textual BGRAPH roundtrip before reporting metrics.
+def export_verified_block_graph(
+    circuit: Any, graph: BlockGraph, bgraph_path: Path, html_path: Path,
+) -> dict[str, Any]:
+    """Verify and save BGRAPH and official viewer HTML at their final paths.
 
     BGRAPH is TQEC's official interchange format. Both original and reloaded
     graphs must represent the input circuit, and their accounting must agree.
@@ -362,11 +356,13 @@ def export_verified_block_graph(circuit: Any, graph: BlockGraph, destination: Pa
     """
     verify_cnot_block_graph(circuit, graph)
     metrics = block_graph_metrics(graph)
-    graph.to_bgraph(destination, graph_name=circuit.name)
-    reloaded = BlockGraph.from_bgraph(destination)
+    bgraph_path.parent.mkdir(parents=True, exist_ok=True)
+    graph.to_bgraph(bgraph_path, graph_name=circuit.name)
+    reloaded = BlockGraph.from_bgraph(bgraph_path)
     verify_cnot_block_graph(circuit, reloaded)
     if block_graph_metrics(reloaded) != metrics:
         raise ValueError("BGRAPH roundtrip changed the representation metrics.")
     # The official cube-face viewer is the source for manuscript screenshots.
-    reloaded.view_as_html(destination.with_suffix(".html"))
+    html_path.parent.mkdir(parents=True, exist_ok=True)
+    reloaded.view_as_html(html_path)
     return {**metrics, "circuit_equivalent": True, "bgraph_roundtrip": True}
