@@ -27,7 +27,12 @@ class ComparisonTest(unittest.TestCase):
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), hashes[name])
 
     def test_checked_in_results(self):
-        rows = json.loads((ROOT / "comparison.json").read_text())["rows"]
+        report = json.loads((ROOT / "comparison.json").read_text())
+        patch_record = report["topols_local_patch"]
+        patch = ROOT / patch_record["path"]
+        self.assertEqual(hashlib.sha256(patch.read_bytes()).hexdigest(),
+                         patch_record["sha256"])
+        rows = report["rows"]
         self.assertEqual({(row["tool"], row["benchmark"]) for row in rows},
                          {(tool, name) for tool in ("this_work", "topols")
                           for name in BENCHMARKS})
@@ -40,13 +45,48 @@ class ComparisonTest(unittest.TestCase):
             self.assertEqual(metrics["bounding_box_volume"], x * y * t)
             if row["tool"] == "this_work":
                 self.assertEqual((row["width"], row["height"]), (7, 7))
+                self.assertEqual(row["active_data"], 8)
                 self.assertEqual(row["factory_sites"], 0)
                 self.assertEqual(row["data_slots"], 9)
                 self.assertEqual(row["allocated_volume"],
                                  row["allocated_sites"] * row["depth"])
             else:
+                self.assertEqual(row["spatial_footprint"], 49)
                 self.assertEqual(row["bounding_box_volume"],
                                  row["spatial_footprint"] * row["depth"])
+
+    def test_seed_sweep_results(self):
+        report = json.loads((ROOT / "seed_sweep.json").read_text())
+        self.assertEqual(report["complete_seeds"], [41, 43, 45, 46, 48])
+        self.assertEqual(len(report["inputs"]), 16)
+        self.assertEqual(len(report["rows"]), 32)
+        failures = report["excluded_failures"]
+        self.assertEqual(
+            {(row["benchmark"], row["seed"], row["tool"])
+             for row in failures},
+            {("mqt_min_parallel", seed, "topols") for seed in (42, 44, 47)},
+        )
+        for row in report["rows"]:
+            if row["status"] != "passed":
+                self.assertIn("same label", row["error"])
+                continue
+            self.assertTrue(row["tqec"]["circuit_equivalent"])
+            self.assertTrue(row["tqec"]["bgraph_roundtrip"])
+        summaries = {(row["benchmark"], row["tool"]): row
+                     for row in report["summaries"]}
+        self.assertEqual({row["n"] for row in summaries.values()}, {5})
+        self.assertAlmostEqual(
+            summaries[("mqt_max_parallel", "this_work")]
+            ["tqec_occupied_volume"]["mean"], 258.6)
+        self.assertAlmostEqual(
+            summaries[("mqt_max_parallel", "topols")]
+            ["tqec_occupied_volume"]["mean"], 502.6)
+        self.assertAlmostEqual(
+            summaries[("mqt_min_parallel", "this_work")]
+            ["tqec_occupied_volume"]["mean"], 287.2)
+        self.assertAlmostEqual(
+            summaries[("mqt_min_parallel", "topols")]
+            ["tqec_occupied_volume"]["mean"], 445.2)
 
     def test_ours_tqec_export_for_cnot_path(self):
         circuit = QuantumCircuit(2)

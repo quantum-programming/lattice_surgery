@@ -22,7 +22,7 @@ tqec = { path = "external/tqec", editable = true }
 [tool.mypy]
 files = ["scripts", "tests"]
 python_version = "3.13"
-python_executable = "work/venv-windows/Scripts/python.exe"
+python_executable = ".venv/Scripts/python.exe"
 mypy_path = ["scripts"]
 follow_imports = "silent"
 
@@ -35,8 +35,8 @@ ignore_missing_imports = true
 include = ["scripts", "tests", "benchmarks/generate_benchmarks.py"]
 exclude = ["external", "work", "benchmarks/work"]
 pythonVersion = "3.13"
-extraPaths = ["scripts", "work/venv-windows/Lib/site-packages", "external/TopoLS/src", "external/tqec/src"]
+extraPaths = ["scripts", ".venv/Lib/site-packages", "external/TopoLS/src", "external/tqec/src"]
 executionEnvironments = [
-    { root = "benchmarks", extraPaths = ["benchmarks/work/venv-inputs-windows/Lib/site-packages"] },
+    { root = "benchmarks", extraPaths = ["benchmarks/.venv/Lib/site-packages"] },
     { root = "." },
 ]

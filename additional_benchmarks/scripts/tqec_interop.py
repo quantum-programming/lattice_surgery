@@ -154,7 +154,7 @@ def build_ours_positioned_zx(circuit: Any, schedule: Mapping[str, Any]) -> Posit
     Data are persistent pillars. CX control/target are the Z/X branching
     spiders; internal route points are zero-phase degree-two identities.
     See PyZX's CNOT.to_graph and scripts/ours_cnot.cpp for the two
-    input contracts. Full-circuit tensor comparison checks this reconstruction.
+    input contracts. Full-circuit ZX identity reduction checks this reconstruction.
     """
     if circuit.num_qubits != len(schedule["geometry"]["data"]):
         raise ValueError("The circuit and schedule have different numbers of data qubits.")
@@ -278,16 +278,19 @@ def label_ports(block_graph: BlockGraph, labels: Mapping[Position3D, str]) -> Bl
 
 
 def verify_cnot_block_graph(circuit: Any, block_graph: BlockGraph) -> None:
-    """Compare a small CNOT circuit with the exported graph, up to scalar.
+    """Verify a CNOT graph by reducing its comparison diagram to identity.
 
     Port order is logical-qubit order, not spatial order. This is a
-    numerical tensor comparison after ZX simplification, not physical-circuit validation.
-    PyZX full_reduce only simplifies the verification copy, never the exported
-    geometry. compare_tensors uses numerical tolerances and ignores global scalar.
-    Sources: TQEC PositionedZX.from_block_graph; PyZX tensor.compare_tensors.
+    ZX-diagram equality check, not physical-circuit validation. Following PyZX's
+    Circuit.verify_equality, we compose the exported graph with the adjoint of
+    the expected circuit, run full_reduce, and require the exact identity wiring.
+    This avoids constructing an exponentially large dense tensor. The reduction
+    only modifies verification copies, never the exported geometry, and global
+    scalar is ignored. Sources: TQEC PositionedZX.from_block_graph; PyZX
+    Circuit.verify_equality and simplify.full_reduce.
     """
-    if circuit.num_qubits > 9 or any(item.operation.name != "cx" for item in circuit.data):
-        raise ValueError("Tensor verification is limited to at most nine CNOT-only qubits.")
+    if any(item.operation.name != "cx" for item in circuit.data):
+        raise ValueError("ZX verification is limited to CNOT-only circuits.")
     block_graph.validate()
     positioned = PositionedZX.from_block_graph(block_graph)
     expected_labels = {f"{role}_{q}" for role in ("input", "output")
@@ -301,7 +304,17 @@ def verify_cnot_block_graph(circuit: Any, block_graph: BlockGraph) -> None:
                             for q in range(circuit.num_qubits)))
     zx.full_reduce(graph)
     expected = zx.Circuit.from_qasm(qasm2.dumps(circuit))
-    if not zx.compare_tensors(expected, graph, preserve_scalar=False):
+    comparison = expected.to_graph().adjoint()
+    comparison.compose(graph)
+    zx.full_reduce(comparison)
+    is_identity = (
+        comparison.num_vertices() == 2 * circuit.num_qubits
+        and all(comparison.edge_type(edge) == zx.EdgeType.SIMPLE
+                for edge in comparison.edges())
+        and all(comparison.connected(source, target)
+                for source, target in zip(comparison.inputs(), comparison.outputs()))
+    )
+    if not is_identity:
         raise ValueError("The exported BlockGraph is not equivalent to the input CNOT circuit.")
 
 
@@ -312,7 +325,8 @@ def build_topols_block_graph(compilation: Path) -> BlockGraph:
     The metadata pickle is kept beside the trusted local compilation in work/.
     No paths, colors, or port labels are reconstructed by our adapter.
     Sources: TopoLS export/bgraph.py build_pipe_diagram/save_bigraph;
-    tools/pipe_sim.py load_block_graph (commit 78aab0e).
+    tools/pipe_sim.py load_block_graph (commit e564d35 plus the recorded
+    temporary branching-endpoint patch).
     """
     from topols.export.bgraph import build_pipe_diagram, save_bigraph
     from topols.tools.pipe_sim import load_block_graph

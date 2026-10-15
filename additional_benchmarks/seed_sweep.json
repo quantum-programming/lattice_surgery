@@ -1,0 +1,1205 @@
+{
+  "seeds": [
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48
+  ],
+  "variation": "MQT input-generation seed; compiler search seeds remain fixed",
+  "commits": {
+    "this_work": "7f3ff0ed81754abab49eb3b3c82c3a215fbb0584",
+    "topols": "e564d350a596cfea3227e09698733210e2e14dcf",
+    "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
+  },
+  "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
+  "configuration": {
+    "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
+    "topols": "three qubits per row (-l 3); Python engine; upstream defaults (block 10; ZX and direction optimization; seed 0; five internal seeds)"
+  },
+  "inputs": {
+    "mqt_max_parallel-seed41": "de2470d091ba7f1f899e5d429e09ac1ac7215e9167029165bb6343a02a614f8e",
+    "mqt_max_parallel-seed42": "0d73a09ad294583145a1903e824c91a46b693ebc80be0d119c16487431908783",
+    "mqt_max_parallel-seed43": "cc3936119dd73135ad861e8d7f7b25018a54fe627fe132c00e9194b094e55add",
+    "mqt_max_parallel-seed44": "f0839d3a7915e530b9aaa88ed2aed531ba251bc0568897b3770f7035581c9477",
+    "mqt_max_parallel-seed45": "29e7956df3d392130ceb04bf5b75d7636ffdf299f3e7960aea83e06d43b2d540",
+    "mqt_min_parallel-seed41": "56de17a984f16f42357299ef860014e707018ca12159c47ed78962ea5aef9080",
+    "mqt_max_parallel-seed46": "ea325720cd9f1f0177ee52c1f74a7815ad2c4f2ca08708354b9c0f349cd4c6f0",
+    "mqt_min_parallel-seed42": "5abcd3a9a06f438ad16f71ece4f6f972d975745bc9daaf70a3573cec83b6e72a",
+    "mqt_min_parallel-seed43": "d4e6ebb91b27ae82b55f81de58bc4d469deb454eaf94159cc9667c739b3dee1a",
+    "mqt_min_parallel-seed44": "4478588e48aafcf2382ef7277635c54c6c3cb6f308c9607b93c62a4656facfc5",
+    "mqt_min_parallel-seed45": "e98ebceb168d35ca819d8e195bd4e9c5fdea50671ce5dd7b9bb7cf2c2d7598b5",
+    "mqt_min_parallel-seed46": "98d8dc4c67ec0427d52e73db239effa444a06ec7f4dfa1c6320be82a295372ab",
+    "mqt_max_parallel-seed47": "01fa00c85a985bc3cb5f23ad064add8ce855264a3b7b367bfa6fbee08efd96f2",
+    "mqt_min_parallel-seed47": "bc45bca6bb66730fbbccd9d1c0952897fb626a2f57d39d246f55290014729219",
+    "mqt_max_parallel-seed48": "b11a3063ad9c9d53063af8a3db31fd218de38c1b0e6a0055484da2d1cbb78961",
+    "mqt_min_parallel-seed48": "c06c4d920f6d090e94dd1a7320f1a493f20cc633fff820a6ea2882b537b9a046"
+  },
+  "rows": [
+    {
+      "depth": 12,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 249,
+      "tqec": {
+        "cubes": 265,
+        "pipes": 289,
+        "ports": 16,
+        "occupied_volume": 249.0,
+        "bounding_box": [
+          7,
+          7,
+          14
+        ],
+        "bounding_box_volume": 686,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 41,
+      "tool": "this_work",
+      "compilation_seconds": 0.1577024159996654,
+      "status": "passed"
+    },
+    {
+      "depth": 21,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1029,
+      "compilation_seconds": 253.2824923992157,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 66,
+          "edges": 88
+        }
+      },
+      "tqec": {
+        "cubes": 536,
+        "pipes": 560,
+        "ports": 16,
+        "occupied_volume": 520.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ],
+        "bounding_box_volume": 1078,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 41,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 273,
+      "tqec": {
+        "cubes": 289,
+        "pipes": 313,
+        "ports": 16,
+        "occupied_volume": 273.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ],
+        "bounding_box_volume": 735,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 42,
+      "tool": "this_work",
+      "compilation_seconds": 0.1611201940013416,
+      "status": "passed"
+    },
+    {
+      "depth": 19,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 931,
+      "compilation_seconds": 201.81364464759827,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 66,
+          "edges": 90
+        }
+      },
+      "tqec": {
+        "cubes": 540,
+        "pipes": 564,
+        "ports": 16,
+        "occupied_volume": 524.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ],
+        "bounding_box_volume": 980,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 42,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 276,
+      "tqec": {
+        "cubes": 292,
+        "pipes": 316,
+        "ports": 16,
+        "occupied_volume": 276.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ],
+        "bounding_box_volume": 637,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 43,
+      "tool": "this_work",
+      "compilation_seconds": 0.20111916499990912,
+      "status": "passed"
+    },
+    {
+      "depth": 25,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1225,
+      "compilation_seconds": 111.01295375823975,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 65,
+          "edges": 89
+        }
+      },
+      "tqec": {
+        "cubes": 494,
+        "pipes": 518,
+        "ports": 16,
+        "occupied_volume": 478.0,
+        "bounding_box": [
+          7,
+          7,
+          26
+        ],
+        "bounding_box_volume": 1274,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 43,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 272,
+      "tqec": {
+        "cubes": 288,
+        "pipes": 312,
+        "ports": 16,
+        "occupied_volume": 272.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ],
+        "bounding_box_volume": 637,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 44,
+      "tool": "this_work",
+      "compilation_seconds": 0.16240001100049994,
+      "status": "passed"
+    },
+    {
+      "depth": 25,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1225,
+      "compilation_seconds": 189.28007888793945,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 64,
+          "edges": 84
+        }
+      },
+      "tqec": {
+        "cubes": 516,
+        "pipes": 538,
+        "ports": 16,
+        "occupied_volume": 500.0,
+        "bounding_box": [
+          7,
+          7,
+          26
+        ],
+        "bounding_box_volume": 1274,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 44,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 260,
+      "tqec": {
+        "cubes": 276,
+        "pipes": 300,
+        "ports": 16,
+        "occupied_volume": 260.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ],
+        "bounding_box_volume": 637,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 45,
+      "tool": "this_work",
+      "compilation_seconds": 0.20473802299966337,
+      "status": "passed"
+    },
+    {
+      "depth": 19,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 931,
+      "compilation_seconds": 193.4699637889862,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 61,
+          "edges": 85
+        }
+      },
+      "tqec": {
+        "cubes": 453,
+        "pipes": 477,
+        "ports": 16,
+        "occupied_volume": 437.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ],
+        "bounding_box_volume": 980,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 45,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 289,
+      "tqec": {
+        "cubes": 305,
+        "pipes": 329,
+        "ports": 16,
+        "occupied_volume": 289.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ],
+        "bounding_box_volume": 784,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 41,
+      "tool": "this_work",
+      "compilation_seconds": 0.15626883500044642,
+      "status": "passed"
+    },
+    {
+      "depth": 19,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 931,
+      "compilation_seconds": 123.11207914352417,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 66,
+          "edges": 86
+        }
+      },
+      "tqec": {
+        "cubes": 446,
+        "pipes": 466,
+        "ports": 16,
+        "occupied_volume": 430.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ],
+        "bounding_box_volume": 980,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 41,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "topols",
+      "status": "failed_export",
+      "error": "There is already a port with the same label output_7 in the graph."
+    },
+    {
+      "depth": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 270,
+      "tqec": {
+        "cubes": 286,
+        "pipes": 310,
+        "ports": 16,
+        "occupied_volume": 270.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ],
+        "bounding_box_volume": 637,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 46,
+      "tool": "this_work",
+      "compilation_seconds": 0.1604404669997166,
+      "status": "passed"
+    },
+    {
+      "depth": 28,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1372,
+      "compilation_seconds": 282.47884726524353,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 64,
+          "edges": 88
+        }
+      },
+      "tqec": {
+        "cubes": 600,
+        "pipes": 624,
+        "ports": 16,
+        "occupied_volume": 584.0,
+        "bounding_box": [
+          7,
+          7,
+          29
+        ],
+        "bounding_box_volume": 1421,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 46,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 15,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 286,
+      "tqec": {
+        "cubes": 302,
+        "pipes": 326,
+        "ports": 16,
+        "occupied_volume": 286.0,
+        "bounding_box": [
+          7,
+          7,
+          17
+        ],
+        "bounding_box_volume": 833,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "this_work",
+      "compilation_seconds": 0.1467459150007926,
+      "status": "passed"
+    },
+    {
+      "depth": 16,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 280,
+      "tqec": {
+        "cubes": 296,
+        "pipes": 320,
+        "ports": 16,
+        "occupied_volume": 280.0,
+        "bounding_box": [
+          7,
+          7,
+          18
+        ],
+        "bounding_box_volume": 882,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 43,
+      "tool": "this_work",
+      "compilation_seconds": 0.15187067400074739,
+      "status": "passed"
+    },
+    {
+      "depth": 21,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1029,
+      "compilation_seconds": 139.03399515151978,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 62,
+          "edges": 80
+        }
+      },
+      "tqec": {
+        "cubes": 408,
+        "pipes": 426,
+        "ports": 16,
+        "occupied_volume": 392.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ],
+        "bounding_box_volume": 1078,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 43,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 260,
+      "tqec": {
+        "cubes": 276,
+        "pipes": 300,
+        "ports": 16,
+        "occupied_volume": 260.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ],
+        "bounding_box_volume": 784,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "this_work",
+      "compilation_seconds": 0.18781757699980517,
+      "status": "passed"
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "topols",
+      "status": "failed_export",
+      "error": "There is already a port with the same label output_3 in the graph."
+    },
+    {
+      "depth": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 305,
+      "tqec": {
+        "cubes": 321,
+        "pipes": 345,
+        "ports": 16,
+        "occupied_volume": 305.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ],
+        "bounding_box_volume": 784,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 45,
+      "tool": "this_work",
+      "compilation_seconds": 0.15174334499897668,
+      "status": "passed"
+    },
+    {
+      "depth": 26,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1274,
+      "compilation_seconds": 216.18053650856018,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 65,
+          "edges": 87
+        }
+      },
+      "tqec": {
+        "cubes": 550,
+        "pipes": 574,
+        "ports": 16,
+        "occupied_volume": 534.0,
+        "bounding_box": [
+          7,
+          7,
+          27
+        ],
+        "bounding_box_volume": 1323,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 45,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 297,
+      "tqec": {
+        "cubes": 313,
+        "pipes": 337,
+        "ports": 16,
+        "occupied_volume": 297.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ],
+        "bounding_box_volume": 735,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 46,
+      "tool": "this_work",
+      "compilation_seconds": 0.14758923500085075,
+      "status": "passed"
+    },
+    {
+      "depth": 21,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1029,
+      "compilation_seconds": 239.24479818344116,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 65,
+          "edges": 85
+        }
+      },
+      "tqec": {
+        "cubes": 478,
+        "pipes": 498,
+        "ports": 16,
+        "occupied_volume": 462.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ],
+        "bounding_box_volume": 1078,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 46,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 12,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 283,
+      "tqec": {
+        "cubes": 299,
+        "pipes": 323,
+        "ports": 16,
+        "occupied_volume": 283.0,
+        "bounding_box": [
+          7,
+          7,
+          14
+        ],
+        "bounding_box_volume": 686,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 47,
+      "tool": "this_work",
+      "compilation_seconds": 0.17390872900068644,
+      "status": "passed"
+    },
+    {
+      "depth": 18,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 882,
+      "compilation_seconds": 118.66204261779785,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 65,
+          "edges": 87
+        }
+      },
+      "tqec": {
+        "cubes": 487,
+        "pipes": 509,
+        "ports": 16,
+        "occupied_volume": 471.0,
+        "bounding_box": [
+          7,
+          7,
+          19
+        ],
+        "bounding_box_volume": 931,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 47,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 279,
+      "tqec": {
+        "cubes": 295,
+        "pipes": 319,
+        "ports": 16,
+        "occupied_volume": 279.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ],
+        "bounding_box_volume": 735,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "this_work",
+      "compilation_seconds": 0.1280066860000062,
+      "status": "passed"
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "topols",
+      "status": "failed_export",
+      "error": "There is already a port with the same label output_4 in the graph."
+    },
+    {
+      "depth": 10,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 238,
+      "tqec": {
+        "cubes": 254,
+        "pipes": 278,
+        "ports": 16,
+        "occupied_volume": 238.0,
+        "bounding_box": [
+          7,
+          7,
+          12
+        ],
+        "bounding_box_volume": 588,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 48,
+      "tool": "this_work",
+      "compilation_seconds": 0.13215167099997416,
+      "status": "passed"
+    },
+    {
+      "depth": 25,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 1225,
+      "compilation_seconds": 143.8332874774933,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 60,
+          "edges": 80
+        }
+      },
+      "tqec": {
+        "cubes": 510,
+        "pipes": 534,
+        "ports": 16,
+        "occupied_volume": 494.0,
+        "bounding_box": [
+          7,
+          7,
+          26
+        ],
+        "bounding_box_volume": 1274,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 48,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "depth": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 265,
+      "tqec": {
+        "cubes": 281,
+        "pipes": 305,
+        "ports": 16,
+        "occupied_volume": 265.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ],
+        "bounding_box_volume": 735,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 48,
+      "tool": "this_work",
+      "compilation_seconds": 0.12551769899999954,
+      "status": "passed"
+    },
+    {
+      "depth": 18,
+      "spatial_footprint": 49,
+      "bounding_box_volume": 882,
+      "compilation_seconds": 107.2647955417633,
+      "zx_graph": {
+        "before": {
+          "vertices": 80,
+          "edges": 104
+        },
+        "after": {
+          "vertices": 62,
+          "edges": 78
+        }
+      },
+      "tqec": {
+        "cubes": 424,
+        "pipes": 440,
+        "ports": 16,
+        "occupied_volume": 408.0,
+        "bounding_box": [
+          7,
+          7,
+          19
+        ],
+        "bounding_box_volume": 931,
+        "correlation_surfaces": 16,
+        "circuit_equivalent": true,
+        "bgraph_roundtrip": true
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 48,
+      "tool": "topols",
+      "status": "passed"
+    }
+  ],
+  "summaries": [
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "this_work",
+      "n": 5,
+      "tqec_occupied_volume": {
+        "mean": 258.6,
+        "sample_sd": 15.420765220960988,
+        "min": 238.0,
+        "max": 276.0
+      },
+      "tqec_time_extent": {
+        "mean": 13,
+        "sample_sd": 0.7071067811865476,
+        "min": 12,
+        "max": 14
+      },
+      "native_depth": {
+        "mean": 11,
+        "sample_sd": 0.7071067811865476,
+        "min": 10,
+        "max": 12
+      },
+      "compilation_seconds": {
+        "mean": 0.17123034839978574,
+        "sample_sd": 0.030994657353386825,
+        "min": 0.13215167099997416,
+        "max": 0.20473802299966337
+      }
+    },
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "topols",
+      "n": 5,
+      "tqec_occupied_volume": {
+        "mean": 502.6,
+        "sample_sd": 54.56922209451038,
+        "min": 437.0,
+        "max": 584.0
+      },
+      "tqec_time_extent": {
+        "mean": 24.6,
+        "sample_sd": 3.5777087639996634,
+        "min": 20,
+        "max": 29
+      },
+      "native_depth": {
+        "mean": 23.6,
+        "sample_sd": 3.5777087639996634,
+        "min": 19,
+        "max": 28
+      },
+      "compilation_seconds": {
+        "mean": 196.8155089378357,
+        "sample_sd": 71.94983442160772,
+        "min": 111.01295375823975,
+        "max": 282.47884726524353
+      }
+    },
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "paired_statistics",
+      "n": 5,
+      "tqec_occupied_volume_reduction_percent": {
+        "mean": 48.093443394290915,
+        "sample_sd": 6.203062235977401,
+        "min": 40.50343249427918,
+        "max": 53.76712328767124
+      },
+      "tqec_time_extent_reduction_percent": {
+        "mean": 46.07644080057873,
+        "sample_sd": 9.689241367641934,
+        "min": 35.0,
+        "max": 55.172413793103445
+      },
+      "native_depth_reduction_percent": {
+        "mean": 52.33533834586466,
+        "sample_sd": 9.177066121429784,
+        "min": 42.10526315789473,
+        "max": 60.71428571428572
+      },
+      "compilation_speedup": {
+        "mean": 1190.411929113886,
+        "sample_sd": 494.0137450477859,
+        "min": 551.9760076484501,
+        "max": 1760.6458803547519
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "this_work",
+      "n": 5,
+      "tqec_occupied_volume": {
+        "mean": 287.2,
+        "sample_sd": 15.498387012847498,
+        "min": 265.0,
+        "max": 305.0
+      },
+      "tqec_time_extent": {
+        "mean": 16,
+        "sample_sd": 1.224744871391589,
+        "min": 15,
+        "max": 18
+      },
+      "native_depth": {
+        "mean": 14,
+        "sample_sd": 1.224744871391589,
+        "min": 13,
+        "max": 16
+      },
+      "compilation_seconds": {
+        "mean": 0.14659795760020417,
+        "sample_sd": 0.012177462306973634,
+        "min": 0.12551769899999954,
+        "max": 0.15626883500044642
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "topols",
+      "n": 5,
+      "tqec_occupied_volume": {
+        "mean": 445.2,
+        "sample_sd": 56.15336143099538,
+        "min": 392.0,
+        "max": 534.0
+      },
+      "tqec_time_extent": {
+        "mean": 22,
+        "sample_sd": 3.082207001484488,
+        "min": 19,
+        "max": 27
+      },
+      "native_depth": {
+        "mean": 21,
+        "sample_sd": 3.082207001484488,
+        "min": 18,
+        "max": 26
+      },
+      "compilation_seconds": {
+        "mean": 164.9672409057617,
+        "sample_sd": 58.93623071616637,
+        "min": 107.2647955417633,
+        "max": 239.24479818344116
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "paired_statistics",
+      "n": 5,
+      "tqec_occupied_volume_reduction_percent": {
+        "mean": 35.00186533981243,
+        "sample_sd": 5.217181696619134,
+        "min": 28.57142857142857,
+        "max": 42.88389513108615
+      },
+      "tqec_time_extent_reduction_percent": {
+        "mean": 26.35867446393762,
+        "sample_sd": 9.644919149940147,
+        "min": 18.181818181818176,
+        "max": 40.74074074074075
+      },
+      "native_depth_reduction_percent": {
+        "mean": 32.43043506201401,
+        "sample_sd": 9.404496619960526,
+        "min": 23.809523809523814,
+        "max": 46.15384615384615
+      },
+      "compilation_speedup": {
+        "mean": 1120.7082987895278,
+        "sample_sd": 376.31298456171726,
+        "min": 787.82233926024,
+        "max": 1621.0179433619403
+      }
+    }
+  ],
+  "complete_seeds": [
+    41,
+    43,
+    45,
+    46,
+    48
+  ],
+  "excluded_failures": [
+    {
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "topols",
+      "status": "failed_export",
+      "error": "There is already a port with the same label output_7 in the graph."
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "topols",
+      "status": "failed_export",
+      "error": "There is already a port with the same label output_3 in the graph."
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "topols",
+      "status": "failed_export",
+      "error": "There is already a port with the same label output_4 in the graph."
+    }
+  ]
+}

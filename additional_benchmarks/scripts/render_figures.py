@@ -16,8 +16,8 @@ from topols.export.visualize import visualize
 ROOT = Path(__file__).resolve().parents[1]
 
 # Upstream renderer and its metadata format:
-# https://github.com/tqec/TopoLS/blob/78aab0ef1326bdf2041b519708f28741162f45c4/src/topols/export/visualize.py
-# https://github.com/tqec/TopoLS/blob/78aab0ef1326bdf2041b519708f28741162f45c4/src/topols/export/bgraph.py
+# https://github.com/tqec/TopoLS/blob/e564d350a596cfea3227e09698733210e2e14dcf/src/topols/export/visualize.py
+# https://github.com/tqec/TopoLS/blob/e564d350a596cfea3227e09698733210e2e14dcf/src/topols/export/bgraph.py
 # Only adapt the saved graph to its input dictionaries. Geometry, face colours,
 # camera and cube size follow the upstream renderer's defaults for both methods.
 for name in ("mqt_max_parallel", "mqt_min_parallel"):

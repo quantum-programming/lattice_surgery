@@ -10,7 +10,7 @@
     }
   ],
   "settings": {
-    "python.defaultInterpreterPath": "${workspaceFolder:comparison}/work/venv-windows/Scripts/python.exe",
+    "python.defaultInterpreterPath": "${workspaceFolder:comparison}/.venv",
     "mypy-type-checker.cwd": "${workspaceFolder}"
   }
 }

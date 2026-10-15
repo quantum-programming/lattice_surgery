@@ -15,6 +15,7 @@ from tqec_interop import build_ours_block_graph, export_verified_block_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARKS = ("mqt_max_parallel", "mqt_min_parallel")
+TOPOLS_PATCH = ROOT / "patches" / "topols-branching-endpoint.patch"
 
 
 def get_commit_id(path: Path) -> str:
@@ -29,11 +30,23 @@ def get_commit_id(path: Path) -> str:
     return result.stdout.strip()
 
 
+def require_topols_patch() -> None:
+    """Require the recorded temporary TopoLS patch in the editable submodule."""
+    subprocess.run([
+        "git", "-C", str(ROOT / "external" / "TopoLS"),
+        "apply", "--reverse", "--check", str(TOPOLS_PATCH),
+    ], capture_output=True, text=True, check=True)
+
+
 def check_circuit(path: Path):
     """Load a benchmark and verify its fixed size and gate set."""
     circuit = qasm2.load(path)
-    if circuit.num_qubits != 9 or circuit.size() != 36 or set(circuit.count_ops()) != {"cx"}:
-        raise ValueError(f"Expected a nine-qubit, 36-CNOT circuit: {path}")
+    if circuit.num_qubits != 8 or circuit.size() != 32 or set(circuit.count_ops()) != {"cx"}:
+        raise ValueError(f"Expected an eight-qubit, 32-CNOT circuit: {path}")
+    used = {circuit.find_bit(qubit).index
+            for instruction in circuit.data for qubit in instruction.qubits}
+    if used != set(range(8)):
+        raise ValueError(f"Expected all eight qubits to be used: {path}")
     return circuit
 
 
@@ -50,6 +63,7 @@ def main() -> None:
     """Run the current two-tool comparison on the saved QASM inputs."""
     if sys.platform != "linux":
         raise SystemExit("Run this comparison under WSL/Linux.")
+    require_topols_patch()
     executable = ROOT / "work" / "ours_cnot"
     if not executable.is_file():
         raise FileNotFoundError("Compile work/ours_cnot as described in COMPARISON.md")
@@ -67,6 +81,11 @@ def main() -> None:
         "commits": {"this_work": get_commit_id(ROOT.parent),
                     "topols": get_commit_id(ROOT / "external" / "TopoLS"),
                     "tqec": get_commit_id(ROOT / "external" / "tqec")},
+        "topols_local_patch": {
+            "path": TOPOLS_PATCH.relative_to(ROOT).as_posix(),
+            "sha256": hashlib.sha256(TOPOLS_PATCH.read_bytes()).hexdigest(),
+            "status": "temporary pending the upstream correctness fix",
+        },
         "this_work_source_sha256": source_hash(),
         "configuration": {
             "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",

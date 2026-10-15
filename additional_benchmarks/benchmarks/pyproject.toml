@@ -14,7 +14,7 @@ package = false
 [tool.mypy]
 files = ["generate_benchmarks.py"]
 python_version = "3.13"
-python_executable = "work/venv-inputs-windows/Scripts/python.exe"
+python_executable = ".venv/Scripts/python.exe"
 follow_imports = "silent"
 
 [[tool.mypy.overrides]]
@@ -25,4 +25,4 @@ ignore_missing_imports = true
 include = ["generate_benchmarks.py"]
 exclude = ["work"]
 pythonVersion = "3.13"
-extraPaths = ["work/venv-inputs-windows/Lib/site-packages"]
+extraPaths = [".venv/Lib/site-packages"]
