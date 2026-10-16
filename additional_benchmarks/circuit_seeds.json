@@ -53,19 +53,12 @@
       "factory_sites": 0,
       "occupied_volume": 249,
       "tqec": {
-        "cubes": 265,
-        "pipes": 289,
-        "ports": 16,
         "occupied_volume": 249.0,
         "bounding_box": [
           7,
           7,
           14
-        ],
-        "bounding_box_volume": 686,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 41,
@@ -76,32 +69,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1029,
       "compilation_seconds": 253.2824923992157,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 66,
-          "edges": 88
-        }
-      },
       "tqec": {
-        "cubes": 536,
-        "pipes": 560,
-        "ports": 16,
         "occupied_volume": 520.0,
         "bounding_box": [
           7,
           7,
           22
-        ],
-        "bounding_box_volume": 1078,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 41,
@@ -118,19 +93,12 @@
       "factory_sites": 0,
       "occupied_volume": 273,
       "tqec": {
-        "cubes": 289,
-        "pipes": 313,
-        "ports": 16,
         "occupied_volume": 273.0,
         "bounding_box": [
           7,
           7,
           15
-        ],
-        "bounding_box_volume": 735,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 42,
@@ -141,32 +109,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 931,
       "compilation_seconds": 201.81364464759827,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 66,
-          "edges": 90
-        }
-      },
       "tqec": {
-        "cubes": 540,
-        "pipes": 564,
-        "ports": 16,
         "occupied_volume": 524.0,
         "bounding_box": [
           7,
           7,
           20
-        ],
-        "bounding_box_volume": 980,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 42,
@@ -183,19 +133,12 @@
       "factory_sites": 0,
       "occupied_volume": 276,
       "tqec": {
-        "cubes": 292,
-        "pipes": 316,
-        "ports": 16,
         "occupied_volume": 276.0,
         "bounding_box": [
           7,
           7,
           13
-        ],
-        "bounding_box_volume": 637,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 43,
@@ -206,32 +149,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1225,
       "compilation_seconds": 111.01295375823975,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 65,
-          "edges": 89
-        }
-      },
       "tqec": {
-        "cubes": 494,
-        "pipes": 518,
-        "ports": 16,
         "occupied_volume": 478.0,
         "bounding_box": [
           7,
           7,
           26
-        ],
-        "bounding_box_volume": 1274,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 43,
@@ -248,19 +173,12 @@
       "factory_sites": 0,
       "occupied_volume": 272,
       "tqec": {
-        "cubes": 288,
-        "pipes": 312,
-        "ports": 16,
         "occupied_volume": 272.0,
         "bounding_box": [
           7,
           7,
           13
-        ],
-        "bounding_box_volume": 637,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 44,
@@ -271,32 +189,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1225,
       "compilation_seconds": 189.28007888793945,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 64,
-          "edges": 84
-        }
-      },
       "tqec": {
-        "cubes": 516,
-        "pipes": 538,
-        "ports": 16,
         "occupied_volume": 500.0,
         "bounding_box": [
           7,
           7,
           26
-        ],
-        "bounding_box_volume": 1274,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 44,
@@ -313,19 +213,12 @@
       "factory_sites": 0,
       "occupied_volume": 260,
       "tqec": {
-        "cubes": 276,
-        "pipes": 300,
-        "ports": 16,
         "occupied_volume": 260.0,
         "bounding_box": [
           7,
           7,
           13
-        ],
-        "bounding_box_volume": 637,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 45,
@@ -336,32 +229,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 931,
       "compilation_seconds": 193.4699637889862,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 61,
-          "edges": 85
-        }
-      },
       "tqec": {
-        "cubes": 453,
-        "pipes": 477,
-        "ports": 16,
         "occupied_volume": 437.0,
         "bounding_box": [
           7,
           7,
           20
-        ],
-        "bounding_box_volume": 980,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 45,
@@ -378,19 +253,12 @@
       "factory_sites": 0,
       "occupied_volume": 289,
       "tqec": {
-        "cubes": 305,
-        "pipes": 329,
-        "ports": 16,
         "occupied_volume": 289.0,
         "bounding_box": [
           7,
           7,
           16
-        ],
-        "bounding_box_volume": 784,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 41,
@@ -401,32 +269,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 931,
       "compilation_seconds": 123.11207914352417,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 66,
-          "edges": 86
-        }
-      },
       "tqec": {
-        "cubes": 446,
-        "pipes": 466,
-        "ports": 16,
         "occupied_volume": 430.0,
         "bounding_box": [
           7,
           7,
           20
-        ],
-        "bounding_box_volume": 980,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 41,
@@ -450,19 +300,12 @@
       "factory_sites": 0,
       "occupied_volume": 270,
       "tqec": {
-        "cubes": 286,
-        "pipes": 310,
-        "ports": 16,
         "occupied_volume": 270.0,
         "bounding_box": [
           7,
           7,
           13
-        ],
-        "bounding_box_volume": 637,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 46,
@@ -473,32 +316,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1372,
       "compilation_seconds": 282.47884726524353,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 64,
-          "edges": 88
-        }
-      },
       "tqec": {
-        "cubes": 600,
-        "pipes": 624,
-        "ports": 16,
         "occupied_volume": 584.0,
         "bounding_box": [
           7,
           7,
           29
-        ],
-        "bounding_box_volume": 1421,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 46,
@@ -515,19 +340,12 @@
       "factory_sites": 0,
       "occupied_volume": 286,
       "tqec": {
-        "cubes": 302,
-        "pipes": 326,
-        "ports": 16,
         "occupied_volume": 286.0,
         "bounding_box": [
           7,
           7,
           17
-        ],
-        "bounding_box_volume": 833,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 42,
@@ -545,19 +363,12 @@
       "factory_sites": 0,
       "occupied_volume": 280,
       "tqec": {
-        "cubes": 296,
-        "pipes": 320,
-        "ports": 16,
         "occupied_volume": 280.0,
         "bounding_box": [
           7,
           7,
           18
-        ],
-        "bounding_box_volume": 882,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 43,
@@ -568,32 +379,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1029,
       "compilation_seconds": 139.03399515151978,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 62,
-          "edges": 80
-        }
-      },
       "tqec": {
-        "cubes": 408,
-        "pipes": 426,
-        "ports": 16,
         "occupied_volume": 392.0,
         "bounding_box": [
           7,
           7,
           22
-        ],
-        "bounding_box_volume": 1078,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 43,
@@ -610,19 +403,12 @@
       "factory_sites": 0,
       "occupied_volume": 260,
       "tqec": {
-        "cubes": 276,
-        "pipes": 300,
-        "ports": 16,
         "occupied_volume": 260.0,
         "bounding_box": [
           7,
           7,
           16
-        ],
-        "bounding_box_volume": 784,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 44,
@@ -647,19 +433,12 @@
       "factory_sites": 0,
       "occupied_volume": 305,
       "tqec": {
-        "cubes": 321,
-        "pipes": 345,
-        "ports": 16,
         "occupied_volume": 305.0,
         "bounding_box": [
           7,
           7,
           16
-        ],
-        "bounding_box_volume": 784,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 45,
@@ -670,32 +449,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1274,
       "compilation_seconds": 216.18053650856018,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 65,
-          "edges": 87
-        }
-      },
       "tqec": {
-        "cubes": 550,
-        "pipes": 574,
-        "ports": 16,
         "occupied_volume": 534.0,
         "bounding_box": [
           7,
           7,
           27
-        ],
-        "bounding_box_volume": 1323,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 45,
@@ -712,19 +473,12 @@
       "factory_sites": 0,
       "occupied_volume": 297,
       "tqec": {
-        "cubes": 313,
-        "pipes": 337,
-        "ports": 16,
         "occupied_volume": 297.0,
         "bounding_box": [
           7,
           7,
           15
-        ],
-        "bounding_box_volume": 735,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 46,
@@ -735,32 +489,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1029,
       "compilation_seconds": 239.24479818344116,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 65,
-          "edges": 85
-        }
-      },
       "tqec": {
-        "cubes": 478,
-        "pipes": 498,
-        "ports": 16,
         "occupied_volume": 462.0,
         "bounding_box": [
           7,
           7,
           22
-        ],
-        "bounding_box_volume": 1078,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 46,
@@ -777,19 +513,12 @@
       "factory_sites": 0,
       "occupied_volume": 283,
       "tqec": {
-        "cubes": 299,
-        "pipes": 323,
-        "ports": 16,
         "occupied_volume": 283.0,
         "bounding_box": [
           7,
           7,
           14
-        ],
-        "bounding_box_volume": 686,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 47,
@@ -800,32 +529,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 882,
       "compilation_seconds": 118.66204261779785,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 65,
-          "edges": 87
-        }
-      },
       "tqec": {
-        "cubes": 487,
-        "pipes": 509,
-        "ports": 16,
         "occupied_volume": 471.0,
         "bounding_box": [
           7,
           7,
           19
-        ],
-        "bounding_box_volume": 931,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 47,
@@ -842,19 +553,12 @@
       "factory_sites": 0,
       "occupied_volume": 279,
       "tqec": {
-        "cubes": 295,
-        "pipes": 319,
-        "ports": 16,
         "occupied_volume": 279.0,
         "bounding_box": [
           7,
           7,
           15
-        ],
-        "bounding_box_volume": 735,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 47,
@@ -879,19 +583,12 @@
       "factory_sites": 0,
       "occupied_volume": 238,
       "tqec": {
-        "cubes": 254,
-        "pipes": 278,
-        "ports": 16,
         "occupied_volume": 238.0,
         "bounding_box": [
           7,
           7,
           12
-        ],
-        "bounding_box_volume": 588,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 48,
@@ -902,32 +599,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 1225,
       "compilation_seconds": 143.8332874774933,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 60,
-          "edges": 80
-        }
-      },
       "tqec": {
-        "cubes": 510,
-        "pipes": 534,
-        "ports": 16,
         "occupied_volume": 494.0,
         "bounding_box": [
           7,
           7,
           26
-        ],
-        "bounding_box_volume": 1274,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 48,
@@ -944,19 +623,12 @@
       "factory_sites": 0,
       "occupied_volume": 265,
       "tqec": {
-        "cubes": 281,
-        "pipes": 305,
-        "ports": 16,
         "occupied_volume": 265.0,
         "bounding_box": [
           7,
           7,
           15
-        ],
-        "bounding_box_volume": 735,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 48,
@@ -967,32 +639,14 @@
     },
     {
       "spatial_footprint": 49,
-      "bounding_box_volume": 882,
       "compilation_seconds": 107.2647955417633,
-      "zx_graph": {
-        "before": {
-          "vertices": 80,
-          "edges": 104
-        },
-        "after": {
-          "vertices": 62,
-          "edges": 78
-        }
-      },
       "tqec": {
-        "cubes": 424,
-        "pipes": 440,
-        "ports": 16,
         "occupied_volume": 408.0,
         "bounding_box": [
           7,
           7,
           19
-        ],
-        "bounding_box_volume": 931,
-        "correlation_surfaces": 16,
-        "circuit_equivalent": true,
-        "bgraph_roundtrip": true
+        ]
       },
       "benchmark": "mqt_min_parallel",
       "seed": 48,
@@ -1012,17 +666,17 @@
         "min": 238.0,
         "max": 276.0
       },
-      "compilation_seconds": {
-        "mean": 0.17123034839978574,
-        "sample_sd": 0.030994657353386825,
-        "min": 0.13215167099997416,
-        "max": 0.20473802299966337
-      },
       "total_execution_time": {
         "mean": 11,
         "sample_sd": 0.7071067811865476,
         "min": 10,
         "max": 12
+      },
+      "compilation_seconds": {
+        "mean": 0.17123034839978574,
+        "sample_sd": 0.030994657353386825,
+        "min": 0.13215167099997416,
+        "max": 0.20473802299966337
       }
     },
     {
@@ -1035,17 +689,17 @@
         "min": 437.0,
         "max": 584.0
       },
-      "compilation_seconds": {
-        "mean": 196.8155089378357,
-        "sample_sd": 71.94983442160772,
-        "min": 111.01295375823975,
-        "max": 282.47884726524353
-      },
       "total_execution_time": {
         "mean": 23.6,
         "sample_sd": 3.5777087639996634,
         "min": 19,
         "max": 28
+      },
+      "compilation_seconds": {
+        "mean": 196.8155089378357,
+        "sample_sd": 71.94983442160772,
+        "min": 111.01295375823975,
+        "max": 282.47884726524353
       }
     },
     {
@@ -1058,17 +712,17 @@
         "min": 40.50343249427918,
         "max": 53.76712328767124
       },
-      "compilation_speedup": {
-        "mean": 1190.411929113886,
-        "sample_sd": 494.0137450477859,
-        "min": 551.9760076484501,
-        "max": 1760.6458803547519
-      },
       "total_execution_time_reduction_percent": {
         "mean": 52.33533834586466,
         "sample_sd": 9.177066121429784,
         "min": 42.10526315789473,
         "max": 60.71428571428572
+      },
+      "compilation_speedup": {
+        "mean": 1190.411929113886,
+        "sample_sd": 494.0137450477859,
+        "min": 551.9760076484501,
+        "max": 1760.6458803547519
       }
     },
     {
@@ -1081,17 +735,17 @@
         "min": 265.0,
         "max": 305.0
       },
-      "compilation_seconds": {
-        "mean": 0.14659795760020417,
-        "sample_sd": 0.012177462306973634,
-        "min": 0.12551769899999954,
-        "max": 0.15626883500044642
-      },
       "total_execution_time": {
         "mean": 14,
         "sample_sd": 1.224744871391589,
         "min": 13,
         "max": 16
+      },
+      "compilation_seconds": {
+        "mean": 0.14659795760020417,
+        "sample_sd": 0.012177462306973634,
+        "min": 0.12551769899999954,
+        "max": 0.15626883500044642
       }
     },
     {
@@ -1104,17 +758,17 @@
         "min": 392.0,
         "max": 534.0
       },
-      "compilation_seconds": {
-        "mean": 164.9672409057617,
-        "sample_sd": 58.93623071616637,
-        "min": 107.2647955417633,
-        "max": 239.24479818344116
-      },
       "total_execution_time": {
         "mean": 21,
         "sample_sd": 3.082207001484488,
         "min": 18,
         "max": 26
+      },
+      "compilation_seconds": {
+        "mean": 164.9672409057617,
+        "sample_sd": 58.93623071616637,
+        "min": 107.2647955417633,
+        "max": 239.24479818344116
       }
     },
     {
@@ -1127,17 +781,17 @@
         "min": 28.57142857142857,
         "max": 42.88389513108615
       },
-      "compilation_speedup": {
-        "mean": 1120.7082987895278,
-        "sample_sd": 376.31298456171726,
-        "min": 787.82233926024,
-        "max": 1621.0179433619403
-      },
       "total_execution_time_reduction_percent": {
         "mean": 32.43043506201401,
         "sample_sd": 9.404496619960526,
         "min": 23.809523809523814,
         "max": 46.15384615384615
+      },
+      "compilation_speedup": {
+        "mean": 1120.7082987895278,
+        "sample_sd": 376.31298456171726,
+        "min": 787.82233926024,
+        "max": 1621.0179433619403
       }
     }
   ],

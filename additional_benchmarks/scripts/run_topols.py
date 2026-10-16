@@ -1,9 +1,8 @@
 """Run one TopoLS case and export metrics and the verified TQEC representation."""
 import json
-import os
 import pickle
-import runpy
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -20,42 +19,18 @@ def run(source: Path, output: Path, bgraph_path: Path) -> None:
     (output / "benchmark").mkdir()
     shutil.copy2(source, output / "benchmark" / source.name)
 
-    import topols.pipeline as pipeline  # type: ignore[import-untyped]
-
-    calls = []
-    original = pipeline.zx_optimization
-
-    def audited(graph, blocks):
-        # Observe upstream optimization without changing its inputs or result.
-        before = {"vertices": graph.num_vertices(), "edges": graph.num_edges()}
-        result = original(graph, blocks)
-        calls.append({"before": before, "after": {
-            "vertices": graph.num_vertices(), "edges": graph.num_edges()}})
-        return result
-
     program = ROOT / "external" / "TopoLS" / "docs" / "prog.py"
-    old_argv = sys.argv
-    old_cwd = Path.cwd()
-    try:
-        pipeline.zx_optimization = audited
-        # Use the supplied CLI, including its seed and search settings.
-        # Source: external/TopoLS/docs/prog.py argument definitions.
-        sys.argv = [str(program), "-f", name, "-l", "3", "--engine", "python"]
-        os.chdir(output)
-        runpy.run_path(str(program), run_name="__main__")
-    finally:
-        os.chdir(old_cwd)
-        sys.argv = old_argv
-        pipeline.zx_optimization = original
+    # Use TopoLS's supplied CLI and its documented defaults. Only the common
+    # 7x7 footprint and the reference Python engine are selected explicitly.
+    subprocess.run([
+        sys.executable, str(program), "-f", name, "-l", "3", "--engine", "python",
+    ], cwd=output, check=True)
 
     data = pickle.loads((output / "result" / "topols" / f"{name}.pkl").read_bytes())
-    audit = calls[0]
     metrics = {
         "total_execution_time": int(data["time"]),
         "spatial_footprint": int(data["space"]),
-        "bounding_box_volume": int(data["volume"]),
         "compilation_seconds": data["compilation_time"],
-        "zx_graph": audit,
     }
     block_graph = build_topols_block_graph(output / "result" / "topols" / f"{name}.pkl")
     circuit = qasm2.load(source)
