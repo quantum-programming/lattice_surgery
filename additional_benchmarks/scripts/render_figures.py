@@ -21,6 +21,9 @@ FIGURE_SEED = 45
 # https://github.com/tqec/TopoLS/blob/e564d350a596cfea3227e09698733210e2e14dcf/src/topols/export/bgraph.py
 # Only adapt the saved graph to its input dictionaries. Geometry, face colours,
 # camera and cube size follow the upstream renderer's defaults for both methods.
+# TopoLS defines each renderer node by position, tqec and other, which are
+# reconstructed below from the corresponding BlockGraph fields. Node IDs are
+# opaque lookup keys, so coordinates are valid IDs when the edge keys match.
 for name in ("mqt_max_parallel", "mqt_min_parallel"):
     for tool in ("ours", "topols"):
         stem = f"{tool}-{name}"
