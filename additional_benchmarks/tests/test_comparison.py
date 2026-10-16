@@ -138,6 +138,17 @@ class ComparisonTest(unittest.TestCase):
         }
         graph = build_ours_block_graph(circuit, schedule)
         verify_cnot_block_graph(circuit, graph)
+        # TQEC's own CNOT gallery test uses these external stabilizers to check
+        # the logical Pauli mappings of its correlation surfaces. Our routed
+        # embedding must induce the same set. This supplements ZX tensor
+        # equivalence; it does not assert a general cube-orientation theorem.
+        self.assertEqual(
+            {
+                surface.external_stabilizer_on_graph(graph)
+                for surface in graph.find_correlation_surfaces()
+            },
+            {"ZIZI", "ZZIZ", "XIXX", "XXXI"},
+        )
         metrics = block_graph_metrics(graph)
         self.assertEqual(graph.num_ports, 4)
         self.assertEqual(metrics["occupied_volume"], 8)
