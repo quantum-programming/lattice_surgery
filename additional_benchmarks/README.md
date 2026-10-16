@@ -29,5 +29,4 @@ Versioned experiment data are organized as follows:
 - `figures/`: the aggregate table and seed-45 manuscript figures.
 
 The comparison and generator environments remain visible at `.venv/` and
-`benchmarks/.venv/`. See [COMPARISON.md](COMPARISON.md) for methodology,
-accounting definitions, and the recorded results.
+`benchmarks/.venv/`.
