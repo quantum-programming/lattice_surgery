@@ -3,6 +3,14 @@ work/
 results/raw/
 __pycache__/
 *.pyc
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*Notes.bib
 !benchmarks/.vscode/
 !benchmarks/.vscode/settings.json
 

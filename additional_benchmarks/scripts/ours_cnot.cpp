@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
   ScheduleResultValidator(result, CareKinkParity).validate_all();
 
   const int side = (problem.width - 1) / 2;
-  std::cout << "{\"depth\":" << result.total_time
+  std::cout << "{\"total_execution_time\":" << result.total_time
             << ",\"width\":" << problem.width
             << ",\"height\":" << problem.height
             << ",\"allocated_sites\":" << problem.chip_size

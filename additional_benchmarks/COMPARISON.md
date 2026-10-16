@@ -7,7 +7,7 @@ qubits and 32 CNOT gates. SAT trials and the three-qubit pilot are excluded.
 This note documents the current comparison separately from the manuscript.
 The current manuscript has not been assessed here.
 
-Read scripts/run_comparison.py for the complete workflow, scripts/ours_cnot.cpp
+Read scripts/run_circuit_seeds.py for the complete workflow, scripts/ours_cnot.cpp
 for the call to the existing native implementation, scripts/run_topols.py
 for upstream compiler options, then scripts/tqec_interop.py for conversion,
 validation, and accounting. No core compiler headers or external submodule code
@@ -48,7 +48,7 @@ compiler pickle outputs are read.
 
 The run uses official TopoLS commit e564d350a596cfea3227e09698733210e2e14dcf
 plus patches/topols-branching-endpoint.patch, a temporary correctness guard pending
-the equivalent upstream fix. comparison.json records both the base commit and
+the equivalent upstream fix. circuit_seeds.json records both the base commit and
 the patch hash. The standalone manuscript retains a prominent TODO to update the
 revision, rerun the experiment and remove the temporary patch after upstream merges
 the fix.
@@ -67,15 +67,15 @@ The this-work occupied count must also equal its native scheduler count.
 TQEC's [BlockGraph implementation](https://github.com/tqec/tqec/blob/8c352c0d605c90ca7eb877e02c777198407875e3/src/tqec/computation/block_graph.py)
 defines occupied spacetime_volume: ordinary cubes count 1, ports and pipes 0,
 and Y half-cubes 0.5. These CNOT exports have no Y cubes. bounding_box includes
-ports and reports coordinate extents (maximum minus minimum plus one).
+ports and reports coordinate sizes (maximum minus minimum plus one).
 The bounding-box product includes unoccupied sites.
 Correlation-surface count is recorded as additional representation information.
 See also the official [BGRAPH guide](https://tqec.github.io/tqec/user_guide/bgraph.html).
 
 Native allocated volume, native TopoLS bounding-box volume, TQEC occupied volume,
 and TQEC bounding-box volume are distinct quantities. Native data-slot density
-also differs from active-data density. Native depth units are retained in JSON
-and are not silently equated with physical execution times.
+also differs from active-data density. Total execution time is reported in code
+beats and is distinct from compiler wall-clock time.
 
 These checks support circuit meaning and a shared representation/accounting.
 They do not prove all global fault-tolerance conditions, compile these graphs to
@@ -85,43 +85,27 @@ cubes. A resource advantage therefore needs its metric and scope stated.
 
 ## Results
 
-Fresh run: work/tqec-comparison. All four outputs passed structural validation,
-input-circuit ZX identity reduction and textual BGRAPH roundtrip checks.
-
-| Input | Tool | Allocated footprint | Native depth | TQEC occupied volume | Official box including ports |
-| --- | --- | --- | ---: | ---: | --- |
-| mqt_max_parallel | this_work | 7 x 7 | 11 | 260 | 7 x 7 x 13 |
-| mqt_max_parallel | topols | 7 x 7 | 19 | 437 | 7 x 7 x 20 |
-| mqt_min_parallel | this_work | 7 x 7 | 14 | 305 | 7 x 7 x 16 |
-| mqt_min_parallel | topols | 7 x 7 | 26 | 534 | 7 x 7 x 27 |
-
-Native depth units differ as described above; this is representation accounting,
-not a calibrated physical-performance comparison. This work now reserves 49 sites
-and no MSF sites. See comparison.json for allocated volume and density metrics.
-The occupied-volume counts agree with the native scheduler for both inputs.
-Both tools have 16 logical ports and 16 recorded correlation surfaces per input.
-
-The manuscript table uses a circuit-generation seed sweep. Compiler search
+The manuscript table uses multiple circuit-generation seeds. Compiler search
 seeds remain fixed. Of candidate MQT seeds 41--48, five seeds (41, 43, 45, 46,
 48) produced fully verified outputs for both circuit families and both tools.
 The values below are mean +/- sample standard deviation over those paired seeds.
 
-| Family | Tool | n | Native depth | TQEC z extent | TQEC occupied volume | Compilation seconds |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| max-parallel | this work | 5 | 11.0 +/- 0.7 | 13.0 +/- 0.7 | 258.6 +/- 15.4 | 0.171 +/- 0.031 |
-| max-parallel | TopoLS | 5 | 23.6 +/- 3.6 | 24.6 +/- 3.6 | 502.6 +/- 54.6 | 196.8 +/- 71.9 |
-| min-parallel | this work | 5 | 14.0 +/- 1.2 | 16.0 +/- 1.2 | 287.2 +/- 15.5 | 0.147 +/- 0.012 |
-| min-parallel | TopoLS | 5 | 21.0 +/- 3.1 | 22.0 +/- 3.1 | 445.2 +/- 56.2 | 165.0 +/- 58.9 |
+| Family | Tool | n | Total execution time | TQEC occupied volume | Compilation seconds |
+| --- | --- | ---: | ---: | ---: | ---: |
+| max-parallel | this work | 5 | 11.0 +/- 0.7 | 258.6 +/- 15.4 | 0.171 +/- 0.031 |
+| max-parallel | TopoLS | 5 | 23.6 +/- 3.6 | 502.6 +/- 54.6 | 196.8 +/- 71.9 |
+| min-parallel | this work | 5 | 14.0 +/- 1.2 | 287.2 +/- 15.5 | 0.147 +/- 0.012 |
+| min-parallel | TopoLS | 5 | 21.0 +/- 3.1 | 445.2 +/- 56.2 | 165.0 +/- 58.9 |
 
 The paired occupied-volume reductions are 48.1 +/- 6.2% and 35.0 +/- 5.2%.
-Native-depth reductions are 52.3 +/- 9.2% and 32.4 +/- 9.4%. Under these
+Total-execution-time reductions are 52.3 +/- 9.2% and 32.4 +/- 9.4%. Under these
 implementations and settings on the same machine, the paired compilation-time
 speedups are 1190 +/- 494 and 1121 +/- 376. These are implementation timings,
 not physical quantum execution times.
 
 The current temporary TopoLS patch is insufficient for the complete candidate
 set: min-parallel seeds 42, 44 and 47 reach native embedding but the official
-exporter produces duplicate output-port labels. seed_sweep.json records these
+exporter produces duplicate output-port labels. circuit_seeds.json records these
 failed attempts. They are excluded because no valid TQEC graph exists. Rerun all
 eight candidates after the upstream fix, update the statistics, and remove the
 manuscript TODO only after every case passes.
@@ -133,17 +117,12 @@ Both methods use upstream renderer defaults. PNGs are saved directly in figures/
 Each model is independently fitted to its axes, so displayed sizes do not share
 a common scale. The PNGs and Q-circuit diagrams are included in topols_comparison.tex.
 
-## Reproducing the official-metric table
+## Saved data
 
-The four textual BlockGraphs are preserved in results/*.bgraph together with
-comparison.json. tqec_interop.py writes the graphs directly to their final paths
-as each case completes. A failed run may update only some graphs.
-Run python scripts/analyze_structure.py to generate figures/block_graph_comparison.tex.
-The script uses BlockGraph.from_bgraph(), validate(), bounding_box_size() and
-spacetime_volume from TQEC, and checks dimensions and volume against comparison.json.
-Available sites come from compiler settings. No existing work/ data is required.
-The table reports available sites, port-inclusive dimensions and spacetime volume.
-The former geometric categories and their diagnostic JSON have been removed.
+All QASM inputs are preserved in benchmarks/. Every successful textual
+BlockGraph is preserved in results/, while circuit_seeds.json
+records every attempt, including failed exports. Seed 45 is selected from these
+same data for the manuscript figures.
 
 ## Provisional citation keys for the added subsection
 
@@ -216,4 +195,3 @@ indexing. Section 3.1 gives qelib1.inc, defining lowercase cx via built-in CX,
 with control first and target second. The eight-qubit register size is our
 benchmark choice. The official OpenQASM repository identifies this document
 as its 2.0 specification: https://github.com/openqasm/openqasm/tree/OpenQASM2.x
-A local PDF copy is retained in ignored work/references/openqasm-2.0-spec.pdf.

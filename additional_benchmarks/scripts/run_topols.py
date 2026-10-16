@@ -51,13 +51,14 @@ def run(source: Path, output: Path, bgraph_path: Path) -> None:
     data = pickle.loads((output / "result" / "topols" / f"{name}.pkl").read_bytes())
     audit = calls[0]
     metrics = {
-        "depth": int(data["time"]),
+        "total_execution_time": int(data["time"]),
         "spatial_footprint": int(data["space"]),
         "bounding_box_volume": int(data["volume"]),
         "compilation_seconds": data["compilation_time"],
         "zx_graph": audit,
     }
     block_graph = build_topols_block_graph(output / "result" / "topols" / f"{name}.pkl")
-    metrics["tqec"] = export_verified_block_graph(
-        qasm2.load(source), block_graph, bgraph_path)
+    circuit = qasm2.load(source)
+    circuit.name = source.stem
+    metrics["tqec"] = export_verified_block_graph(circuit, block_graph, bgraph_path)
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")

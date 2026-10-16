@@ -2,7 +2,7 @@ BLOCKGRAPH 0.1.0;
 
 METADATA: attr_name; value;
 source; TQEC.
-circuit_name; circuit-44;
+circuit_name; mqt_min_parallel-seed45;
 
 CUBES: index;x;y;z;kind;label;
 (0, 0, 0);0;0;0;PORT;input_0;

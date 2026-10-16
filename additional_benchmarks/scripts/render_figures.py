@@ -14,6 +14,7 @@ from tqec import BlockGraph
 from topols.export.visualize import visualize
 
 ROOT = Path(__file__).resolve().parents[1]
+FIGURE_SEED = 45
 
 # Upstream renderer and its metadata format:
 # https://github.com/tqec/TopoLS/blob/e564d350a596cfea3227e09698733210e2e14dcf/src/topols/export/visualize.py
@@ -23,7 +24,8 @@ ROOT = Path(__file__).resolve().parents[1]
 for name in ("mqt_max_parallel", "mqt_min_parallel"):
     for tool in ("ours", "topols"):
         stem = f"{tool}-{name}"
-        graph = BlockGraph.from_bgraph(ROOT / "results" / f"{stem}.bgraph")
+        graph = BlockGraph.from_bgraph(
+            ROOT / "results" / f"{stem}-seed{FIGURE_SEED}.bgraph")
         graph.validate()
         nodes: dict[tuple[int, int, int], dict[str, Any]] = {}
         for cube in graph.cubes:

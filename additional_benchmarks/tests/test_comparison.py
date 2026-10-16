@@ -6,10 +6,13 @@ from pathlib import Path
 
 import pyzx as zx
 from qiskit import QuantumCircuit
+from tqec import BlockGraph
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from run_comparison import BENCHMARKS, check_circuit  # pyright: ignore[reportMissingImports]
+from comparison_common import (  # pyright: ignore[reportMissingImports]
+    FAMILIES, ROOT, SEEDS, check_circuit,
+)
 from tqec_interop import (  # pyright: ignore[reportMissingImports]
     block_graph_metrics,
     build_ours_block_graph,
@@ -19,44 +22,45 @@ from tqec_interop import (  # pyright: ignore[reportMissingImports]
 
 
 class ComparisonTest(unittest.TestCase):
-    def test_saved_inputs_match_recorded_hashes(self):
-        hashes = json.loads((ROOT / "comparison.json").read_text())["inputs"]
-        for name in BENCHMARKS:
+    def test_saved_circuit_seed_artifacts(self):
+        report = json.loads((ROOT / "circuit_seeds.json").read_text())
+        hashes = report["inputs"]
+        expected_inputs = {
+            f"{family}-seed{seed}" for family in FAMILIES for seed in SEEDS
+        }
+        self.assertEqual(set(hashes), expected_inputs)
+        for name in expected_inputs:
             path = ROOT / "benchmarks" / f"{name}.qasm"
             check_circuit(path)
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), hashes[name])
-
-    def test_checked_in_results(self):
-        report = json.loads((ROOT / "comparison.json").read_text())
         patch_record = report["topols_local_patch"]
         patch = ROOT / patch_record["path"]
         self.assertEqual(hashlib.sha256(patch.read_bytes()).hexdigest(),
                          patch_record["sha256"])
-        rows = report["rows"]
-        self.assertEqual({(row["tool"], row["benchmark"]) for row in rows},
-                         {(tool, name) for tool in ("this_work", "topols")
-                          for name in BENCHMARKS})
-        for row in rows:
-            self.assertEqual(row["status"], "passed")
+
+        expected_graphs = set()
+        for row in report["rows"]:
+            tool = "ours" if row["tool"] == "this_work" else "topols"
+            stem = f"{tool}-{row['benchmark']}-seed{row['seed']}"
+            path = ROOT / "results" / f"{stem}.bgraph"
+            if row["status"] != "passed":
+                self.assertFalse(path.exists())
+                continue
+            expected_graphs.add(path.name)
+            graph = BlockGraph.from_bgraph(path)
+            graph.validate()
+            self.assertEqual(graph.name, f"{row['benchmark']}-seed{row['seed']}")
             metrics = row["tqec"]
             self.assertTrue(metrics["circuit_equivalent"])
             self.assertTrue(metrics["bgraph_roundtrip"])
-            x, y, t = metrics["bounding_box"]
-            self.assertEqual(metrics["bounding_box_volume"], x * y * t)
-            if row["tool"] == "this_work":
-                self.assertEqual((row["width"], row["height"]), (7, 7))
-                self.assertEqual(row["active_data"], 8)
-                self.assertEqual(row["factory_sites"], 0)
-                self.assertEqual(row["data_slots"], 9)
-                self.assertEqual(row["allocated_volume"],
-                                 row["allocated_sites"] * row["depth"])
-            else:
-                self.assertEqual(row["spatial_footprint"], 49)
-                self.assertEqual(row["bounding_box_volume"],
-                                 row["spatial_footprint"] * row["depth"])
+            self.assertEqual(list(graph.bounding_box_size()), metrics["bounding_box"])
+            self.assertEqual(graph.spacetime_volume, metrics["occupied_volume"])
+        actual_graphs = {path.name for path in
+                         (ROOT / "results").glob("*.bgraph")}
+        self.assertEqual(actual_graphs, expected_graphs)
 
-    def test_seed_sweep_results(self):
-        report = json.loads((ROOT / "seed_sweep.json").read_text())
+    def test_circuit_seed_results(self):
+        report = json.loads((ROOT / "circuit_seeds.json").read_text())
         self.assertEqual(report["complete_seeds"], [41, 43, 45, 46, 48])
         self.assertEqual(len(report["inputs"]), 16)
         self.assertEqual(len(report["rows"]), 32)
@@ -87,6 +91,18 @@ class ComparisonTest(unittest.TestCase):
         self.assertAlmostEqual(
             summaries[("mqt_min_parallel", "topols")]
             ["tqec_occupied_volume"]["mean"], 445.2)
+        self.assertAlmostEqual(
+            summaries[("mqt_max_parallel", "this_work")]
+            ["total_execution_time"]["mean"], 11.0)
+        self.assertAlmostEqual(
+            summaries[("mqt_max_parallel", "topols")]
+            ["total_execution_time"]["mean"], 23.6)
+        self.assertAlmostEqual(
+            summaries[("mqt_min_parallel", "this_work")]
+            ["total_execution_time"]["mean"], 14.0)
+        self.assertAlmostEqual(
+            summaries[("mqt_min_parallel", "topols")]
+            ["total_execution_time"]["mean"], 21.0)
 
     def test_ours_tqec_export_for_cnot_path(self):
         circuit = QuantumCircuit(2)

@@ -1,5 +1,4 @@
-"""Regenerate the fixed examples and optional seeded sweep inputs."""
-import argparse
+"""Regenerate the versioned seeded benchmark inputs and figure circuits."""
 from pathlib import Path
 
 from mqt.qecc.cococo.circuit_construction import (
@@ -10,6 +9,8 @@ from qiskit import QuantumCircuit  # type: ignore[import-untyped]
 
 OUTPUT = Path(__file__).resolve().parent
 FIGURES = OUTPUT.parent / "figures"
+FIGURE_SEED = 45
+SEEDS = tuple(range(41, 49))
 
 
 def qasm_text(operations: list[tuple[int, int]]) -> str:
@@ -23,9 +24,12 @@ def qasm_text(operations: list[tuple[int, int]]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write(name: str, operations: list[tuple[int, int]]) -> None:
-    path = OUTPUT / f"{name}.qasm"
+def write_qasm(path: Path, operations: list[tuple[int, int]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(qasm_text(operations), newline="\n")
+
+
+def write_figure(name: str, operations: list[tuple[int, int]]) -> None:
     circuit = QuantumCircuit(8, name=name.replace("_", " ").title())
     for control, target in operations:
         circuit.cx(control, target)
@@ -42,11 +46,9 @@ def write(name: str, operations: list[tuple[int, int]]) -> None:
     (FIGURES / f"{name}.tex").write_text(body.strip() + "\n", newline="\n")
 
 
-def write_sweep(seeds: list[int]) -> None:
-    """Write inputs used for statistics without changing the figure examples."""
-    destination = OUTPUT.parent / "work" / "seed-sweep" / "inputs"
-    destination.mkdir(parents=True, exist_ok=True)
-    for seed in seeds:
+def write_circuit_seeds() -> None:
+    """Write every statistical input and the selected manuscript circuits."""
+    for seed in SEEDS:
         cases = {
             "mqt_max_parallel": generate_max_parallel_circuit(
                 q=8, min_depth=32, seed=seed),
@@ -54,27 +56,16 @@ def write_sweep(seeds: list[int]) -> None:
                 q=8, min_depth=32, layer_size=2, seed=seed),
         }
         for family, operations in cases.items():
-            (destination / f"{family}-seed{seed}.qasm").write_text(
-                qasm_text(operations), newline="\n")
+            write_qasm(OUTPUT / f"{family}-seed{seed}.qasm", operations)
+            if seed == FIGURE_SEED:
+                write_figure(family, operations)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--sweep-seeds", nargs="+", type=int,
-        help="write statistical-sweep QASM files under work/seed-sweep/inputs",
-    )
-    args = parser.parse_args()
-    if args.sweep_seeds:
-        write_sweep(args.sweep_seeds)
-        raise SystemExit
-    # Use the upstream default seed in both MQT QECC generators.
     # Parallelism families and 4q gate counts: Herzog et al., Sec. VII.B / Fig. 10.
     # https://arxiv.org/html/2504.10591v2
     # For q=8, the max-parallel generator creates groups of four disjoint CXs.
     # layer_size=2 is our choice: the smallest group size above the serial case.
     # The min-parallel generator also enforces overlap between successive groups.
     # min_depth is a gate-count target here: 32 gives 8 groups of 4 or 16 of 2.
-    write("mqt_max_parallel", generate_max_parallel_circuit(q=8, min_depth=32))
-    write("mqt_min_parallel", generate_min_parallel_circuit(
-        q=8, min_depth=32, layer_size=2))
+    write_circuit_seeds()

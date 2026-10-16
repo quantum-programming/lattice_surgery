@@ -9,16 +9,21 @@
     47,
     48
   ],
-  "variation": "MQT input-generation seed; compiler search seeds remain fixed",
+  "variation": "MQT input-generation seed. Compiler search seeds remain fixed.",
   "commits": {
     "this_work": "7f3ff0ed81754abab49eb3b3c82c3a215fbb0584",
     "topols": "e564d350a596cfea3227e09698733210e2e14dcf",
     "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
   },
+  "topols_local_patch": {
+    "path": "patches/topols-branching-endpoint.patch",
+    "sha256": "5119d6bbf967f6946e9f9b565a36b2f21127716f65619f92cbc100c4c11b5173",
+    "status": "temporary pending the upstream correctness fix"
+  },
   "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
   "configuration": {
-    "this_work": "one layer; SA seed 1, 1,000,000 iterations; remove MSF and outer ring before scheduling; Double look-ahead; CareKinkParity",
-    "topols": "three qubits per row (-l 3); Python engine; upstream defaults (block 10; ZX and direction optimization; seed 0; five internal seeds)"
+    "this_work": "one layer, SA seed 1, 1,000,000 iterations, MSF and outer ring removed before scheduling, Double look-ahead, CareKinkParity",
+    "topols": "three qubits per row (-l 3), Python engine, upstream defaults (block 10, ZX and direction optimization, seed 0, five internal seeds)"
   },
   "inputs": {
     "mqt_max_parallel-seed41": "de2470d091ba7f1f899e5d429e09ac1ac7215e9167029165bb6343a02a614f8e",
@@ -40,7 +45,6 @@
   },
   "rows": [
     {
-      "depth": 12,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -67,10 +71,10 @@
       "seed": 41,
       "tool": "this_work",
       "compilation_seconds": 0.1577024159996654,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 12
     },
     {
-      "depth": 21,
       "spatial_footprint": 49,
       "bounding_box_volume": 1029,
       "compilation_seconds": 253.2824923992157,
@@ -102,10 +106,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 41,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 21
     },
     {
-      "depth": 13,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -132,10 +136,10 @@
       "seed": 42,
       "tool": "this_work",
       "compilation_seconds": 0.1611201940013416,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 13
     },
     {
-      "depth": 19,
       "spatial_footprint": 49,
       "bounding_box_volume": 931,
       "compilation_seconds": 201.81364464759827,
@@ -167,10 +171,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 42,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 19
     },
     {
-      "depth": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -197,10 +201,10 @@
       "seed": 43,
       "tool": "this_work",
       "compilation_seconds": 0.20111916499990912,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 11
     },
     {
-      "depth": 25,
       "spatial_footprint": 49,
       "bounding_box_volume": 1225,
       "compilation_seconds": 111.01295375823975,
@@ -232,10 +236,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 43,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 25
     },
     {
-      "depth": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -262,10 +266,10 @@
       "seed": 44,
       "tool": "this_work",
       "compilation_seconds": 0.16240001100049994,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 11
     },
     {
-      "depth": 25,
       "spatial_footprint": 49,
       "bounding_box_volume": 1225,
       "compilation_seconds": 189.28007888793945,
@@ -297,10 +301,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 44,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 25
     },
     {
-      "depth": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -327,10 +331,10 @@
       "seed": 45,
       "tool": "this_work",
       "compilation_seconds": 0.20473802299966337,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 11
     },
     {
-      "depth": 19,
       "spatial_footprint": 49,
       "bounding_box_volume": 931,
       "compilation_seconds": 193.4699637889862,
@@ -362,10 +366,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 45,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 19
     },
     {
-      "depth": 14,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -392,10 +396,10 @@
       "seed": 41,
       "tool": "this_work",
       "compilation_seconds": 0.15626883500044642,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 14
     },
     {
-      "depth": 19,
       "spatial_footprint": 49,
       "bounding_box_volume": 931,
       "compilation_seconds": 123.11207914352417,
@@ -427,7 +431,8 @@
       "benchmark": "mqt_min_parallel",
       "seed": 41,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 19
     },
     {
       "benchmark": "mqt_min_parallel",
@@ -437,7 +442,6 @@
       "error": "There is already a port with the same label output_7 in the graph."
     },
     {
-      "depth": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -464,10 +468,10 @@
       "seed": 46,
       "tool": "this_work",
       "compilation_seconds": 0.1604404669997166,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 11
     },
     {
-      "depth": 28,
       "spatial_footprint": 49,
       "bounding_box_volume": 1372,
       "compilation_seconds": 282.47884726524353,
@@ -499,10 +503,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 46,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 28
     },
     {
-      "depth": 15,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -529,10 +533,10 @@
       "seed": 42,
       "tool": "this_work",
       "compilation_seconds": 0.1467459150007926,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 15
     },
     {
-      "depth": 16,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -559,10 +563,10 @@
       "seed": 43,
       "tool": "this_work",
       "compilation_seconds": 0.15187067400074739,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 16
     },
     {
-      "depth": 21,
       "spatial_footprint": 49,
       "bounding_box_volume": 1029,
       "compilation_seconds": 139.03399515151978,
@@ -594,10 +598,10 @@
       "benchmark": "mqt_min_parallel",
       "seed": 43,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 21
     },
     {
-      "depth": 14,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -624,7 +628,8 @@
       "seed": 44,
       "tool": "this_work",
       "compilation_seconds": 0.18781757699980517,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 14
     },
     {
       "benchmark": "mqt_min_parallel",
@@ -634,7 +639,6 @@
       "error": "There is already a port with the same label output_3 in the graph."
     },
     {
-      "depth": 14,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -661,10 +665,10 @@
       "seed": 45,
       "tool": "this_work",
       "compilation_seconds": 0.15174334499897668,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 14
     },
     {
-      "depth": 26,
       "spatial_footprint": 49,
       "bounding_box_volume": 1274,
       "compilation_seconds": 216.18053650856018,
@@ -696,10 +700,10 @@
       "benchmark": "mqt_min_parallel",
       "seed": 45,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 26
     },
     {
-      "depth": 13,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -726,10 +730,10 @@
       "seed": 46,
       "tool": "this_work",
       "compilation_seconds": 0.14758923500085075,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 13
     },
     {
-      "depth": 21,
       "spatial_footprint": 49,
       "bounding_box_volume": 1029,
       "compilation_seconds": 239.24479818344116,
@@ -761,10 +765,10 @@
       "benchmark": "mqt_min_parallel",
       "seed": 46,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 21
     },
     {
-      "depth": 12,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -791,10 +795,10 @@
       "seed": 47,
       "tool": "this_work",
       "compilation_seconds": 0.17390872900068644,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 12
     },
     {
-      "depth": 18,
       "spatial_footprint": 49,
       "bounding_box_volume": 882,
       "compilation_seconds": 118.66204261779785,
@@ -826,10 +830,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 47,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 18
     },
     {
-      "depth": 13,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -856,7 +860,8 @@
       "seed": 47,
       "tool": "this_work",
       "compilation_seconds": 0.1280066860000062,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 13
     },
     {
       "benchmark": "mqt_min_parallel",
@@ -866,7 +871,6 @@
       "error": "There is already a port with the same label output_4 in the graph."
     },
     {
-      "depth": 10,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -893,10 +897,10 @@
       "seed": 48,
       "tool": "this_work",
       "compilation_seconds": 0.13215167099997416,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 10
     },
     {
-      "depth": 25,
       "spatial_footprint": 49,
       "bounding_box_volume": 1225,
       "compilation_seconds": 143.8332874774933,
@@ -928,10 +932,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 48,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 25
     },
     {
-      "depth": 13,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -958,10 +962,10 @@
       "seed": 48,
       "tool": "this_work",
       "compilation_seconds": 0.12551769899999954,
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 13
     },
     {
-      "depth": 18,
       "spatial_footprint": 49,
       "bounding_box_volume": 882,
       "compilation_seconds": 107.2647955417633,
@@ -993,7 +997,8 @@
       "benchmark": "mqt_min_parallel",
       "seed": 48,
       "tool": "topols",
-      "status": "passed"
+      "status": "passed",
+      "total_execution_time": 18
     }
   ],
   "summaries": [
@@ -1007,23 +1012,17 @@
         "min": 238.0,
         "max": 276.0
       },
-      "tqec_time_extent": {
-        "mean": 13,
-        "sample_sd": 0.7071067811865476,
-        "min": 12,
-        "max": 14
-      },
-      "native_depth": {
-        "mean": 11,
-        "sample_sd": 0.7071067811865476,
-        "min": 10,
-        "max": 12
-      },
       "compilation_seconds": {
         "mean": 0.17123034839978574,
         "sample_sd": 0.030994657353386825,
         "min": 0.13215167099997416,
         "max": 0.20473802299966337
+      },
+      "total_execution_time": {
+        "mean": 11,
+        "sample_sd": 0.7071067811865476,
+        "min": 10,
+        "max": 12
       }
     },
     {
@@ -1036,23 +1035,17 @@
         "min": 437.0,
         "max": 584.0
       },
-      "tqec_time_extent": {
-        "mean": 24.6,
-        "sample_sd": 3.5777087639996634,
-        "min": 20,
-        "max": 29
-      },
-      "native_depth": {
-        "mean": 23.6,
-        "sample_sd": 3.5777087639996634,
-        "min": 19,
-        "max": 28
-      },
       "compilation_seconds": {
         "mean": 196.8155089378357,
         "sample_sd": 71.94983442160772,
         "min": 111.01295375823975,
         "max": 282.47884726524353
+      },
+      "total_execution_time": {
+        "mean": 23.6,
+        "sample_sd": 3.5777087639996634,
+        "min": 19,
+        "max": 28
       }
     },
     {
@@ -1065,23 +1058,17 @@
         "min": 40.50343249427918,
         "max": 53.76712328767124
       },
-      "tqec_time_extent_reduction_percent": {
-        "mean": 46.07644080057873,
-        "sample_sd": 9.689241367641934,
-        "min": 35.0,
-        "max": 55.172413793103445
-      },
-      "native_depth_reduction_percent": {
-        "mean": 52.33533834586466,
-        "sample_sd": 9.177066121429784,
-        "min": 42.10526315789473,
-        "max": 60.71428571428572
-      },
       "compilation_speedup": {
         "mean": 1190.411929113886,
         "sample_sd": 494.0137450477859,
         "min": 551.9760076484501,
         "max": 1760.6458803547519
+      },
+      "total_execution_time_reduction_percent": {
+        "mean": 52.33533834586466,
+        "sample_sd": 9.177066121429784,
+        "min": 42.10526315789473,
+        "max": 60.71428571428572
       }
     },
     {
@@ -1094,23 +1081,17 @@
         "min": 265.0,
         "max": 305.0
       },
-      "tqec_time_extent": {
-        "mean": 16,
-        "sample_sd": 1.224744871391589,
-        "min": 15,
-        "max": 18
-      },
-      "native_depth": {
-        "mean": 14,
-        "sample_sd": 1.224744871391589,
-        "min": 13,
-        "max": 16
-      },
       "compilation_seconds": {
         "mean": 0.14659795760020417,
         "sample_sd": 0.012177462306973634,
         "min": 0.12551769899999954,
         "max": 0.15626883500044642
+      },
+      "total_execution_time": {
+        "mean": 14,
+        "sample_sd": 1.224744871391589,
+        "min": 13,
+        "max": 16
       }
     },
     {
@@ -1123,23 +1104,17 @@
         "min": 392.0,
         "max": 534.0
       },
-      "tqec_time_extent": {
-        "mean": 22,
-        "sample_sd": 3.082207001484488,
-        "min": 19,
-        "max": 27
-      },
-      "native_depth": {
-        "mean": 21,
-        "sample_sd": 3.082207001484488,
-        "min": 18,
-        "max": 26
-      },
       "compilation_seconds": {
         "mean": 164.9672409057617,
         "sample_sd": 58.93623071616637,
         "min": 107.2647955417633,
         "max": 239.24479818344116
+      },
+      "total_execution_time": {
+        "mean": 21,
+        "sample_sd": 3.082207001484488,
+        "min": 18,
+        "max": 26
       }
     },
     {
@@ -1152,23 +1127,17 @@
         "min": 28.57142857142857,
         "max": 42.88389513108615
       },
-      "tqec_time_extent_reduction_percent": {
-        "mean": 26.35867446393762,
-        "sample_sd": 9.644919149940147,
-        "min": 18.181818181818176,
-        "max": 40.74074074074075
-      },
-      "native_depth_reduction_percent": {
-        "mean": 32.43043506201401,
-        "sample_sd": 9.404496619960526,
-        "min": 23.809523809523814,
-        "max": 46.15384615384615
-      },
       "compilation_speedup": {
         "mean": 1120.7082987895278,
         "sample_sd": 376.31298456171726,
         "min": 787.82233926024,
         "max": 1621.0179433619403
+      },
+      "total_execution_time_reduction_percent": {
+        "mean": 32.43043506201401,
+        "sample_sd": 9.404496619960526,
+        "min": 23.809523809523814,
+        "max": 46.15384615384615
       }
     }
   ],

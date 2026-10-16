@@ -79,16 +79,15 @@ For our compiler, we use SA-based mapping followed by double-slice routing with 
 TopoLS uses its Python engine and default search settings, including ZX and direction optimization and a five-seed search.
 Both compilers are allocated the same $7 \times 7$ spatial footprint while retaining their respective placement constraints and search strategies.
 
-We convert both outputs to TQEC BlockGraphs and evaluate their spacetime volume and bounding-box dimensions.
+We report total execution time in code beats, following the metric used throughout this paper, and convert both outputs to TQEC BlockGraphs for common volume accounting.
 For these circuits, the volume counts computation and storage cubes, with ports and pipes contributing zero volume.
-The bounding box includes input/output ports, and its $z$ dimension measures the time-coordinate extent of the exported geometry.
-\Cref{fig:comparison_embeddings} shows representative spacetime geometries, and \cref{tab:topols_seed_sweep} reports aggregate results.
+\Cref{fig:comparison_embeddings} shows representative spacetime geometries, and \cref{tab:topols_circuit_seeds} reports aggregate results.
 
 Across the five paired seeds, double-slice routing reduces occupied volume by approximately $48\%$ for max-parallel circuits and $35\%$ for min-parallel circuits.
-The corresponding depth and temporal-extent results in \cref{tab:topols_seed_sweep} show the same overall trend across both families.
+The corresponding total-execution-time results in \cref{tab:topols_circuit_seeds} show the same overall trend across both families.
 Thus, under the matched spatial allocations used here, bounded-depth routing consistently produces more compact spacetime geometries.
 
-\input{figures/seed_sweep_comparison.tex}
+\input{figures/circuit_seeds_comparison.tex}
 
 \begin{figure*}[t]
     \centering
@@ -134,7 +133,7 @@ Thus, under the matched spatial allocations used here, bounded-depth routing con
         \includegraphics[width=\linewidth]{figures/topols-mqt_min_parallel.png}
         \caption{TopoLS, min-parallel.}
     \end{subfigure}
-    \caption{Representative compiled spacetime geometries, rendered from TQEC BlockGraphs using TopoLS's renderer. The time direction is vertical, and blue and red faces indicate block boundary bases. Grey blocks indicate input/output ports and contribute zero volume. Each panel is independently fitted to its coordinate extent, while \cref{tab:topols_seed_sweep} provides the aggregate quantitative comparison.}
+    \caption{Representative compiled spacetime geometries, rendered from TQEC BlockGraphs using TopoLS's renderer. The time direction is vertical, and blue and red faces indicate block boundary bases. Grey blocks indicate input/output ports and contribute zero volume. Each panel is independently fitted to its coordinate bounds, while \cref{tab:topols_circuit_seeds} provides the aggregate quantitative comparison.}
     \label{fig:comparison_embeddings}
 \end{figure*}
 
