@@ -58,13 +58,12 @@
 
 \begin{document}
 % Suggested insertion: a new subsection in Numerical Experiments, before Discussion.
-% Citation keys are provisional.
 \subsection{Comparison with Existing Compilers}
 \label{sec:topols_comparison}
 
-Existing lattice-surgery compilers include scalable instruction-level compilation~\citep{watkinsHighPerformanceCompiler2024} and dependency-aware mapping and routing~\citep{molaviDependencyAwareCompilation2025}.
-Here we compare our compiler with TopoLS~\citep{zhouTopoLS2026}, which simplifies a ZX graph before embedding it in three-dimensional spacetime, whereas our compiler optimizes spacetime paths on a regular patch layout.
-Both outputs can be represented as TQEC BlockGraphs~\citep{tqecSoftware}, enabling their occupied geometries to be evaluated in a common representation.
+Existing lattice-surgery compilers include scalable instruction-level compilation~\citep{watkinsHighPerformanceCompiler2024} and dependency-aware mapping and routing~\citep{molaviDependencyAwareCompilationSurface2025}.
+Here we compare our compiler with TopoLS~\citep{zhouTopoLSLatticeSurgery2026}, which simplifies a ZX graph before embedding it in three-dimensional spacetime, whereas our compiler optimizes spacetime paths on a regular patch layout.
+Both outputs can be represented as TQEC BlockGraphs~\citep{suauTqecPythonPackage2026}, enabling their occupied geometries to be evaluated in a common representation.
 The path search in our double-slice router is temporally local, spanning only two adjacent code beats, unlike whole-circuit transformations that require the circuit fragment to be available before embedding.
 Although the present scheduler uses whole-circuit critical-path information to prioritize ready instructions, the routing stage could in principle operate online using a bounded buffer of upcoming instructions.
 Such an extension would be useful for circuits containing classically conditioned Pauli corrections after $T$-gate reduction, as well as programs whose subsequent quantum instructions are selected or generated during execution.
@@ -72,8 +71,8 @@ Such an extension would be useful for circuits containing classically conditione
 We use the latest official TopoLS revision available at the time of this experiment.
 \par\noindent\textcolor{red}{\textbf{TODO: Update the TopoLS revision and rerun the comparison after the upstream correctness fix is merged.}}
 
-We use five pairs of eight-qubit, 32-CNOT synthetic circuits generated with the max-parallel and min-parallel generators of MQT QECC~\citep{mqtQECCSoftware}.
-These families follow the contrasting initial parallelism studied in the MQT QECC compilation benchmarks~\citep[Section~VII.B]{herzogCompilationBeyondSurfaceCode2025}, with the same scaling of four CNOTs per qubit.
+We use five pairs of eight-qubit, 32-CNOT synthetic circuits generated with the max-parallel and min-parallel generators of MQT QECC~\citep{willeMQTHandbookSummary2024}.
+These families follow the contrasting initial parallelism studied in the MQT QECC compilation benchmarks~\citep[Section~VII.B]{herzogLatticeSurgeryCompilation2025}, with the same scaling of four CNOTs per qubit.
 
 For our compiler, we use SA-based mapping followed by double-slice routing with instruction look-ahead and kink-parity correction.
 TopoLS uses its Python engine and default search settings, including ZX and direction optimization and a five-seed search.
@@ -136,6 +135,8 @@ Thus, under the matched spatial allocations used here, bounded-depth routing con
     \caption{Representative compiled spacetime geometries, rendered from TQEC BlockGraphs using TopoLS's renderer. The time direction is vertical, and blue and red faces indicate block boundary bases. Grey blocks indicate input/output ports and contribute zero volume. Each panel is independently fitted to its coordinate bounds, while \cref{tab:topols_circuit_seeds} provides the aggregate quantitative comparison.}
     \label{fig:comparison_embeddings}
 \end{figure*}
+
+\bibliography{../LatticeSurgery}
 
 \end{document}
 
