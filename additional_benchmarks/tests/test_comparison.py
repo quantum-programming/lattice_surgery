@@ -14,11 +14,11 @@ from comparison_common import (  # pyright: ignore[reportMissingImports]
     FAMILIES, ROOT, SEEDS, check_circuit,
 )
 from analyze_circuit_seeds import summarize  # pyright: ignore[reportMissingImports]
+from cnot_semantics import verify_cnot_block_graph  # pyright: ignore[reportMissingImports]
+from schedule_to_zx import build_ours_positioned_zx  # pyright: ignore[reportMissingImports]
 from tqec_interop import (  # pyright: ignore[reportMissingImports]
     block_graph_metrics,
     build_ours_block_graph,
-    build_ours_positioned_zx,
-    verify_cnot_block_graph,
 )
 
 
