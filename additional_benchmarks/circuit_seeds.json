@@ -11,14 +11,9 @@
   ],
   "variation": "MQT input-generation seed. Compiler search seeds remain fixed.",
   "commits": {
-    "this_work": "7f3ff0ed81754abab49eb3b3c82c3a215fbb0584",
-    "topols": "e564d350a596cfea3227e09698733210e2e14dcf",
+    "this_work": "6bc7052356e9ddc7dbd25fb7e028110c4f01d935",
+    "topols": "19d1e1eb2ea4771596cd2e8f760147338fe3f75c",
     "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
-  },
-  "topols_local_patch": {
-    "path": "patches/topols-branching-endpoint.patch",
-    "sha256": "5119d6bbf967f6946e9f9b565a36b2f21127716f65619f92cbc100c4c11b5173",
-    "status": "temporary pending the upstream correctness fix"
   },
   "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
   "configuration": {
@@ -31,20 +26,21 @@
     "mqt_max_parallel-seed43": "cc3936119dd73135ad861e8d7f7b25018a54fe627fe132c00e9194b094e55add",
     "mqt_max_parallel-seed44": "f0839d3a7915e530b9aaa88ed2aed531ba251bc0568897b3770f7035581c9477",
     "mqt_max_parallel-seed45": "29e7956df3d392130ceb04bf5b75d7636ffdf299f3e7960aea83e06d43b2d540",
-    "mqt_min_parallel-seed41": "56de17a984f16f42357299ef860014e707018ca12159c47ed78962ea5aef9080",
     "mqt_max_parallel-seed46": "ea325720cd9f1f0177ee52c1f74a7815ad2c4f2ca08708354b9c0f349cd4c6f0",
+    "mqt_max_parallel-seed47": "01fa00c85a985bc3cb5f23ad064add8ce855264a3b7b367bfa6fbee08efd96f2",
+    "mqt_max_parallel-seed48": "b11a3063ad9c9d53063af8a3db31fd218de38c1b0e6a0055484da2d1cbb78961",
+    "mqt_min_parallel-seed41": "56de17a984f16f42357299ef860014e707018ca12159c47ed78962ea5aef9080",
     "mqt_min_parallel-seed42": "5abcd3a9a06f438ad16f71ece4f6f972d975745bc9daaf70a3573cec83b6e72a",
     "mqt_min_parallel-seed43": "d4e6ebb91b27ae82b55f81de58bc4d469deb454eaf94159cc9667c739b3dee1a",
     "mqt_min_parallel-seed44": "4478588e48aafcf2382ef7277635c54c6c3cb6f308c9607b93c62a4656facfc5",
     "mqt_min_parallel-seed45": "e98ebceb168d35ca819d8e195bd4e9c5fdea50671ce5dd7b9bb7cf2c2d7598b5",
     "mqt_min_parallel-seed46": "98d8dc4c67ec0427d52e73db239effa444a06ec7f4dfa1c6320be82a295372ab",
-    "mqt_max_parallel-seed47": "01fa00c85a985bc3cb5f23ad064add8ce855264a3b7b367bfa6fbee08efd96f2",
     "mqt_min_parallel-seed47": "bc45bca6bb66730fbbccd9d1c0952897fb626a2f57d39d246f55290014729219",
-    "mqt_max_parallel-seed48": "b11a3063ad9c9d53063af8a3db31fd218de38c1b0e6a0055484da2d1cbb78961",
     "mqt_min_parallel-seed48": "c06c4d920f6d090e94dd1a7320f1a493f20cc633fff820a6ea2882b537b9a046"
   },
   "rows": [
     {
+      "total_execution_time": 12,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -63,28 +59,28 @@
       "benchmark": "mqt_max_parallel",
       "seed": 41,
       "tool": "this_work",
-      "compilation_seconds": 0.1577024159996654,
-      "status": "passed",
-      "total_execution_time": 12
+      "compilation_seconds": 0.12914160099990113,
+      "status": "passed"
     },
     {
+      "total_execution_time": 20,
       "spatial_footprint": 49,
-      "compilation_seconds": 253.2824923992157,
+      "compilation_seconds": 128.71396899223328,
       "tqec": {
-        "occupied_volume": 520.0,
+        "occupied_volume": 490.0,
         "bounding_box": [
           7,
           7,
-          22
+          21
         ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 41,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 21
+      "status": "passed"
     },
     {
+      "total_execution_time": 13,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -103,13 +99,13 @@
       "benchmark": "mqt_max_parallel",
       "seed": 42,
       "tool": "this_work",
-      "compilation_seconds": 0.1611201940013416,
-      "status": "passed",
-      "total_execution_time": 13
+      "compilation_seconds": 0.14041692799992234,
+      "status": "passed"
     },
     {
+      "total_execution_time": 19,
       "spatial_footprint": 49,
-      "compilation_seconds": 201.81364464759827,
+      "compilation_seconds": 163.4709267616272,
       "tqec": {
         "occupied_volume": 524.0,
         "bounding_box": [
@@ -121,10 +117,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 42,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 19
+      "status": "passed"
     },
     {
+      "total_execution_time": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -143,13 +139,13 @@
       "benchmark": "mqt_max_parallel",
       "seed": 43,
       "tool": "this_work",
-      "compilation_seconds": 0.20111916499990912,
-      "status": "passed",
-      "total_execution_time": 11
+      "compilation_seconds": 0.14249836099997992,
+      "status": "passed"
     },
     {
+      "total_execution_time": 25,
       "spatial_footprint": 49,
-      "compilation_seconds": 111.01295375823975,
+      "compilation_seconds": 74.14084577560425,
       "tqec": {
         "occupied_volume": 478.0,
         "bounding_box": [
@@ -161,10 +157,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 43,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 25
+      "status": "passed"
     },
     {
+      "total_execution_time": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -183,28 +179,28 @@
       "benchmark": "mqt_max_parallel",
       "seed": 44,
       "tool": "this_work",
-      "compilation_seconds": 0.16240001100049994,
-      "status": "passed",
-      "total_execution_time": 11
+      "compilation_seconds": 0.14364769099984187,
+      "status": "passed"
     },
     {
+      "total_execution_time": 24,
       "spatial_footprint": 49,
-      "compilation_seconds": 189.28007888793945,
+      "compilation_seconds": 108.99849247932434,
       "tqec": {
-        "occupied_volume": 500.0,
+        "occupied_volume": 523.0,
         "bounding_box": [
           7,
           7,
-          26
+          25
         ]
       },
       "benchmark": "mqt_max_parallel",
       "seed": 44,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 25
+      "status": "passed"
     },
     {
+      "total_execution_time": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -223,13 +219,13 @@
       "benchmark": "mqt_max_parallel",
       "seed": 45,
       "tool": "this_work",
-      "compilation_seconds": 0.20473802299966337,
-      "status": "passed",
-      "total_execution_time": 11
+      "compilation_seconds": 0.11771359099975598,
+      "status": "passed"
     },
     {
+      "total_execution_time": 19,
       "spatial_footprint": 49,
-      "compilation_seconds": 193.4699637889862,
+      "compilation_seconds": 143.70002484321594,
       "tqec": {
         "occupied_volume": 437.0,
         "bounding_box": [
@@ -241,57 +237,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 45,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 19
+      "status": "passed"
     },
     {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 289,
-      "tqec": {
-        "occupied_volume": 289.0,
-        "bounding_box": [
-          7,
-          7,
-          16
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 41,
-      "tool": "this_work",
-      "compilation_seconds": 0.15626883500044642,
-      "status": "passed",
-      "total_execution_time": 14
-    },
-    {
-      "spatial_footprint": 49,
-      "compilation_seconds": 123.11207914352417,
-      "tqec": {
-        "occupied_volume": 430.0,
-        "bounding_box": [
-          7,
-          7,
-          20
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 41,
-      "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 19
-    },
-    {
-      "benchmark": "mqt_min_parallel",
-      "seed": 42,
-      "tool": "topols",
-      "status": "failed_export",
-      "error": "There is already a port with the same label output_7 in the graph."
-    },
-    {
+      "total_execution_time": 11,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -310,13 +259,13 @@
       "benchmark": "mqt_max_parallel",
       "seed": 46,
       "tool": "this_work",
-      "compilation_seconds": 0.1604404669997166,
-      "status": "passed",
-      "total_execution_time": 11
+      "compilation_seconds": 0.12797721199967782,
+      "status": "passed"
     },
     {
+      "total_execution_time": 28,
       "spatial_footprint": 49,
-      "compilation_seconds": 282.47884726524353,
+      "compilation_seconds": 200.54534125328064,
       "tqec": {
         "occupied_volume": 584.0,
         "bounding_box": [
@@ -328,183 +277,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 46,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 28
+      "status": "passed"
     },
     {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 286,
-      "tqec": {
-        "occupied_volume": 286.0,
-        "bounding_box": [
-          7,
-          7,
-          17
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 42,
-      "tool": "this_work",
-      "compilation_seconds": 0.1467459150007926,
-      "status": "passed",
-      "total_execution_time": 15
-    },
-    {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 280,
-      "tqec": {
-        "occupied_volume": 280.0,
-        "bounding_box": [
-          7,
-          7,
-          18
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 43,
-      "tool": "this_work",
-      "compilation_seconds": 0.15187067400074739,
-      "status": "passed",
-      "total_execution_time": 16
-    },
-    {
-      "spatial_footprint": 49,
-      "compilation_seconds": 139.03399515151978,
-      "tqec": {
-        "occupied_volume": 392.0,
-        "bounding_box": [
-          7,
-          7,
-          22
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 43,
-      "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 21
-    },
-    {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 260,
-      "tqec": {
-        "occupied_volume": 260.0,
-        "bounding_box": [
-          7,
-          7,
-          16
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 44,
-      "tool": "this_work",
-      "compilation_seconds": 0.18781757699980517,
-      "status": "passed",
-      "total_execution_time": 14
-    },
-    {
-      "benchmark": "mqt_min_parallel",
-      "seed": 44,
-      "tool": "topols",
-      "status": "failed_export",
-      "error": "There is already a port with the same label output_3 in the graph."
-    },
-    {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 305,
-      "tqec": {
-        "occupied_volume": 305.0,
-        "bounding_box": [
-          7,
-          7,
-          16
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 45,
-      "tool": "this_work",
-      "compilation_seconds": 0.15174334499897668,
-      "status": "passed",
-      "total_execution_time": 14
-    },
-    {
-      "spatial_footprint": 49,
-      "compilation_seconds": 216.18053650856018,
-      "tqec": {
-        "occupied_volume": 534.0,
-        "bounding_box": [
-          7,
-          7,
-          27
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 45,
-      "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 26
-    },
-    {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 297,
-      "tqec": {
-        "occupied_volume": 297.0,
-        "bounding_box": [
-          7,
-          7,
-          15
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 46,
-      "tool": "this_work",
-      "compilation_seconds": 0.14758923500085075,
-      "status": "passed",
-      "total_execution_time": 13
-    },
-    {
-      "spatial_footprint": 49,
-      "compilation_seconds": 239.24479818344116,
-      "tqec": {
-        "occupied_volume": 462.0,
-        "bounding_box": [
-          7,
-          7,
-          22
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 46,
-      "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 21
-    },
-    {
+      "total_execution_time": 12,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -523,13 +299,13 @@
       "benchmark": "mqt_max_parallel",
       "seed": 47,
       "tool": "this_work",
-      "compilation_seconds": 0.17390872900068644,
-      "status": "passed",
-      "total_execution_time": 12
+      "compilation_seconds": 0.13915211399989857,
+      "status": "passed"
     },
     {
+      "total_execution_time": 18,
       "spatial_footprint": 49,
-      "compilation_seconds": 118.66204261779785,
+      "compilation_seconds": 78.0639865398407,
       "tqec": {
         "occupied_volume": 471.0,
         "bounding_box": [
@@ -541,40 +317,10 @@
       "benchmark": "mqt_max_parallel",
       "seed": 47,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 18
+      "status": "passed"
     },
     {
-      "width": 7,
-      "height": 7,
-      "allocated_sites": 49,
-      "data_slots": 9,
-      "active_data": 8,
-      "factory_sites": 0,
-      "occupied_volume": 279,
-      "tqec": {
-        "occupied_volume": 279.0,
-        "bounding_box": [
-          7,
-          7,
-          15
-        ]
-      },
-      "benchmark": "mqt_min_parallel",
-      "seed": 47,
-      "tool": "this_work",
-      "compilation_seconds": 0.1280066860000062,
-      "status": "passed",
-      "total_execution_time": 13
-    },
-    {
-      "benchmark": "mqt_min_parallel",
-      "seed": 47,
-      "tool": "topols",
-      "status": "failed_export",
-      "error": "There is already a port with the same label output_4 in the graph."
-    },
-    {
+      "total_execution_time": 10,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -593,13 +339,13 @@
       "benchmark": "mqt_max_parallel",
       "seed": 48,
       "tool": "this_work",
-      "compilation_seconds": 0.13215167099997416,
-      "status": "passed",
-      "total_execution_time": 10
+      "compilation_seconds": 0.1262459609997677,
+      "status": "passed"
     },
     {
+      "total_execution_time": 25,
       "spatial_footprint": 49,
-      "compilation_seconds": 143.8332874774933,
+      "compilation_seconds": 137.060471534729,
       "tqec": {
         "occupied_volume": 494.0,
         "bounding_box": [
@@ -611,10 +357,290 @@
       "benchmark": "mqt_max_parallel",
       "seed": 48,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 25
+      "status": "passed"
     },
     {
+      "total_execution_time": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 289,
+      "tqec": {
+        "occupied_volume": 289.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 41,
+      "tool": "this_work",
+      "compilation_seconds": 0.10950285900025847,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 19,
+      "spatial_footprint": 49,
+      "compilation_seconds": 83.36647057533264,
+      "tqec": {
+        "occupied_volume": 430.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 41,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 15,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 286,
+      "tqec": {
+        "occupied_volume": 286.0,
+        "bounding_box": [
+          7,
+          7,
+          17
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "this_work",
+      "compilation_seconds": 0.12340964600025472,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 18,
+      "spatial_footprint": 49,
+      "compilation_seconds": 87.47441172599792,
+      "tqec": {
+        "occupied_volume": 448.0,
+        "bounding_box": [
+          7,
+          7,
+          19
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 16,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 280,
+      "tqec": {
+        "occupied_volume": 280.0,
+        "bounding_box": [
+          7,
+          7,
+          18
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 43,
+      "tool": "this_work",
+      "compilation_seconds": 0.12159197800065158,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 21,
+      "spatial_footprint": 49,
+      "compilation_seconds": 104.0397777557373,
+      "tqec": {
+        "occupied_volume": 392.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 43,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 260,
+      "tqec": {
+        "occupied_volume": 260.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "this_work",
+      "compilation_seconds": 0.13519856099992467,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 27,
+      "spatial_footprint": 49,
+      "compilation_seconds": 108.93028855323792,
+      "tqec": {
+        "occupied_volume": 536.0,
+        "bounding_box": [
+          7,
+          7,
+          28
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 305,
+      "tqec": {
+        "occupied_volume": 305.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 45,
+      "tool": "this_work",
+      "compilation_seconds": 0.1201003039996067,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 26,
+      "spatial_footprint": 49,
+      "compilation_seconds": 141.03418278694153,
+      "tqec": {
+        "occupied_volume": 534.0,
+        "bounding_box": [
+          7,
+          7,
+          27
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 45,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 297,
+      "tqec": {
+        "occupied_volume": 297.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 46,
+      "tool": "this_work",
+      "compilation_seconds": 0.11364766499991674,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 21,
+      "spatial_footprint": 49,
+      "compilation_seconds": 154.44465708732605,
+      "tqec": {
+        "occupied_volume": 480.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 46,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 279,
+      "tqec": {
+        "occupied_volume": 279.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "this_work",
+      "compilation_seconds": 0.11250070500045695,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 21,
+      "spatial_footprint": 49,
+      "compilation_seconds": 192.97820329666138,
+      "tqec": {
+        "occupied_volume": 510.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
       "width": 7,
       "height": 7,
       "allocated_sites": 49,
@@ -633,13 +659,13 @@
       "benchmark": "mqt_min_parallel",
       "seed": 48,
       "tool": "this_work",
-      "compilation_seconds": 0.12551769899999954,
-      "status": "passed",
-      "total_execution_time": 13
+      "compilation_seconds": 0.14480545399965195,
+      "status": "passed"
     },
     {
+      "total_execution_time": 18,
       "spatial_footprint": 49,
-      "compilation_seconds": 107.2647955417633,
+      "compilation_seconds": 110.39834666252136,
       "tqec": {
         "occupied_volume": 408.0,
         "bounding_box": [
@@ -651,178 +677,158 @@
       "benchmark": "mqt_min_parallel",
       "seed": 48,
       "tool": "topols",
-      "status": "passed",
-      "total_execution_time": 18
-    }
-  ],
-  "summaries": [
-    {
-      "benchmark": "mqt_max_parallel",
-      "tool": "this_work",
-      "n": 5,
-      "tqec_occupied_volume": {
-        "mean": 258.6,
-        "sample_sd": 15.420765220960988,
-        "min": 238.0,
-        "max": 276.0
-      },
-      "total_execution_time": {
-        "mean": 11,
-        "sample_sd": 0.7071067811865476,
-        "min": 10,
-        "max": 12
-      },
-      "compilation_seconds": {
-        "mean": 0.17123034839978574,
-        "sample_sd": 0.030994657353386825,
-        "min": 0.13215167099997416,
-        "max": 0.20473802299966337
-      }
-    },
-    {
-      "benchmark": "mqt_max_parallel",
-      "tool": "topols",
-      "n": 5,
-      "tqec_occupied_volume": {
-        "mean": 502.6,
-        "sample_sd": 54.56922209451038,
-        "min": 437.0,
-        "max": 584.0
-      },
-      "total_execution_time": {
-        "mean": 23.6,
-        "sample_sd": 3.5777087639996634,
-        "min": 19,
-        "max": 28
-      },
-      "compilation_seconds": {
-        "mean": 196.8155089378357,
-        "sample_sd": 71.94983442160772,
-        "min": 111.01295375823975,
-        "max": 282.47884726524353
-      }
-    },
-    {
-      "benchmark": "mqt_max_parallel",
-      "tool": "paired_statistics",
-      "n": 5,
-      "tqec_occupied_volume_reduction_percent": {
-        "mean": 48.093443394290915,
-        "sample_sd": 6.203062235977401,
-        "min": 40.50343249427918,
-        "max": 53.76712328767124
-      },
-      "total_execution_time_reduction_percent": {
-        "mean": 52.33533834586466,
-        "sample_sd": 9.177066121429784,
-        "min": 42.10526315789473,
-        "max": 60.71428571428572
-      },
-      "compilation_speedup": {
-        "mean": 1190.411929113886,
-        "sample_sd": 494.0137450477859,
-        "min": 551.9760076484501,
-        "max": 1760.6458803547519
-      }
-    },
-    {
-      "benchmark": "mqt_min_parallel",
-      "tool": "this_work",
-      "n": 5,
-      "tqec_occupied_volume": {
-        "mean": 287.2,
-        "sample_sd": 15.498387012847498,
-        "min": 265.0,
-        "max": 305.0
-      },
-      "total_execution_time": {
-        "mean": 14,
-        "sample_sd": 1.224744871391589,
-        "min": 13,
-        "max": 16
-      },
-      "compilation_seconds": {
-        "mean": 0.14659795760020417,
-        "sample_sd": 0.012177462306973634,
-        "min": 0.12551769899999954,
-        "max": 0.15626883500044642
-      }
-    },
-    {
-      "benchmark": "mqt_min_parallel",
-      "tool": "topols",
-      "n": 5,
-      "tqec_occupied_volume": {
-        "mean": 445.2,
-        "sample_sd": 56.15336143099538,
-        "min": 392.0,
-        "max": 534.0
-      },
-      "total_execution_time": {
-        "mean": 21,
-        "sample_sd": 3.082207001484488,
-        "min": 18,
-        "max": 26
-      },
-      "compilation_seconds": {
-        "mean": 164.9672409057617,
-        "sample_sd": 58.93623071616637,
-        "min": 107.2647955417633,
-        "max": 239.24479818344116
-      }
-    },
-    {
-      "benchmark": "mqt_min_parallel",
-      "tool": "paired_statistics",
-      "n": 5,
-      "tqec_occupied_volume_reduction_percent": {
-        "mean": 35.00186533981243,
-        "sample_sd": 5.217181696619134,
-        "min": 28.57142857142857,
-        "max": 42.88389513108615
-      },
-      "total_execution_time_reduction_percent": {
-        "mean": 32.43043506201401,
-        "sample_sd": 9.404496619960526,
-        "min": 23.809523809523814,
-        "max": 46.15384615384615
-      },
-      "compilation_speedup": {
-        "mean": 1120.7082987895278,
-        "sample_sd": 376.31298456171726,
-        "min": 787.82233926024,
-        "max": 1621.0179433619403
-      }
+      "status": "passed"
     }
   ],
   "complete_seeds": [
     41,
+    42,
     43,
+    44,
     45,
     46,
+    47,
     48
   ],
-  "excluded_failures": [
+  "excluded_failures": [],
+  "summaries": [
     {
-      "benchmark": "mqt_min_parallel",
-      "seed": 42,
+      "benchmark": "mqt_max_parallel",
+      "tool": "this_work",
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 265.125,
+        "sample_sd": 15.084878900030038,
+        "min": 238.0,
+        "max": 283.0
+      },
+      "total_execution_time": {
+        "mean": 11.375,
+        "sample_sd": 0.9161253813129043,
+        "min": 10,
+        "max": 13
+      },
+      "compilation_seconds": {
+        "mean": 0.13334918237484317,
+        "sample_sd": 0.009372323018716704,
+        "min": 0.11771359099975598,
+        "max": 0.14364769099984187
+      }
+    },
+    {
+      "benchmark": "mqt_max_parallel",
       "tool": "topols",
-      "status": "failed_export",
-      "error": "There is already a port with the same label output_7 in the graph."
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 500.125,
+        "sample_sd": 44.06306357289029,
+        "min": 437.0,
+        "max": 584.0
+      },
+      "total_execution_time": {
+        "mean": 22.25,
+        "sample_sd": 3.6936238496708276,
+        "min": 18,
+        "max": 28
+      },
+      "compilation_seconds": {
+        "mean": 129.33675727248192,
+        "sample_sd": 42.41172634541613,
+        "min": 74.14084577560425,
+        "max": 200.54534125328064
+      }
+    },
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "paired_statistics",
+      "n": 8,
+      "tqec_occupied_volume_reduction_percent": {
+        "mean": 46.66796191383234,
+        "sample_sd": 5.204415724277322,
+        "min": 39.91507430997877,
+        "max": 53.76712328767124
+      },
+      "total_execution_time_reduction_percent": {
+        "mean": 47.23731203007519,
+        "sample_sd": 11.871558440024351,
+        "min": 31.57894736842105,
+        "max": 60.71428571428572
+      },
+      "compilation_speedup": {
+        "mean": 984.3016501582313,
+        "sample_sd": 355.29192287197964,
+        "min": 520.2926212997966,
+        "max": 1567.0394605391584
+      }
     },
     {
       "benchmark": "mqt_min_parallel",
-      "seed": 44,
-      "tool": "topols",
-      "status": "failed_export",
-      "error": "There is already a port with the same label output_3 in the graph."
+      "tool": "this_work",
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 282.625,
+        "sample_sd": 15.127434868948724,
+        "min": 260.0,
+        "max": 305.0
+      },
+      "total_execution_time": {
+        "mean": 14,
+        "sample_sd": 1.0690449676496976,
+        "min": 13,
+        "max": 16
+      },
+      "compilation_seconds": {
+        "mean": 0.12259464650009022,
+        "sample_sd": 0.012032105718924881,
+        "min": 0.10950285900025847,
+        "max": 0.14480545399965195
+      }
     },
     {
       "benchmark": "mqt_min_parallel",
-      "seed": 47,
       "tool": "topols",
-      "status": "failed_export",
-      "error": "There is already a port with the same label output_4 in the graph."
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 467.25,
+        "sample_sd": 56.19290753416179,
+        "min": 392.0,
+        "max": 536.0
+      },
+      "total_execution_time": {
+        "mean": 21.375,
+        "sample_sd": 3.420004177106889,
+        "min": 18,
+        "max": 27
+      },
+      "compilation_seconds": {
+        "mean": 122.83329230546951,
+        "sample_sd": 37.33986258405494,
+        "min": 83.36647057533264,
+        "max": 192.97820329666138
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "paired_statistics",
+      "n": 8,
+      "tqec_occupied_volume_reduction_percent": {
+        "mean": 38.7959262788728,
+        "sample_sd": 7.388976635506319,
+        "min": 28.57142857142857,
+        "max": 51.49253731343284
+      },
+      "total_execution_time_reduction_percent": {
+        "mean": 33.13277852751537,
+        "sample_sd": 11.196076022023744,
+        "min": 16.666666666666664,
+        "max": 48.14814814814815
+      },
+      "compilation_speedup": {
+        "mean": 1017.8133561767313,
+        "sample_sd": 363.5618129370978,
+        "min": 708.8134077122089,
+        "max": 1715.3510575411733
+      }
     }
   ]
 }

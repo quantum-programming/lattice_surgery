@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from comparison_common import (  # pyright: ignore[reportMissingImports]
     FAMILIES, ROOT, SEEDS, check_circuit,
 )
-from analyze_circuit_seeds import summarize  # pyright: ignore[reportMissingImports]
+from analyze_circuit_seeds import pm, summarize  # pyright: ignore[reportMissingImports]
 from cnot_semantics import verify_cnot_block_graph  # pyright: ignore[reportMissingImports]
 from schedule_to_zx import build_ours_positioned_zx  # pyright: ignore[reportMissingImports]
 from tqec_interop import (  # pyright: ignore[reportMissingImports]
@@ -34,11 +34,6 @@ class ComparisonTest(unittest.TestCase):
             path = ROOT / "benchmarks" / f"{name}.qasm"
             check_circuit(path)
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), hashes[name])
-        patch_record = report["topols_local_patch"]
-        patch = ROOT / patch_record["path"]
-        self.assertEqual(hashlib.sha256(patch.read_bytes()).hexdigest(),
-                         patch_record["sha256"])
-
         expected_graphs = set()
         for row in report["rows"]:
             tool = "ours" if row["tool"] == "this_work" else "topols"
@@ -65,22 +60,19 @@ class ComparisonTest(unittest.TestCase):
         complete_seeds, summaries = summarize(report["rows"])
         self.assertEqual(report["complete_seeds"], complete_seeds)
         self.assertEqual(report["summaries"], summaries)
-        failures = report["excluded_failures"]
-        self.assertEqual(
-            failures,
-            [row for row in report["rows"] if row["status"] != "passed"],
-        )
+        self.assertEqual(complete_seeds, list(SEEDS))
+        self.assertEqual(report["excluded_failures"], [])
+        expected_cases = {
+            (family, seed, tool)
+            for family in FAMILIES for seed in SEEDS
+            for tool in ("this_work", "topols")
+        }
         self.assertEqual(
             {(row["benchmark"], row["seed"], row["tool"])
-             for row in failures},
-            {("mqt_min_parallel", seed, "topols") for seed in (42, 44, 47)},
+             for row in report["rows"]}, expected_cases,
         )
-        for row in report["rows"]:
-            if row["status"] != "passed":
-                self.assertIn("same label", row["error"])
-        summaries = {(row["benchmark"], row["tool"]): row
-                     for row in report["summaries"]}
-        self.assertEqual({row["n"] for row in summaries.values()}, {5})
+        self.assertTrue(all(row["status"] == "passed" for row in report["rows"]))
+        self.assertEqual({row["n"] for row in summaries}, {len(SEEDS)})
 
     def test_manuscript_numbers(self):
         """Keep the published table and prose tied to the saved results."""
@@ -89,39 +81,23 @@ class ComparisonTest(unittest.TestCase):
             (row["benchmark"], row["tool"]): row
             for row in report["summaries"]
         }
-        expected_table = {
-            ("mqt_max_parallel", "this_work"): {
-                "total_execution_time": (11.0, 0.7),
-                "tqec_occupied_volume": (258.6, 15.4),
-            },
-            ("mqt_max_parallel", "topols"): {
-                "total_execution_time": (23.6, 3.6),
-                "tqec_occupied_volume": (502.6, 54.6),
-            },
-            ("mqt_min_parallel", "this_work"): {
-                "total_execution_time": (14.0, 1.2),
-                "tqec_occupied_volume": (287.2, 15.5),
-            },
-            ("mqt_min_parallel", "topols"): {
-                "total_execution_time": (21.0, 3.1),
-                "tqec_occupied_volume": (445.2, 56.2),
-            },
-        }
-        for key, expected_metrics in expected_table.items():
-            for metric, (expected_mean, expected_sd) in expected_metrics.items():
-                actual = summaries[key][metric]
-                self.assertEqual(round(actual["mean"], 1), expected_mean)
-                self.assertEqual(round(actual["sample_sd"], 1), expected_sd)
-
-        expected_prose_reductions = {
-            "mqt_max_parallel": 48,
-            "mqt_min_parallel": 35,
-        }
-        for family, expected in expected_prose_reductions.items():
-            reduction = summaries[(family, "paired_statistics")][
-                "tqec_occupied_volume_reduction_percent"
-            ]["mean"]
-            self.assertEqual(round(reduction), expected)
+        table = (ROOT / "figures" / "circuit_seeds_comparison.tex").read_text()
+        for family, label in (("mqt_max_parallel", "Max-parallel"),
+                              ("mqt_min_parallel", "Min-parallel")):
+            for tool, method in (("this_work", "Double-slice"), ("topols", "TopoLS")):
+                row = summaries[(family, tool)]
+                self.assertIn(
+                    f"{label} & {method} & {row['n']} & "
+                    f"{pm(row['total_execution_time'])} & "
+                    f"{pm(row['tqec_occupied_volume'])}", table,
+                )
+        prose = (ROOT / "topols_comparison.tex").read_text()
+        reductions = [round(summaries[(family, "paired_statistics")][
+            "tqec_occupied_volume_reduction_percent"]["mean"]) for family in FAMILIES]
+        self.assertIn(
+            f"${reductions[0]}\\%$ for max-parallel circuits and "
+            f"${reductions[1]}\\%$ for min-parallel circuits.", prose,
+        )
 
     def test_ours_tqec_export_for_cnot_path(self):
         circuit = QuantumCircuit(2)

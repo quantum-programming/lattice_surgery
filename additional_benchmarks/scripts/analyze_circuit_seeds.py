@@ -97,7 +97,8 @@ def main() -> None:
         r"\begin{table*}[t]",
         r"    \centering",
         r"    \setlength{\tabcolsep}{10pt}",
-        r"    \caption{Results over five paired circuit-generation seeds, reported as mean $\pm$ sample standard deviation.",
+        r"    \caption{Results over " + str(len(complete_seeds))
+        + r" paired circuit-generation seeds, reported as mean $\pm$ sample standard deviation.",
         r"    Total execution time is reported in code beats by each compiler. Occupied volume is measured from the exported TQEC BlockGraph.}",
         r"    \label{tab:topols_circuit_seeds}",
         r"    \begin{tabular}{llrrr}",

@@ -59,8 +59,7 @@ def build_topols_block_graph(compilation: Path) -> BlockGraph:
     The metadata pickle is written beside the temporary native compilation.
     No paths, colors, or port labels are reconstructed by our adapter.
     Sources: TopoLS export/bgraph.py build_pipe_diagram/save_bigraph;
-    tools/pipe_sim.py load_block_graph (commit e564d35 plus the recorded
-    temporary branching-endpoint patch).
+    tools/pipe_sim.py load_block_graph.
     """
     from topols.export.bgraph import build_pipe_diagram, save_bigraph
     from topols.tools.pipe_sim import load_block_graph

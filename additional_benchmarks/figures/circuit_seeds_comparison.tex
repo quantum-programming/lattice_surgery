@@ -2,17 +2,17 @@
 \begin{table*}[t]
     \centering
     \setlength{\tabcolsep}{10pt}
-    \caption{Results over five paired circuit-generation seeds, reported as mean $\pm$ sample standard deviation.
+    \caption{Results over 8 paired circuit-generation seeds, reported as mean $\pm$ sample standard deviation.
     Total execution time is reported in code beats by each compiler. Occupied volume is measured from the exported TQEC BlockGraph.}
     \label{tab:topols_circuit_seeds}
     \begin{tabular}{llrrr}
         \toprule
         Circuit & Method & $n$ & Total execution time & Occupied volume \\
         \midrule
-        Max-parallel & Double-slice & 5 & $11.0 \pm 0.7$ & $258.6 \pm 15.4$ \\
-        Max-parallel & TopoLS & 5 & $23.6 \pm 3.6$ & $502.6 \pm 54.6$ \\
-        Min-parallel & Double-slice & 5 & $14.0 \pm 1.2$ & $287.2 \pm 15.5$ \\
-        Min-parallel & TopoLS & 5 & $21.0 \pm 3.1$ & $445.2 \pm 56.2$ \\
+        Max-parallel & Double-slice & 8 & $11.4 \pm 0.9$ & $265.1 \pm 15.1$ \\
+        Max-parallel & TopoLS & 8 & $22.2 \pm 3.7$ & $500.1 \pm 44.1$ \\
+        Min-parallel & Double-slice & 8 & $14.0 \pm 1.1$ & $282.6 \pm 15.1$ \\
+        Min-parallel & TopoLS & 8 & $21.4 \pm 3.4$ & $467.2 \pm 56.2$ \\
         \bottomrule
     \end{tabular}
 \end{table*}

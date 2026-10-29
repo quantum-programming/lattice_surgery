@@ -68,10 +68,9 @@ The path search in our double-slice router is temporally local, spanning only tw
 Although the present scheduler uses whole-circuit critical-path information to prioritize ready instructions, the routing stage could in principle operate online using a bounded buffer of upcoming instructions.
 Such an extension would be useful for circuits containing classically conditioned Pauli corrections after $T$-gate reduction, as well as programs whose subsequent quantum instructions are selected or generated during execution.
 
-We use the latest official TopoLS revision available at the time of this experiment.
-\par\noindent\textcolor{red}{\textbf{TODO: Update the TopoLS revision and rerun the comparison after the upstream correctness fix is merged.}}
+We use TopoLS revision \texttt{19d1e1e}.
 
-We use five pairs of eight-qubit, 32-CNOT synthetic circuits generated with the max-parallel and min-parallel generators of MQT QECC~\citep{willeMQTHandbookSummary2024}.
+We use eight pairs of eight-qubit, 32-CNOT synthetic circuits generated with the max-parallel and min-parallel generators of MQT QECC~\citep{willeMQTHandbookSummary2024}.
 These families follow the contrasting initial parallelism studied in the MQT QECC compilation benchmarks~\citep[Section~VII.B]{herzogLatticeSurgeryCompilation2025}, with the same scaling of four CNOTs per qubit.
 
 For our compiler, we use SA-based mapping followed by double-slice routing with instruction look-ahead and kink-parity correction.
@@ -82,7 +81,7 @@ We report total execution time in code beats, following the metric used througho
 For these circuits, the volume counts computation and storage cubes, with ports and pipes contributing zero volume.
 \Cref{fig:comparison_embeddings} shows representative spacetime geometries, and \cref{tab:topols_circuit_seeds} reports aggregate results.
 
-Across the five paired seeds, double-slice routing reduces occupied volume by approximately $48\%$ for max-parallel circuits and $35\%$ for min-parallel circuits.
+Across the eight paired seeds, double-slice routing reduces occupied volume by approximately $47\%$ for max-parallel circuits and $39\%$ for min-parallel circuits.
 The corresponding total-execution-time results in \cref{tab:topols_circuit_seeds} show the same overall trend across both families.
 Thus, under the matched spatial allocations used here, bounded-depth routing consistently produces more compact spacetime geometries.
 
@@ -103,7 +102,7 @@ Thus, under the matched spatial allocations used here, bounded-depth routing con
         \caption{Min-parallel.}
         \label{fig:comparison_input_min}
     \end{subfigure}
-    \caption{Eight-qubit, 32-CNOT benchmark circuits generated with MQT QECC using its default random seed.}
+    \caption{Eight-qubit, 32-CNOT benchmark circuits generated with MQT QECC using input-generation seed 45.}
     \label{fig:comparison_inputs}
 \end{figure*}
 

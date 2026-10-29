@@ -9,21 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 FAMILIES = ("mqt_max_parallel", "mqt_min_parallel")
 SEEDS = tuple(range(41, 49))
 FIGURE_SEED = 45
-TOPOLS_PATCH = ROOT / "patches" / "topols-branching-endpoint.patch"
 
 
 def get_commit_id(path: Path) -> str:
     result = subprocess.run(
-        ["git", "-c", f"safe.directory={path.as_posix()}", "-C", str(path),
+        ["git", "-C", str(path),
          "rev-parse", "HEAD"], capture_output=True, text=True, check=True)
     return result.stdout.strip()
-
-
-def require_topols_patch() -> None:
-    subprocess.run([
-        "git", "-C", str(ROOT / "external" / "TopoLS"),
-        "apply", "--reverse", "--check", str(TOPOLS_PATCH),
-    ], capture_output=True, text=True, check=True)
 
 
 def check_circuit(path: Path):

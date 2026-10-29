@@ -8,11 +8,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from tqec.utils.exceptions import TQECError
-
 from comparison_common import (
-    FAMILIES, ROOT, SEEDS, TOPOLS_PATCH, check_circuit, get_commit_id,
-    require_topols_patch, source_hash,
+    FAMILIES, ROOT, SEEDS, check_circuit, get_commit_id, source_hash,
 )
 from qasm2in import qasm2in
 from run_topols import run as run_topols  # pyright: ignore[reportImplicitRelativeImport]
@@ -21,7 +18,6 @@ from tqec_interop import build_ours_block_graph, export_verified_block_graph
 def main() -> None:
     if sys.platform != "linux":
         raise SystemExit("Run this comparison under WSL/Linux.")
-    require_topols_patch()
 
     generator_python = ROOT / "benchmarks" / ".venv" / "bin" / "python"
     if not generator_python.is_file():
@@ -49,11 +45,6 @@ def main() -> None:
             "tqec": get_commit_id(ROOT / "external" / "tqec"),
         },
         "this_work_source_sha256": source_hash(),
-        "topols_local_patch": {
-            "path": TOPOLS_PATCH.relative_to(ROOT).as_posix(),
-            "sha256": hashlib.sha256(TOPOLS_PATCH.read_bytes()).hexdigest(),
-            "status": "temporary pending the upstream correctness fix",
-        },
         "configuration": {
             "this_work": "one layer, SA seed 1, 1,000,000 iterations, MSF and outer ring removed before scheduling, Double look-ahead, CareKinkParity",
             "topols": "three qubits per row (-l 3), Python engine, upstream defaults (block 10, ZX and direction optimization, seed 0, five internal seeds)",
@@ -110,22 +101,12 @@ def main() -> None:
                            and row["tool"] == "topols" for row in report["rows"]):
                     topols_output = temporary_path / f"topols-{name}"
                     bgraph_path = outputs / f"topols-{name}.bgraph"
-                    try:
-                        run_topols(qasm_path, topols_output, bgraph_path=bgraph_path)
-                        topols = json.loads((topols_output / "metrics.json").read_text())
-                        topols.update({
-                            "benchmark": family, "seed": seed, "tool": "topols",
-                            "status": "passed",
-                        })
-                    except TQECError as error:
-                        if not str(error).startswith(
-                                "There is already a port with the same label "):
-                            raise
-                        bgraph_path.unlink(missing_ok=True)
-                        topols = {
-                            "benchmark": family, "seed": seed, "tool": "topols",
-                            "status": "failed_export", "error": str(error),
-                        }
+                    run_topols(qasm_path, topols_output, bgraph_path=bgraph_path)
+                    topols = json.loads((topols_output / "metrics.json").read_text())
+                    topols.update({
+                        "benchmark": family, "seed": seed, "tool": "topols",
+                        "status": "passed",
+                    })
                     report["rows"].append(topols)
                 # Preserve completed cases if a later case fails.
                 partial.write_text(json.dumps(report, indent=2) + "\n")
