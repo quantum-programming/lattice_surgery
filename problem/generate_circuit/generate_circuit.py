@@ -145,22 +145,16 @@ def process_SELECT(
         elif gate["name"] == "CCX":
             # https://arxiv.org/abs/2210.14109
             # Fig. S20. (a)
+            # ( + Litinski Compilation in the multi-primitive case; see Appendix B.)
             assert gate["note"] in ["start_t3", "end_t3"]
             if gate["note"] == "start_t3":
                 control1 = gate["controls"][0]
                 control2 = gate["controls"][1]
                 target = gate["targets"][0]
                 if multibody_primitive:
+                    # Here, \pi/8 Pauli rotations are converted into the corresponding
+                    # Z^{\otimes n} measurements, at which S & H gates are neglected.
                     gates.append({"name": "MAGIC_MOVE", "targets": [target]})
-                    gates.append({"name": "Sdag", "targets": [target]})
-                    gates.append(
-                        {
-                            "name": "MAGIC_MZ3",
-                            "targets": [control2, target],
-                            "output": f"creg{creg_cnt}",
-                        }
-                    )
-                    creg_cnt += 2
                     gates.append(
                         {
                             "name": "MAGIC_MZ4",
@@ -168,7 +162,6 @@ def process_SELECT(
                             "output": f"creg{creg_cnt}",
                         }
                     )
-                    creg_cnt += 2
                     gates.append(
                         {
                             "name": "MAGIC_MZ3",
@@ -176,9 +169,15 @@ def process_SELECT(
                             "output": f"creg{creg_cnt}",
                         }
                     )
-                    creg_cnt += 2
+                    gates.append(
+                        {
+                            "name": "MAGIC_MZ3",
+                            "targets": [control2, target],
+                            "output": f"creg{creg_cnt}",
+                        }
+                    )
                     gates.append({"name": "H", "targets": [target]})
-                    gates.append({"name": "Sdag", "targets": [target]})
+                    gates.append({"name": "S", "targets": [target]})
                 else:
                     creg = f"creg{creg_cnt}"
                     gates.append({"name": "MAGIC_MOVE", "targets": [target]})
