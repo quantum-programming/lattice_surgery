@@ -1,0 +1,834 @@
+{
+  "seeds": [
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48
+  ],
+  "variation": "MQT input-generation seed. Compiler search seeds remain fixed.",
+  "commits": {
+    "this_work": "6bc7052356e9ddc7dbd25fb7e028110c4f01d935",
+    "topols": "19d1e1eb2ea4771596cd2e8f760147338fe3f75c",
+    "tqec": "8c352c0d605c90ca7eb877e02c777198407875e3"
+  },
+  "this_work_source_sha256": "607b5fabe7bd2b766218585184c412381df1d4d3541b683d7333db96582bf383",
+  "configuration": {
+    "this_work": "one layer, SA seed 1, 1,000,000 iterations, MSF and outer ring removed before scheduling, Double look-ahead, CareKinkParity",
+    "topols": "three qubits per row (-l 3), Python engine, upstream defaults (block 10, ZX and direction optimization, seed 0, five internal seeds)"
+  },
+  "inputs": {
+    "mqt_max_parallel-seed41": "de2470d091ba7f1f899e5d429e09ac1ac7215e9167029165bb6343a02a614f8e",
+    "mqt_max_parallel-seed42": "0d73a09ad294583145a1903e824c91a46b693ebc80be0d119c16487431908783",
+    "mqt_max_parallel-seed43": "cc3936119dd73135ad861e8d7f7b25018a54fe627fe132c00e9194b094e55add",
+    "mqt_max_parallel-seed44": "f0839d3a7915e530b9aaa88ed2aed531ba251bc0568897b3770f7035581c9477",
+    "mqt_max_parallel-seed45": "29e7956df3d392130ceb04bf5b75d7636ffdf299f3e7960aea83e06d43b2d540",
+    "mqt_max_parallel-seed46": "ea325720cd9f1f0177ee52c1f74a7815ad2c4f2ca08708354b9c0f349cd4c6f0",
+    "mqt_max_parallel-seed47": "01fa00c85a985bc3cb5f23ad064add8ce855264a3b7b367bfa6fbee08efd96f2",
+    "mqt_max_parallel-seed48": "b11a3063ad9c9d53063af8a3db31fd218de38c1b0e6a0055484da2d1cbb78961",
+    "mqt_min_parallel-seed41": "56de17a984f16f42357299ef860014e707018ca12159c47ed78962ea5aef9080",
+    "mqt_min_parallel-seed42": "5abcd3a9a06f438ad16f71ece4f6f972d975745bc9daaf70a3573cec83b6e72a",
+    "mqt_min_parallel-seed43": "d4e6ebb91b27ae82b55f81de58bc4d469deb454eaf94159cc9667c739b3dee1a",
+    "mqt_min_parallel-seed44": "4478588e48aafcf2382ef7277635c54c6c3cb6f308c9607b93c62a4656facfc5",
+    "mqt_min_parallel-seed45": "e98ebceb168d35ca819d8e195bd4e9c5fdea50671ce5dd7b9bb7cf2c2d7598b5",
+    "mqt_min_parallel-seed46": "98d8dc4c67ec0427d52e73db239effa444a06ec7f4dfa1c6320be82a295372ab",
+    "mqt_min_parallel-seed47": "bc45bca6bb66730fbbccd9d1c0952897fb626a2f57d39d246f55290014729219",
+    "mqt_min_parallel-seed48": "c06c4d920f6d090e94dd1a7320f1a493f20cc633fff820a6ea2882b537b9a046"
+  },
+  "rows": [
+    {
+      "total_execution_time": 12,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 249,
+      "tqec": {
+        "occupied_volume": 249.0,
+        "bounding_box": [
+          7,
+          7,
+          14
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 41,
+      "tool": "this_work",
+      "compilation_seconds": 0.12914160099990113,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 20,
+      "spatial_footprint": 49,
+      "compilation_seconds": 128.71396899223328,
+      "tqec": {
+        "occupied_volume": 490.0,
+        "bounding_box": [
+          7,
+          7,
+          21
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 41,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 273,
+      "tqec": {
+        "occupied_volume": 273.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 42,
+      "tool": "this_work",
+      "compilation_seconds": 0.14041692799992234,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 19,
+      "spatial_footprint": 49,
+      "compilation_seconds": 163.4709267616272,
+      "tqec": {
+        "occupied_volume": 524.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 42,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 276,
+      "tqec": {
+        "occupied_volume": 276.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 43,
+      "tool": "this_work",
+      "compilation_seconds": 0.14249836099997992,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 25,
+      "spatial_footprint": 49,
+      "compilation_seconds": 74.14084577560425,
+      "tqec": {
+        "occupied_volume": 478.0,
+        "bounding_box": [
+          7,
+          7,
+          26
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 43,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 272,
+      "tqec": {
+        "occupied_volume": 272.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 44,
+      "tool": "this_work",
+      "compilation_seconds": 0.14364769099984187,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 24,
+      "spatial_footprint": 49,
+      "compilation_seconds": 108.99849247932434,
+      "tqec": {
+        "occupied_volume": 523.0,
+        "bounding_box": [
+          7,
+          7,
+          25
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 44,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 260,
+      "tqec": {
+        "occupied_volume": 260.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 45,
+      "tool": "this_work",
+      "compilation_seconds": 0.11771359099975598,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 19,
+      "spatial_footprint": 49,
+      "compilation_seconds": 143.70002484321594,
+      "tqec": {
+        "occupied_volume": 437.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 45,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 11,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 270,
+      "tqec": {
+        "occupied_volume": 270.0,
+        "bounding_box": [
+          7,
+          7,
+          13
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 46,
+      "tool": "this_work",
+      "compilation_seconds": 0.12797721199967782,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 28,
+      "spatial_footprint": 49,
+      "compilation_seconds": 200.54534125328064,
+      "tqec": {
+        "occupied_volume": 584.0,
+        "bounding_box": [
+          7,
+          7,
+          29
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 46,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 12,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 283,
+      "tqec": {
+        "occupied_volume": 283.0,
+        "bounding_box": [
+          7,
+          7,
+          14
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 47,
+      "tool": "this_work",
+      "compilation_seconds": 0.13915211399989857,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 18,
+      "spatial_footprint": 49,
+      "compilation_seconds": 78.0639865398407,
+      "tqec": {
+        "occupied_volume": 471.0,
+        "bounding_box": [
+          7,
+          7,
+          19
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 47,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 10,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 238,
+      "tqec": {
+        "occupied_volume": 238.0,
+        "bounding_box": [
+          7,
+          7,
+          12
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 48,
+      "tool": "this_work",
+      "compilation_seconds": 0.1262459609997677,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 25,
+      "spatial_footprint": 49,
+      "compilation_seconds": 137.060471534729,
+      "tqec": {
+        "occupied_volume": 494.0,
+        "bounding_box": [
+          7,
+          7,
+          26
+        ]
+      },
+      "benchmark": "mqt_max_parallel",
+      "seed": 48,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 289,
+      "tqec": {
+        "occupied_volume": 289.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 41,
+      "tool": "this_work",
+      "compilation_seconds": 0.10950285900025847,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 19,
+      "spatial_footprint": 49,
+      "compilation_seconds": 83.36647057533264,
+      "tqec": {
+        "occupied_volume": 430.0,
+        "bounding_box": [
+          7,
+          7,
+          20
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 41,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 15,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 286,
+      "tqec": {
+        "occupied_volume": 286.0,
+        "bounding_box": [
+          7,
+          7,
+          17
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "this_work",
+      "compilation_seconds": 0.12340964600025472,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 18,
+      "spatial_footprint": 49,
+      "compilation_seconds": 87.47441172599792,
+      "tqec": {
+        "occupied_volume": 448.0,
+        "bounding_box": [
+          7,
+          7,
+          19
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 42,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 16,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 280,
+      "tqec": {
+        "occupied_volume": 280.0,
+        "bounding_box": [
+          7,
+          7,
+          18
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 43,
+      "tool": "this_work",
+      "compilation_seconds": 0.12159197800065158,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 21,
+      "spatial_footprint": 49,
+      "compilation_seconds": 104.0397777557373,
+      "tqec": {
+        "occupied_volume": 392.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 43,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 260,
+      "tqec": {
+        "occupied_volume": 260.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "this_work",
+      "compilation_seconds": 0.13519856099992467,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 27,
+      "spatial_footprint": 49,
+      "compilation_seconds": 108.93028855323792,
+      "tqec": {
+        "occupied_volume": 536.0,
+        "bounding_box": [
+          7,
+          7,
+          28
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 44,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 14,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 305,
+      "tqec": {
+        "occupied_volume": 305.0,
+        "bounding_box": [
+          7,
+          7,
+          16
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 45,
+      "tool": "this_work",
+      "compilation_seconds": 0.1201003039996067,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 26,
+      "spatial_footprint": 49,
+      "compilation_seconds": 141.03418278694153,
+      "tqec": {
+        "occupied_volume": 534.0,
+        "bounding_box": [
+          7,
+          7,
+          27
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 45,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 297,
+      "tqec": {
+        "occupied_volume": 297.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 46,
+      "tool": "this_work",
+      "compilation_seconds": 0.11364766499991674,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 21,
+      "spatial_footprint": 49,
+      "compilation_seconds": 154.44465708732605,
+      "tqec": {
+        "occupied_volume": 480.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 46,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 279,
+      "tqec": {
+        "occupied_volume": 279.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "this_work",
+      "compilation_seconds": 0.11250070500045695,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 21,
+      "spatial_footprint": 49,
+      "compilation_seconds": 192.97820329666138,
+      "tqec": {
+        "occupied_volume": 510.0,
+        "bounding_box": [
+          7,
+          7,
+          22
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 47,
+      "tool": "topols",
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 13,
+      "width": 7,
+      "height": 7,
+      "allocated_sites": 49,
+      "data_slots": 9,
+      "active_data": 8,
+      "factory_sites": 0,
+      "occupied_volume": 265,
+      "tqec": {
+        "occupied_volume": 265.0,
+        "bounding_box": [
+          7,
+          7,
+          15
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 48,
+      "tool": "this_work",
+      "compilation_seconds": 0.14480545399965195,
+      "status": "passed"
+    },
+    {
+      "total_execution_time": 18,
+      "spatial_footprint": 49,
+      "compilation_seconds": 110.39834666252136,
+      "tqec": {
+        "occupied_volume": 408.0,
+        "bounding_box": [
+          7,
+          7,
+          19
+        ]
+      },
+      "benchmark": "mqt_min_parallel",
+      "seed": 48,
+      "tool": "topols",
+      "status": "passed"
+    }
+  ],
+  "complete_seeds": [
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48
+  ],
+  "excluded_failures": [],
+  "summaries": [
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "this_work",
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 265.125,
+        "sample_sd": 15.084878900030038,
+        "min": 238.0,
+        "max": 283.0
+      },
+      "total_execution_time": {
+        "mean": 11.375,
+        "sample_sd": 0.9161253813129043,
+        "min": 10,
+        "max": 13
+      },
+      "compilation_seconds": {
+        "mean": 0.13334918237484317,
+        "sample_sd": 0.009372323018716704,
+        "min": 0.11771359099975598,
+        "max": 0.14364769099984187
+      }
+    },
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "topols",
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 500.125,
+        "sample_sd": 44.06306357289029,
+        "min": 437.0,
+        "max": 584.0
+      },
+      "total_execution_time": {
+        "mean": 22.25,
+        "sample_sd": 3.6936238496708276,
+        "min": 18,
+        "max": 28
+      },
+      "compilation_seconds": {
+        "mean": 129.33675727248192,
+        "sample_sd": 42.41172634541613,
+        "min": 74.14084577560425,
+        "max": 200.54534125328064
+      }
+    },
+    {
+      "benchmark": "mqt_max_parallel",
+      "tool": "paired_statistics",
+      "n": 8,
+      "tqec_occupied_volume_reduction_percent": {
+        "mean": 46.66796191383234,
+        "sample_sd": 5.204415724277322,
+        "min": 39.91507430997877,
+        "max": 53.76712328767124
+      },
+      "total_execution_time_reduction_percent": {
+        "mean": 47.23731203007519,
+        "sample_sd": 11.871558440024351,
+        "min": 31.57894736842105,
+        "max": 60.71428571428572
+      },
+      "compilation_speedup": {
+        "mean": 984.3016501582313,
+        "sample_sd": 355.29192287197964,
+        "min": 520.2926212997966,
+        "max": 1567.0394605391584
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "this_work",
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 282.625,
+        "sample_sd": 15.127434868948724,
+        "min": 260.0,
+        "max": 305.0
+      },
+      "total_execution_time": {
+        "mean": 14,
+        "sample_sd": 1.0690449676496976,
+        "min": 13,
+        "max": 16
+      },
+      "compilation_seconds": {
+        "mean": 0.12259464650009022,
+        "sample_sd": 0.012032105718924881,
+        "min": 0.10950285900025847,
+        "max": 0.14480545399965195
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "topols",
+      "n": 8,
+      "tqec_occupied_volume": {
+        "mean": 467.25,
+        "sample_sd": 56.19290753416179,
+        "min": 392.0,
+        "max": 536.0
+      },
+      "total_execution_time": {
+        "mean": 21.375,
+        "sample_sd": 3.420004177106889,
+        "min": 18,
+        "max": 27
+      },
+      "compilation_seconds": {
+        "mean": 122.83329230546951,
+        "sample_sd": 37.33986258405494,
+        "min": 83.36647057533264,
+        "max": 192.97820329666138
+      }
+    },
+    {
+      "benchmark": "mqt_min_parallel",
+      "tool": "paired_statistics",
+      "n": 8,
+      "tqec_occupied_volume_reduction_percent": {
+        "mean": 38.7959262788728,
+        "sample_sd": 7.388976635506319,
+        "min": 28.57142857142857,
+        "max": 51.49253731343284
+      },
+      "total_execution_time_reduction_percent": {
+        "mean": 33.13277852751537,
+        "sample_sd": 11.196076022023744,
+        "min": 16.666666666666664,
+        "max": 48.14814814814815
+      },
+      "compilation_speedup": {
+        "mean": 1017.8133561767313,
+        "sample_sd": 363.5618129370978,
+        "min": 708.8134077122089,
+        "max": 1715.3510575411733
+      }
+    }
+  ]
+}

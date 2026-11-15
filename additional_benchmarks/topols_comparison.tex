@@ -1,0 +1,141 @@
+\documentclass[aps, prx, 10pt, superscriptaddress, longbibliography, twocolumn]{revtex4-2}
+
+\usepackage{array} % it causes arxiv issue (https://tex.stackexchange.com/questions/731843/p-column-type-stops-compilation-in-revtex)
+
+\usepackage[table, dvipsnames]{xcolor} % to suppress warning
+\usepackage[linesnumbered, ruled]{algorithm2e} % \begin{algorithm}
+\usepackage{amsmath} % \begin{align*}
+\usepackage{amssymb} % \mathbb{A}
+\usepackage{amsthm} % \newtheorem
+\usepackage{bm, bbm} % \bm{A}, \bbm{1}
+\usepackage{booktabs} % \toprule, \midrule, \bottomrule
+\usepackage{enumitem} % \begin{enumerate}[label=(\alph*)]
+\usepackage{geometry} % \geometry{margin=1in}
+\usepackage{hyperref} % \href{URL}{text}
+\usepackage{ifthen} % \ifthenelse
+\usepackage{mathrsfs} % \mathscr{A}
+\usepackage{mathtools} % \mathrlap
+\usepackage{multirow} % \multirow
+\usepackage{mwe} % \includegraphics{example-image}
+\usepackage[sort&compress]{natbib} % \citet, \citep
+\usepackage{qcircuit} % \Qcircuit input diagrams
+\usepackage{physics} % \qty, \norm, \abs
+\usepackage{subcaption}
+\usepackage{thm-restate} % \begin{restatable}{theorem}{thm}
+\usepackage{tikz} % \begin{tikzpicture}
+\usepackage{xparse} % \NewDocumentCommand
+\usepackage[capitalise]{cleveref} % must be loaded after hyperref
+\usepackage{pifont}
+\usepackage{cancel}
+
+\geometry{margin=20truemm}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\definecolor{cA}{HTML}{0072BD}
+\definecolor{cB}{HTML}{EDB120}
+\definecolor{cC}{HTML}{77AC30}
+\definecolor{cD}{HTML}{D95319}
+
+
+\newcommand{\st}{\text{ s.t. }}
+\newcommand{\Cpp}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bf +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bf +}}
+\newcommand{\defeq}{\coloneqq}
+\newcommand{\eqdef}{\eqqcolon}
+\newcommand{\relmiddle}[1]{\mathrel{}\middle#1\mathrel{}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+\crefname{section}{Sec.}{Secs.}
+\Crefname{section}{Section}{Sections}
+
+\allowdisplaybreaks[4]
+
+\begin{document}
+% Suggested insertion: a new subsection in Numerical Experiments, before Discussion.
+\subsection{Comparison with Existing Compilers}
+\label{sec:topols_comparison}
+
+Existing lattice-surgery compilers include scalable instruction-level compilation~\citep{watkinsHighPerformanceCompiler2024} and dependency-aware mapping and routing~\citep{molaviDependencyAwareCompilationSurface2025}.
+Here we compare our compiler with TopoLS~\citep{zhouTopoLSLatticeSurgery2026}, which simplifies a ZX graph before embedding it in three-dimensional spacetime, whereas our compiler optimizes spacetime paths on a regular patch layout.
+Both outputs can be represented as TQEC BlockGraphs~\citep{suauTqecPythonPackage2026}, enabling their occupied geometries to be evaluated in a common representation.
+The path search in our double-slice router is temporally local, spanning only two adjacent code beats, unlike whole-circuit transformations that require the circuit fragment to be available before embedding.
+Although the present scheduler uses whole-circuit critical-path information to prioritize ready instructions, the routing stage could in principle operate online using a bounded buffer of upcoming instructions.
+Such an extension would be useful for circuits containing classically conditioned Pauli corrections after $T$-gate reduction, as well as programs whose subsequent quantum instructions are selected or generated during execution.
+
+We use TopoLS revision \texttt{19d1e1e}.
+
+We use eight pairs of eight-qubit, 32-CNOT synthetic circuits generated with the max-parallel and min-parallel generators of MQT QECC~\citep{willeMQTHandbookSummary2024}.
+These families follow the contrasting initial parallelism studied in the MQT QECC compilation benchmarks~\citep[Section~VII.B]{herzogLatticeSurgeryCompilation2025}, with the same scaling of four CNOTs per qubit.
+
+For our compiler, we use SA-based mapping followed by double-slice routing with instruction look-ahead and kink-parity correction.
+TopoLS uses its Python engine and default search settings, including ZX and direction optimization and a five-seed search.
+Both compilers are allocated the same $7 \times 7$ spatial footprint while retaining their respective placement constraints and search strategies.
+
+We report total execution time in code beats, following the metric used throughout this paper, and convert both outputs to TQEC BlockGraphs for common volume accounting.
+For these circuits, the volume counts computation and storage cubes, with ports and pipes contributing zero volume.
+\Cref{fig:comparison_embeddings} shows representative spacetime geometries, and \cref{tab:topols_circuit_seeds} reports aggregate results.
+
+Across the eight paired seeds, double-slice routing reduces occupied volume by approximately $47\%$ for max-parallel circuits and $39\%$ for min-parallel circuits.
+The corresponding total-execution-time results in \cref{tab:topols_circuit_seeds} show the same overall trend across both families.
+Thus, under the matched spatial allocations used here, bounded-depth routing consistently produces more compact spacetime geometries.
+
+\input{figures/circuit_seeds_comparison.tex}
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}[t]{0.49\linewidth}
+        \centering
+        \resizebox*{!}{0.27\textwidth}{\input{figures/mqt_max_parallel.tex}}
+        \caption{Max-parallel.}
+        \label{fig:comparison_input_max}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.49\linewidth}
+        \centering
+        \resizebox*{!}{0.27\textwidth}{\input{figures/mqt_min_parallel.tex}}
+        \caption{Min-parallel.}
+        \label{fig:comparison_input_min}
+    \end{subfigure}
+    \caption{Eight-qubit, 32-CNOT benchmark circuits generated with MQT QECC using input-generation seed 45.}
+    \label{fig:comparison_inputs}
+\end{figure*}
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}[t]{0.47\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/ours-mqt_max_parallel.png}
+        \caption{Double-slice, max-parallel.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.47\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/topols-mqt_max_parallel.png}
+        \caption{TopoLS, max-parallel.}
+    \end{subfigure}
+    \par\medskip
+    \begin{subfigure}[t]{0.47\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/ours-mqt_min_parallel.png}
+        \caption{Double-slice, min-parallel.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.47\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/topols-mqt_min_parallel.png}
+        \caption{TopoLS, min-parallel.}
+    \end{subfigure}
+    \caption{Representative compiled spacetime geometries, rendered from TQEC BlockGraphs using TopoLS's renderer. The time direction is vertical, and blue and red faces indicate block boundary bases. Grey blocks indicate input/output ports and contribute zero volume. Each panel is independently fitted to its coordinate bounds, while \cref{tab:topols_circuit_seeds} provides the aggregate quantitative comparison.}
+    \label{fig:comparison_embeddings}
+\end{figure*}
+
+\bibliography{../LatticeSurgery}
+
+\end{document}
+

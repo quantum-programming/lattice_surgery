@@ -1,54 +1,33 @@
-# Additional Benchmarks
+# Additional benchmarks
 
-## Setup <!-- for LLM: DO NOT EDIT THIS SECTION -->
+This directory reproduces the comparison with TopoLS on two eight-qubit,
+32-CNOT circuit families over generation seeds 41--48. All eight seeds have complete
+paired results. Seed 45 supplies the manuscript circuit and geometry figures.
 
-For Windows users, we recommend to run on WSL2.
+## Reproduction
+
+Use Linux/WSL, Python 3.13, uv, and a C++17 compiler. Initialize the TopoLS and
+TQEC submodules at the revisions recorded in `circuit_seeds.json`, then run:
 
 ```bash
-# 1. check that you are in the lattice_surgery repository
-
-# 2. update submodules
-git submodule update --init --recursive
-
-# 3. install dependencies
-sudo apt update
-sudo apt install -y \
-  build-essential \
-  cmake \
-  pkg-config \
-  libsqlite3-dev \
-  libzstd-dev \
-  libpq-dev \
-  libboost-graph-dev
-
-# 4. build liblsqecc
-# See lattice_surgery/additional_benchmarks/external/liblsqecc/README.md
-cd additional_benchmarks/external/liblsqecc
-mkdir build
-cd build
-cmake ..
-cmake --build .
-# The output should look like:
-# -- Configuring done (52.0s)
-# -- Generating done (0.0s)
-# -- Build files have been written to: /home/hirok/University/lattice_surgery/additional_benchmarks/external/liblsqecc/build
+uv sync --frozen
+uv sync --project benchmarks --frozen
+.venv/bin/python scripts/run_circuit_seeds.py
+.venv/bin/python -m unittest discover -s tests -v
 ```
 
-## Reproducibility contract
+Environment synchronization installs the locked dependencies and removes packages
+not included in each project. The experiment generates all inputs, compiles both
+methods, verifies and
+saves their TQEC BlockGraphs, writes `circuit_seeds.json`, regenerates the aggregate
+LaTeX table, and renders the four seed-45 geometry figures.
 
-From this `additional_benchmarks` directory, we can run the following test:
+Versioned experiment data are organized as follows:
 
-```powershell
-# cd ../../../ # If necessary.
-uv sync
+- `benchmarks/`: all generated QASM inputs.
+- `results/`: every successful BGRAPH output.
+- `circuit_seeds.json`: configuration, input hashes, failures, metrics, and summaries.
+- `figures/`: the aggregate table and seed-45 manuscript figures.
 
-# The editable install creates untracked package metadata in the submodule. Remove it to keep Git status clean.
-rm -rf external/Surface_Code_Compiler/src/surface_code_routing.egg-info
-
-uv run scripts/run_smoke.py
-uv run python -m unittest discover -s tests -v
-```
-
-`uv sync` creates and updates the shared `.venv/` from `pyproject.toml` and `uv.lock`.
-Normalized results are written to `results/smoke_results.json` and `results/smoke_results.csv`.
-Temporary and upstream-native outputs stay under ignored `work/` and `results/raw/` paths.
+The comparison and generator environments remain visible at `.venv/` and
+`benchmarks/.venv/`.
