@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include "../util/problem.hpp"
 
 typedef std::vector<std::vector<std::vector<std::vector<int>>>> vector4D;
@@ -102,21 +104,6 @@ struct MultiTimeSliceSurgeryTree {
       neighbors.at(second).push_back(first);
     }
     return neighbors;
-  }
-
-  static MultiTimeSliceSurgeryTree from_path(
-      std::vector<std::pair<int, int>> path) {
-    MultiTimeSliceSurgeryTree tree{std::move(path), {}, {}};
-    if (tree.voxels.empty()) return tree;
-
-    tree.leaves.push_back(tree.voxels.front());
-    if (tree.voxels.size() > 1) tree.leaves.push_back(tree.voxels.back());
-
-    tree.edges.reserve(tree.voxels.size() - 1);
-    for (size_t index = 1; index < tree.voxels.size(); index++) {
-      tree.edges.emplace_back(tree.voxels[index - 1], tree.voxels[index]);
-    }
-    return tree;
   }
 };
 
@@ -347,30 +334,38 @@ class MultiTimeSliceScheduleResult
   }
 };
 
+using MultiTimeSliceSurgeryRoute =
+    std::variant<MultiTimeSliceSurgeryPath, MultiTimeSliceSurgeryTree>;
+
 class MultiTimeSliceMultiBodyScheduleResult {
  public:
   Problem prob;
   int total_time = 0;
-  // Entries are indexed by Instruction::instId.
-  std::vector<MultiTimeSliceSurgeryTree> surgery_trees;
+  // Routes are indexed by Instruction::instId.
+  std::vector<MultiTimeSliceSurgeryRoute> surgery_routes;
 
   MultiTimeSliceMultiBodyScheduleResult(
-      const Problem& prob, std::vector<MultiTimeSliceSurgeryTree> surgery_trees)
-      : prob(prob), surgery_trees(std::move(surgery_trees)) {
-    for (const auto& tree : this->surgery_trees) {
-      for (const auto& voxel : tree.voxels) {
+      const Problem& prob, std::vector<MultiTimeSliceSurgeryRoute> routes)
+      : prob(prob), surgery_routes(std::move(routes)) {
+    for (size_t index = 0; index < surgery_routes.size(); index++) {
+      for (const auto& voxel : voxels_at(index)) {
         total_time = std::max(total_time, voxel.first + 1);
       }
     }
   }
 
   const std::vector<std::pair<int, int>>& voxels_at(size_t index) const {
-    return surgery_trees.at(index).voxels;
+    const auto& route = surgery_routes.at(index);
+    if (const auto* path = std::get_if<MultiTimeSliceSurgeryPath>(&route)) {
+      return path->timing_positions;
+    } else {
+      return std::get<MultiTimeSliceSurgeryTree>(route).voxels;
+    }
   }
 
   vector4D construct_lattice() const {
     return construct_schedule_lattice(
-        prob, total_time, surgery_trees.size(),
+        prob, total_time, surgery_routes.size(),
         [this](size_t index) -> const auto& { return voxels_at(index); });
   }
 };

@@ -55,9 +55,9 @@ class ScheduleResultValidator {
             std::get_if<MultiTimeSliceScheduleResult>(&result)) {
       validate_routes(path_schedule->surgery_paths);
     } else {
-      const auto& tree_schedule =
+      const auto& multibody_schedule =
           std::get<MultiTimeSliceMultiBodyScheduleResult>(result);
-      validate_routes(tree_schedule.surgery_trees);
+      validate_routes(multibody_schedule.surgery_routes);
     }
     packing_is_valid();
   }
@@ -87,7 +87,7 @@ class ScheduleResultValidator {
     }
   }
 
-  void path_is_connected(const MultiTimeSliceSurgeryPath& path) {
+  void path_is_connected(const MultiTimeSliceSurgeryPath& path) const {
     for (int pos_index = 0; pos_index < int(path.timing_positions.size()) - 1;
          pos_index++) {
       assert(voxels_are_adjacent(path.timing_positions[pos_index],
@@ -107,7 +107,7 @@ class ScheduleResultValidator {
   }
 
   void kink_parity_is_valid(const Instruction& inst,
-                            const MultiTimeSliceSurgeryPath& path) {
+                            const MultiTimeSliceSurgeryPath& path) const {
     const auto& voxels = path.timing_positions;
     if (is_transversal_cx(inst, voxels.front(), voxels.back(), voxels.size())) {
       return;
@@ -118,7 +118,7 @@ class ScheduleResultValidator {
 
  private:
   template <typename Route>
-  void validate_routes(const std::vector<Route>& routes) {
+  void validate_routes(const std::vector<Route>& routes) const {
     assert(routes.size() == prob.instructions.size());
     for (size_t index = 0; index < prob.instructions.size(); index++) {
       validate_surgery(prob.instructions[index], routes[index]);
@@ -126,7 +126,14 @@ class ScheduleResultValidator {
   }
 
   void validate_surgery(const Instruction& inst,
-                        const MultiTimeSliceSurgeryPath& path) {
+                        const MultiTimeSliceSurgeryRoute& route) const {
+    std::visit(
+        [this, &inst](const auto& surgery) { validate_surgery(inst, surgery); },
+        route);
+  }
+
+  void validate_surgery(const Instruction& inst,
+                        const MultiTimeSliceSurgeryPath& path) const {
     assert(!path.timing_positions.empty());
     operands_are_correct(inst, path);
 
@@ -143,6 +150,7 @@ class ScheduleResultValidator {
 
   void validate_surgery(const Instruction& inst,
                         const MultiTimeSliceSurgeryTree& tree) const {
+    assert(inst.targetIds.size() > 2);
     assert(!tree.voxels.empty());
     for (const auto& voxel : tree.voxels) {
       assert(0 <= voxel.first);
@@ -163,7 +171,6 @@ class ScheduleResultValidator {
       return;
     }
 
-    const bool multibody = inst.targetIds.size() > 2;
     if (check_topology) {
       for (const auto& [first, second] : tree.edges) {
         assert(voxels_are_adjacent(first, second));
@@ -182,20 +189,13 @@ class ScheduleResultValidator {
       }
     }
 
-    const auto& first_voxel = tree.leaves.at(0);
-    const bool check_path_kink = !multibody && validation_flags.check_kink;
-    const bool transversal_cx =
-        (check_topology || check_path_kink) &&
-        is_transversal_cx(inst, first_voxel, tree.leaves.back(),
-                          tree.voxels.size());
-    validate_tree_connectivity_and_path_kink(
-        inst, tree, neighbors, check_path_kink && !transversal_cx);
+    validate_tree_connectivity(tree, neighbors);
 
-    if (check_topology && !transversal_cx) {
+    if (check_topology) {
       validate_tree_boundaries(inst, tree, neighbors, operand_offset);
     }
-    if (multibody && validation_flags.check_kink) {
-      assert(prob.has_valid_multibody_segments(neighbors, first_voxel));
+    if (validation_flags.check_kink) {
+      assert(prob.has_valid_multibody_segments(neighbors, tree.leaves.front()));
     }
   }
 
@@ -218,14 +218,10 @@ class ScheduleResultValidator {
     return operand_offset;
   }
 
-  void validate_tree_connectivity_and_path_kink(
-      const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
+  void validate_tree_connectivity(
+      const MultiTimeSliceSurgeryTree& tree,
       const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
-          neighbors,
-      bool check_path_kink) const {
-    // A tree with two leaves is a path. Its edges are visited in order.
-    const bool collect_directions = check_path_kink && tree.voxels.size() > 3;
-    std::vector<Direction> directions;
+          neighbors) const {
     const auto& first_voxel = tree.leaves.at(0);
     std::vector<std::pair<int, int>> dfs_stack{first_voxel};
     std::set<std::pair<int, int>> visited{first_voxel};
@@ -236,18 +232,9 @@ class ScheduleResultValidator {
         const bool first_visit = visited.insert(neighbor).second;
         if (!first_visit) continue;
         dfs_stack.push_back(neighbor);
-        if (collect_directions) {
-          const auto direction = prob.voxel_edge_direction(voxel, neighbor);
-          if (directions.empty() || directions.back() != direction) {
-            directions.push_back(direction);
-          }
-        }
       }
     }
     assert(visited.size() == tree.voxels.size());
-    if (check_path_kink) {
-      assert(inst.kink_parity_allowed[prob.count_kink(directions) % 2]);
-    }
   }
 
   void validate_tree_boundaries(
