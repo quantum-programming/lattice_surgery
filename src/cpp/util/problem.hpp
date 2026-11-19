@@ -171,6 +171,14 @@ class Problem {
     }
   }
 
+  Direction voxel_edge_direction(const std::pair<int, int>& first,
+                                 const std::pair<int, int>& second) const {
+    // Time and the physical layer axis both count as Z for kink checks.
+    return first.first != second.first
+               ? Direction::Z
+               : adjacent_direction(first.second, second.second);
+  }
+
   std::vector<Direction> run_compressed_adjacent_directions(
       const std::vector<int>& path_positions) const {
     std::vector<Direction> run_compressed_directions;
@@ -191,16 +199,8 @@ class Problem {
       const std::vector<std::pair<int, int>>& path) const {
     std::vector<Direction> run_compressed_directions;
     for (int path_idx = 0; path_idx < int(path.size()) - 1; path_idx++) {
-      auto [t0, pos0] = path[path_idx];
-      auto [t1, pos1] = path[path_idx + 1];
-      Direction dir;
-      if (t0 != t1) {
-        // We can regard time axis and Z axis as the same direction
-        // when counting kinks.
-        dir = Direction::Z;
-      } else {
-        dir = adjacent_direction(pos0, pos1);
-      }
+      const Direction dir =
+          voxel_edge_direction(path[path_idx], path[path_idx + 1]);
       if (run_compressed_directions.empty() ||
           run_compressed_directions.back() != dir) {
         run_compressed_directions.push_back(dir);
@@ -233,5 +233,51 @@ class Problem {
   int count_kink(const std::vector<std::pair<int, int>>& path) const {
     if (path.size() <= 3) return 0;
     return count_kink(run_compressed_adjacent_directions(path));
+  }
+
+  // Appendix A segment conditions for a geometrically valid undirected tree.
+  bool has_valid_multibody_segments(
+      const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
+          neighbors,
+      const std::pair<int, int>& pivot_leaf) const {
+    const auto pivot = neighbors.find(pivot_leaf);
+    if (pivot == neighbors.end() || pivot->second.size() != 1) return false;
+
+    struct State {
+      std::pair<int, int> voxel;
+      Direction incoming_direction;
+      Direction last_planar_axis;
+      bool odd;
+    };
+    std::vector<State> dfs_stack{
+        {pivot_leaf, Direction::H, Direction::H, false}};
+    std::set<std::pair<int, int>> visited{pivot_leaf};
+    while (!dfs_stack.empty()) {
+      const auto state = dfs_stack.back();
+      dfs_stack.pop_back();
+      const auto& adjacent = neighbors.at(state.voxel);
+      if (state.odd && adjacent.size() != 2) return false;
+
+      for (const auto& neighbor : adjacent) {
+        if (visited.count(neighbor)) continue;
+        visited.insert(neighbor);
+        const Direction direction = voxel_edge_direction(state.voxel, neighbor);
+        if (direction == Direction::Z) {
+          // A relay may have no fork and must have a planar edge at each end.
+          if (adjacent.size() != 2 || neighbors.at(neighbor).size() != 2) {
+            return false;
+          }
+          dfs_stack.push_back(
+              {neighbor, direction, state.last_planar_axis, state.odd});
+        } else {
+          // A cross-plane run is a kink if the two planar axes differ.
+          const bool kink = state.incoming_direction == Direction::Z &&
+                            state.last_planar_axis != direction;
+          const bool neighbor_odd = state.odd ^ kink;
+          dfs_stack.push_back({neighbor, direction, direction, neighbor_odd});
+        }
+      }
+    }
+    return visited.size() == neighbors.size();
   }
 };
