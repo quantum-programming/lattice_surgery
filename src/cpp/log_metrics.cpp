@@ -1,5 +1,8 @@
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
+#include <sstream>
+#include <type_traits>
 
 #include "allocator/allocator.hpp"
 #include "scheduler/doubleTimeSlice.hpp"
@@ -11,24 +14,43 @@
 
 namespace fs = std::filesystem;
 
-template <class Result>
-void validate(std::string routing_option, Result result) {
-  RoutingAlgorithm routing_algo;
-  if (routing_option == "Yes_Kink") {
-    routing_algo = CareKinkParity;
-  } else if (routing_option == "No_Kink") {
-    routing_algo = IgnoreKinkParity;
-  } else if (routing_option == "No_Top") {
-    routing_algo = IgnoreTopology;
-  } else if (routing_option == "No_MP") {
-    routing_algo = IgnoreMagicTopology;
-  } else if (routing_option == "No_MSF") {
-    routing_algo = IgnoreTopologyInfiniteMagic;
-  } else {
-    assert(false);
+const char* routing_option_name(RoutingAlgorithm algo) {
+  switch (algo) {
+    case IgnoreTopologyInfiniteMagic:
+      return "No_MSF";
+    case IgnoreTopology:
+      return "No_Top";
+    case IgnoreMagicTopology:
+      return "No_MP";
+    case IgnoreKinkParity:
+      return "No_Kink";
+    case CareKinkParity:
+      return "Yes_Kink";
+    default:
+      assert(false);
+      return "";
   }
-  ScheduleResultValidator(result, routing_algo).validate_all();
-};
+}
+
+template <typename Result, RoutingAlgorithm... algorithms, typename Scheduler>
+void append_metrics(std::ostream& out, const std::string& prefix,
+                    const char* scheduler_name, Scheduler& scheduler) {
+  const auto append_row = [&](RoutingAlgorithm algo, const auto& result) {
+    ScheduleResultValidator(result, algo).validate_all();
+    out << prefix << scheduler_name << ',' << routing_option_name(algo) << ','
+        << result.total_time << ',' << result.compute_circuit_volume() << '\n';
+  };
+
+  if constexpr (std::is_void_v<Result>) {
+    (append_row(algorithms,
+                scheduler.template look_ahead_schedule<algorithms>()),
+     ...);
+  } else {
+    (append_row(algorithms,
+                scheduler.template look_ahead_schedule<algorithms, Result>()),
+     ...);
+  }
+}
 
 std::string to_csv(fs::path input_path, std::string factory, int layer_count,
                    std::string allocator, double msf_coeff, int msf_prep_time) {
@@ -56,72 +78,34 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
       + allocator + ","                                 //
       + msf_coeff_str + "," + std::to_string(msf_prep_time) + ",";
 
-  {
-    SingleTimeSliceScheduler single_scheduler(prob);
-
-    std::vector<std::pair<std::string, SingleTimeSliceScheduleResult>> results =
-        {
-            {"No_MSF", single_scheduler
-                           .look_ahead_schedule<IgnoreTopologyInfiniteMagic>()},
-            {"No_Top", single_scheduler.look_ahead_schedule<IgnoreTopology>()},
-            {"No_MP",
-             single_scheduler.look_ahead_schedule<IgnoreMagicTopology>()},
-            {"No_Kink",
-             single_scheduler.look_ahead_schedule<IgnoreKinkParity>()},
-
-        };
-    if (layer_count > 1) {
-      results.push_back(
-          {"Yes_Kink", single_scheduler.look_ahead_schedule<CareKinkParity>()});
-    }
-
-    for (auto&& [option, result] : results) {
-      validate(option, result);
-      ss << csv_row_prefix << "Single" << "," << option << ","
-         << result.total_time << "," << result.compute_circuit_volume() << "\n";
-    }
-  }
-  {
+  const bool has_multibody = std::any_of(
+      prob.instructions.begin(), prob.instructions.end(),
+      [](const Instruction& inst) { return inst.targetIds.size() > 2; });
+  if (has_multibody) {
     DoubleTimeSliceScheduler double_scheduler(prob);
-
-    std::vector<std::pair<std::string, MultiTimeSliceScheduleResult>> results =
-        {
-            {"No_MSF", double_scheduler
-                           .look_ahead_schedule<IgnoreTopologyInfiniteMagic>()},
-            {"No_Top", double_scheduler.look_ahead_schedule<IgnoreTopology>()},
-            {"No_MP",
-             double_scheduler.look_ahead_schedule<IgnoreMagicTopology>()},
-            {"No_Kink",
-             double_scheduler.look_ahead_schedule<IgnoreKinkParity>()},
-            {"Yes_Kink",
-             double_scheduler.look_ahead_schedule<CareKinkParity>()},
-        };
-
-    for (auto&& [option, result] : results) {
-      validate(option, result);
-      ss << csv_row_prefix << "Double" << "," << option << ","
-         << result.total_time << "," << result.compute_circuit_volume() << "\n";
+    append_metrics<MultiTimeSliceMultiBodyScheduleResult,
+                   IgnoreTopologyInfiniteMagic, IgnoreTopology,
+                   IgnoreMagicTopology, IgnoreKinkParity>(
+        ss, csv_row_prefix, "Double", double_scheduler);
+  } else {
+    SingleTimeSliceScheduler single_scheduler(prob);
+    append_metrics<void, IgnoreTopologyInfiniteMagic, IgnoreTopology,
+                   IgnoreMagicTopology, IgnoreKinkParity>(
+        ss, csv_row_prefix, "Single", single_scheduler);
+    if (layer_count > 1) {
+      append_metrics<void, CareKinkParity>(ss, csv_row_prefix, "Single",
+                                           single_scheduler);
     }
-  }
-  {
-    ProjectiveScheduler proj_scheduler(prob);
 
-    std::vector<std::pair<std::string, MultiTimeSliceScheduleResult>> results =
-        {
-            {"No_MSF",
-             proj_scheduler.look_ahead_schedule<IgnoreTopologyInfiniteMagic>()},
-            {"No_Top", proj_scheduler.look_ahead_schedule<IgnoreTopology>()},
-            {"No_MP",
-             proj_scheduler.look_ahead_schedule<IgnoreMagicTopology>()},
-            {"No_Kink", proj_scheduler.look_ahead_schedule<IgnoreKinkParity>()},
-            {"Yes_Kink", proj_scheduler.look_ahead_schedule<CareKinkParity>()},
-        };
+    DoubleTimeSliceScheduler double_scheduler(prob);
+    append_metrics<void, IgnoreTopologyInfiniteMagic, IgnoreTopology,
+                   IgnoreMagicTopology, IgnoreKinkParity, CareKinkParity>(
+        ss, csv_row_prefix, "Double", double_scheduler);
 
-    for (auto&& [option, result] : results) {
-      validate(option, result);
-      ss << csv_row_prefix << "Proj." << "," << option << ","
-         << result.total_time << "," << result.compute_circuit_volume() << "\n";
-    }
+    ProjectiveScheduler projective_scheduler(prob);
+    append_metrics<void, IgnoreTopologyInfiniteMagic, IgnoreTopology,
+                   IgnoreMagicTopology, IgnoreKinkParity, CareKinkParity>(
+        ss, csv_row_prefix, "Proj.", projective_scheduler);
   }
 
   return ss.str();
