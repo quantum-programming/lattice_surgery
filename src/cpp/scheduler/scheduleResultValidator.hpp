@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include "../util/problem.hpp"
 #include "scheduleResult.hpp"
 
@@ -32,19 +34,47 @@ class ScheduleResultValidator {
     return {true, true, true, true};
   }
 
-  ScheduleResultValidator(SingleTimeSliceScheduleResult result,
+  ScheduleResultValidator(const SingleTimeSliceScheduleResult& result,
+                          ValidationFlags flags)
+      : prob(result.prob),
+        result(MultiTimeSliceScheduleResult(result)),
+        validation_flags(flags) {}
+  ScheduleResultValidator(const MultiTimeSliceScheduleResult& result,
                           ValidationFlags flags)
       : prob(result.prob), result(result), validation_flags(flags) {}
-  ScheduleResultValidator(MultiTimeSliceScheduleResult result,
+  ScheduleResultValidator(const MultiTimeSliceMultiBodyScheduleResult& result,
                           ValidationFlags flags)
       : prob(result.prob), result(result), validation_flags(flags) {}
 
-  ScheduleResultValidator(SingleTimeSliceScheduleResult result,
-                          RoutingAlgorithm algo)
+  template <typename Result>
+  ScheduleResultValidator(const Result& result, RoutingAlgorithm algo)
       : ScheduleResultValidator(result, get_validation_flags(algo)) {}
-  ScheduleResultValidator(MultiTimeSliceScheduleResult result,
-                          RoutingAlgorithm algo)
-      : ScheduleResultValidator(result, get_validation_flags(algo)) {}
+
+  void validate_all() {
+    if (const auto* path_schedule =
+            std::get_if<MultiTimeSliceScheduleResult>(&result)) {
+      validate_routes(path_schedule->surgery_paths);
+    } else {
+      const auto& tree_schedule =
+          std::get<MultiTimeSliceMultiBodyScheduleResult>(result);
+      validate_routes(tree_schedule.surgery_trees);
+    }
+    packing_is_valid();
+  }
+
+  void packing_is_valid() {
+    std::visit([this](const auto& schedule) { validate_packing(schedule); },
+               result);
+  }
+
+  void operands_are_correct(const Instruction& inst,
+                            const MultiTimeSliceSurgeryPath& path) const {
+    assert(inst.targetIds.size() == 2);
+    operand_matches_target(path.timing_positions.front().second,
+                           inst.targetIds[0]);
+    operand_matches_target(path.timing_positions.back().second,
+                           inst.targetIds[1]);
+  }
 
   void operand_matches_target(int operand, int target_id) const {
     if (target_id == -1) {
@@ -57,60 +87,226 @@ class ScheduleResultValidator {
     }
   }
 
-  void operands_are_correct(const Instruction& inst,
-                            const MultiTimeSliceSurgeryPath& path) const {
-    assert(inst.targetIds.size() == 2);
-    operand_matches_target(path.timing_positions.front().second,
-                           inst.targetIds[0]);
-    operand_matches_target(path.timing_positions.back().second,
-                           inst.targetIds[1]);
-  }
-
   void path_is_connected(const MultiTimeSliceSurgeryPath& path) {
     for (int pos_index = 0; pos_index < int(path.timing_positions.size()) - 1;
          pos_index++) {
-      const auto [t1, pos1] = path.timing_positions[pos_index];
-      const auto [t2, pos2] = path.timing_positions[pos_index + 1];
-      bool spatially_adjacent = (t1 == t2 && prob.is_adjacent(pos1, pos2));
-      bool temporally_adjacent = (std::abs(t1 - t2) == 1 && pos1 == pos2);
-      assert(spatially_adjacent || temporally_adjacent);
+      assert(voxels_are_adjacent(path.timing_positions[pos_index],
+                                 path.timing_positions[pos_index + 1]));
     }
   }
 
-  void directions_are_correct(const Instruction& inst,
-                              const MultiTimeSliceSurgeryPath& path) const {
-    const int path_length = path.timing_positions.size();
+  void validate_path_boundaries(const Instruction& inst,
+                                const MultiTimeSliceSurgeryPath& path) const {
+    const auto& voxels = path.timing_positions;
+    if (is_transversal_cx(inst, voxels.front(), voxels.back(), voxels.size())) {
+      return;
+    }
+    validate_boundary_condition(voxels.front(), voxels[1], inst.directions[0]);
+    validate_boundary_condition(voxels.back(), voxels[voxels.size() - 2],
+                                inst.directions[1]);
+  }
 
-    const auto [t0, pos0] = path.timing_positions[0];
-    const auto [t1, pos1] = path.timing_positions[1];
-    assert(t0 == t1);
-    const Direction first_direction = prob.adjacent_direction(pos0, pos1);
-
-    // Transversal CNOT is okay.
-    if (inst.gate == "CX" && path_length == 2 &&
-        first_direction == Direction::Z) {
+  void kink_parity_is_valid(const Instruction& inst,
+                            const MultiTimeSliceSurgeryPath& path) {
+    const auto& voxels = path.timing_positions;
+    if (is_transversal_cx(inst, voxels.front(), voxels.back(), voxels.size())) {
       return;
     }
 
-    auto [t2, pos2] = path.timing_positions[path_length - 2];
-    auto [t3, pos3] = path.timing_positions[path_length - 1];
-    assert(t2 == t3);
-    const Direction last_direction = prob.adjacent_direction(pos2, pos3);
-
-    assert(std::count(inst.directions[0].begin(), inst.directions[0].end(),
-                      first_direction));
-    assert(std::count(inst.directions[1].begin(), inst.directions[1].end(),
-                      last_direction));
+    assert(inst.kink_parity_allowed[prob.count_kink(voxels) % 2]);
   }
 
-  void packing_is_valid() {
+ private:
+  template <typename Route>
+  void validate_routes(const std::vector<Route>& routes) {
+    assert(routes.size() == prob.instructions.size());
+    for (size_t index = 0; index < prob.instructions.size(); index++) {
+      validate_surgery(prob.instructions[index], routes[index]);
+    }
+  }
+
+  void validate_surgery(const Instruction& inst,
+                        const MultiTimeSliceSurgeryPath& path) {
+    assert(!path.timing_positions.empty());
+    operands_are_correct(inst, path);
+
+    if (topology_is_checked(inst)) {
+      assert(path.timing_positions.size() >= 2);
+      path_is_connected(path);
+      validate_path_boundaries(inst, path);
+    }
+
+    if (validation_flags.check_kink) {
+      kink_parity_is_valid(inst, path);
+    }
+  }
+
+  void validate_surgery(const Instruction& inst,
+                        const MultiTimeSliceSurgeryTree& tree) const {
+    assert(!tree.voxels.empty());
+    for (const auto& voxel : tree.voxels) {
+      assert(0 <= voxel.first);
+      assert(0 <= voxel.second && voxel.second < prob.chip_size);
+    }
+
+    const auto neighbors = tree.make_adjacency();
+    const std::set<std::pair<int, int>> leaves(tree.leaves.begin(),
+                                               tree.leaves.end());
+    assert(leaves.size() == tree.leaves.size());
+    const size_t operand_offset = validate_tree_operands(inst, tree, neighbors);
+
+    // Relaxed routing can reserve just the operand voxels without routing
+    // edges.
+    const bool check_topology = topology_is_checked(inst);
+    if (!check_topology && !validation_flags.check_kink && tree.edges.empty()) {
+      assert(tree.voxels.size() == tree.leaves.size());
+      return;
+    }
+
+    const bool multibody = inst.targetIds.size() > 2;
+    if (check_topology) {
+      for (const auto& [first, second] : tree.edges) {
+        assert(voxels_are_adjacent(first, second));
+      }
+    }
+
+    // Connectivity and |E| = |V| - 1 together rule out cycles.
+    assert(tree.edges.size() + 1 == tree.voxels.size());
+    for (const auto& [voxel, adjacent] : neighbors) {
+      if (leaves.count(voxel)) {
+        assert(prob.is_data_qubit(voxel.second));
+        assert(adjacent.size() == 1);
+      } else {
+        assert(!prob.is_data_qubit(voxel.second));
+        assert(adjacent.size() >= 2);
+      }
+    }
+
+    const auto& first_voxel = tree.leaves.at(0);
+    const bool check_path_kink = !multibody && validation_flags.check_kink;
+    const bool transversal_cx =
+        (check_topology || check_path_kink) &&
+        is_transversal_cx(inst, first_voxel, tree.leaves.back(),
+                          tree.voxels.size());
+    validate_tree_connectivity_and_path_kink(
+        inst, tree, neighbors, check_path_kink && !transversal_cx);
+
+    if (check_topology && !transversal_cx) {
+      validate_tree_boundaries(inst, tree, neighbors, operand_offset);
+    }
+    if (multibody && validation_flags.check_kink) {
+      assert(prob.has_valid_multibody_segments(neighbors, first_voxel));
+    }
+  }
+
+  size_t validate_tree_operands(
+      const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
+      const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
+          neighbors) const {
+    // An unplaced magic-state factory omits the first operand's leaf.
+    const bool unplaced_magic = !validation_flags.check_magic_operand &&
+                                inst.targetIds.front() == -1 &&
+                                tree.leaves.size() + 1 == inst.targetIds.size();
+    const size_t operand_offset = unplaced_magic ? 1 : 0;
+    assert(tree.leaves.size() + operand_offset == inst.targetIds.size());
+    for (size_t index = 0; index < tree.leaves.size(); index++) {
+      const auto& leaf = tree.leaves[index];
+      assert(neighbors.count(leaf));
+      operand_matches_target(leaf.second,
+                             inst.targetIds[index + operand_offset]);
+    }
+    return operand_offset;
+  }
+
+  void validate_tree_connectivity_and_path_kink(
+      const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
+      const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
+          neighbors,
+      bool check_path_kink) const {
+    // A tree with two leaves is a path. Its edges are visited in order.
+    const bool collect_directions = check_path_kink && tree.voxels.size() > 3;
+    std::vector<Direction> directions;
+    const auto& first_voxel = tree.leaves.at(0);
+    std::vector<std::pair<int, int>> dfs_stack{first_voxel};
+    std::set<std::pair<int, int>> visited{first_voxel};
+    while (!dfs_stack.empty()) {
+      const auto voxel = dfs_stack.back();
+      dfs_stack.pop_back();
+      for (const auto& neighbor : neighbors.at(voxel)) {
+        const bool first_visit = visited.insert(neighbor).second;
+        if (!first_visit) continue;
+        dfs_stack.push_back(neighbor);
+        if (collect_directions) {
+          const auto direction = prob.voxel_edge_direction(voxel, neighbor);
+          if (directions.empty() || directions.back() != direction) {
+            directions.push_back(direction);
+          }
+        }
+      }
+    }
+    assert(visited.size() == tree.voxels.size());
+    if (check_path_kink) {
+      assert(inst.kink_parity_allowed[prob.count_kink(directions) % 2]);
+    }
+  }
+
+  void validate_tree_boundaries(
+      const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
+      const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
+          neighbors,
+      size_t operand_offset) const {
+    for (size_t index = 0; index < tree.leaves.size(); index++) {
+      const auto& leaf = tree.leaves[index];
+      const auto& adjacent = neighbors.at(leaf);
+      assert(adjacent.size() == 1);
+      validate_boundary_condition(leaf, adjacent.front(),
+                                  inst.directions[index + operand_offset]);
+    }
+  }
+
+  bool topology_is_checked(const Instruction& inst) const {
+    return inst.gate == "CX" ? validation_flags.check_cx_topology
+                             : validation_flags.check_magic_topology;
+  }
+
+  bool voxels_are_adjacent(const std::pair<int, int>& first,
+                           const std::pair<int, int>& second) const {
+    const auto [first_beat, first_pos] = first;
+    const auto [second_beat, second_pos] = second;
+    const bool spatially_adjacent =
+        first_beat == second_beat && prob.is_adjacent(first_pos, second_pos);
+    const bool temporally_adjacent =
+        std::abs(first_beat - second_beat) == 1 && first_pos == second_pos;
+    return spatially_adjacent || temporally_adjacent;
+  }
+
+  bool is_transversal_cx(const Instruction& inst,
+                         const std::pair<int, int>& first,
+                         const std::pair<int, int>& last,
+                         size_t voxel_count) const {
+    return inst.gate == "CX" && voxel_count == 2 && first.first == last.first &&
+           prob.adjacent_direction(first.second, last.second) == Direction::Z;
+  }
+
+  void validate_boundary_condition(
+      const std::pair<int, int>& endpoint, const std::pair<int, int>& neighbor,
+      const std::vector<Direction>& allowed_directions) const {
+    assert(endpoint.first == neighbor.first);
+    assert(
+        std::count(allowed_directions.begin(), allowed_directions.end(),
+                   prob.adjacent_direction(endpoint.second, neighbor.second)));
+  }
+
+  template <typename Schedule>
+  void validate_packing(const Schedule& schedule) {
     std::vector<std::vector<int>> path_indices(
-        result.total_time, std::vector<int>(prob.chip_size));
+        schedule.total_time, std::vector<int>(prob.chip_size));
 
     for (int index = 0; index < int(prob.instructions.size()); index++) {
-      const auto& path = result.surgery_paths[index];
-      for (auto&& [timing, pos] : path.timing_positions) {
-        // Verify that the paths do not intersect.
+      for (const auto& [timing, pos] : schedule.voxels_at(index)) {
+        assert(0 <= timing && timing < schedule.total_time);
+        assert(0 <= pos && pos < prob.chip_size);
+        // Verify that no two instructions occupy the same voxel.
         assert(path_indices[timing][pos] == 0);
         path_indices[timing][pos] = index + 1;
       }
@@ -119,7 +315,7 @@ class ScheduleResultValidator {
     // For each data qubit, check the order of the path.
     for (auto&& pos : prob.data_qubits) {
       int last_inst_index = 0;
-      for (int timing = 0; timing < result.total_time; timing++) {
+      for (int timing = 0; timing < schedule.total_time; timing++) {
         if (path_indices[timing][pos]) {
           assert(path_indices[timing][pos] >= last_inst_index);
           last_inst_index = path_indices[timing][pos];
@@ -130,7 +326,7 @@ class ScheduleResultValidator {
     // Check the generation time of the magic state factory.
     for (auto&& pos : prob.ms_factories) {
       int last_free_timing = 0;
-      for (int timing = 0; timing < result.total_time; timing++) {
+      for (int timing = 0; timing < schedule.total_time; timing++) {
         if (path_indices[timing][pos]) {
           assert(timing - last_free_timing >= prob.magic_prep_time);
           last_free_timing = timing + 1;
@@ -139,46 +335,9 @@ class ScheduleResultValidator {
     }
   }
 
-  void kink_parity_is_valid(const Instruction& inst,
-                            const MultiTimeSliceSurgeryPath& path) {
-    // Skip the transversal CX.
-    if (inst.gate == "CX" && path.timing_positions.size() == 2) {
-      auto [t0, pos0] = path.timing_positions[0];
-      auto [t1, pos1] = path.timing_positions[1];
-      if (t0 == t1 && prob.adjacent_direction(pos0, pos1) == Direction::Z) {
-        return;
-      }
-    }
-
-    const int parity = prob.count_kink(path.timing_positions) % 2;
-    assert(inst.kink_parity_allowed[parity]);
-  }
-
-  void validate_all() {
-    packing_is_valid();
-
-    for (int index = 0; index < int(prob.instructions.size()); index++) {
-      const auto& inst = prob.instructions[index];
-      const auto& path = result.surgery_paths[index];
-
-      operands_are_correct(inst, path);
-
-      bool check_topology = inst.gate == "CX"
-                                ? validation_flags.check_cx_topology
-                                : validation_flags.check_magic_topology;
-      if (check_topology) {
-        path_is_connected(path);
-        directions_are_correct(inst, path);
-      }
-
-      if (validation_flags.check_kink) {
-        kink_parity_is_valid(inst, path);
-      }
-    }
-  }
-
- private:
   Problem prob;
-  MultiTimeSliceScheduleResult result;
+  std::variant<MultiTimeSliceScheduleResult,
+               MultiTimeSliceMultiBodyScheduleResult>
+      result;
   ValidationFlags validation_flags;
 };
