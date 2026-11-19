@@ -86,6 +86,58 @@ class MultiTimeSliceSurgeryPath : public SurgeryPathBase {
   }
 };
 
+struct MultiTimeSliceSurgeryTree {
+  std::vector<std::pair<int, int>> voxels;  // (beat, position)
+  std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> edges;
+  std::vector<std::pair<int, int>> leaves;  // In Instruction::targetIds order.
+
+  std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>
+  make_adjacency() const {
+    std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> neighbors;
+    for (const auto& voxel : voxels) neighbors.try_emplace(voxel);
+    assert(neighbors.size() == voxels.size());
+    for (const auto& [first, second] : edges) {
+      assert(neighbors.count(first) && neighbors.count(second));
+      neighbors.at(first).push_back(second);
+      neighbors.at(second).push_back(first);
+    }
+    return neighbors;
+  }
+
+  static MultiTimeSliceSurgeryTree from_path(
+      std::vector<std::pair<int, int>> path) {
+    MultiTimeSliceSurgeryTree tree{std::move(path), {}, {}};
+    if (tree.voxels.empty()) return tree;
+
+    tree.leaves.push_back(tree.voxels.front());
+    if (tree.voxels.size() > 1) tree.leaves.push_back(tree.voxels.back());
+
+    tree.edges.reserve(tree.voxels.size() - 1);
+    for (size_t index = 1; index < tree.voxels.size(); index++) {
+      tree.edges.emplace_back(tree.voxels[index - 1], tree.voxels[index]);
+    }
+    return tree;
+  }
+};
+
+template <typename VoxelsAt>
+vector4D construct_schedule_lattice(const Problem& prob, int total_time,
+                                    size_t count, VoxelsAt voxels_at) {
+  vector4D lattice(
+      total_time,
+      std::vector<std::vector<std::vector<int>>>(
+          prob.layer_count, std::vector<std::vector<int>>(
+                                prob.height, std::vector<int>(prob.width, 0))));
+
+  for (size_t index = 0; index < count; index++) {
+    for (const auto& [timing, position] : voxels_at(index)) {
+      auto [x, y, z] = prob.position_to_xyz(position);
+      lattice[timing][z][y][x] = index + 1;
+    }
+  }
+  return lattice;
+}
+
 // Base class template
 template <typename PathType>
 class ScheduleResultBase {
@@ -227,21 +279,9 @@ class ScheduleResultBase {
 
   static vector4D _construct_lattice(const Problem& prob, int total_time,
                                      const std::vector<PathType>& paths) {
-    vector4D lattice(total_time,
-                     std::vector<std::vector<std::vector<int>>>(
-                         prob.layer_count,
-                         std::vector<std::vector<int>>(
-                             prob.height, std::vector<int>(prob.width, 0))));
-
-    for (int path_idx = 0; path_idx < int(paths.size()); path_idx++) {
-      const auto& path = paths[path_idx];
-      for (auto&& [timing, position] : path.getTimingPositions()) {
-        auto [x, y, z] = prob.position_to_xyz(position);
-        lattice[timing][z][y][x] = path_idx + 1;
-      }
-    }
-
-    return lattice;
+    return construct_schedule_lattice(
+        prob, total_time, paths.size(),
+        [&paths](size_t index) { return paths[index].getTimingPositions(); });
   }
 };
 
@@ -294,11 +334,43 @@ class MultiTimeSliceScheduleResult
     total_time = single_result.total_time;
   }
 
+  const std::vector<std::pair<int, int>>& voxels_at(size_t index) const {
+    return surgery_paths.at(index).timing_positions;
+  }
+
   vector4D construct_lattice() const override {
     return Base::_construct_lattice(prob, total_time, surgery_paths);
   }
 
   void to_visualizer(std::ostream& os, int maxSz) const override {
     _to_visualizer(os, prob, surgery_paths, maxSz);
+  }
+};
+
+class MultiTimeSliceMultiBodyScheduleResult {
+ public:
+  Problem prob;
+  int total_time = 0;
+  // Entries are indexed by Instruction::instId.
+  std::vector<MultiTimeSliceSurgeryTree> surgery_trees;
+
+  MultiTimeSliceMultiBodyScheduleResult(
+      const Problem& prob, std::vector<MultiTimeSliceSurgeryTree> surgery_trees)
+      : prob(prob), surgery_trees(std::move(surgery_trees)) {
+    for (const auto& tree : this->surgery_trees) {
+      for (const auto& voxel : tree.voxels) {
+        total_time = std::max(total_time, voxel.first + 1);
+      }
+    }
+  }
+
+  const std::vector<std::pair<int, int>>& voxels_at(size_t index) const {
+    return surgery_trees.at(index).voxels;
+  }
+
+  vector4D construct_lattice() const {
+    return construct_schedule_lattice(
+        prob, total_time, surgery_trees.size(),
+        [this](size_t index) -> const auto& { return voxels_at(index); });
   }
 };
