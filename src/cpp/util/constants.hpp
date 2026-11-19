@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 
 constexpr int INF = 1'000'000'000;
 constexpr int64_t INFLL = 1'000'000'000'000'000'000;
