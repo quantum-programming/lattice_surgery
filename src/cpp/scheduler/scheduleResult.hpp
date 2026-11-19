@@ -45,9 +45,11 @@ class MultiTimeSliceSurgeryPath : public SurgeryPathBase {
   std::vector<std::pair<int, int>> timing_positions;
 
   MultiTimeSliceSurgeryPath() = default;
-  MultiTimeSliceSurgeryPath(const std::vector<std::pair<int, int>>& tpos)
-      : timing_positions(tpos) {
-    for (auto& tp : tpos) required_time = std::max(required_time, tp.first + 1);
+  MultiTimeSliceSurgeryPath(std::vector<std::pair<int, int>> tpos)
+      : timing_positions(std::move(tpos)) {
+    for (const auto& tp : timing_positions) {
+      required_time = std::max(required_time, tp.first + 1);
+    }
   }
 
   std::vector<SingleTimeSliceSurgeryPath> fragment() const {
@@ -367,5 +369,21 @@ class MultiTimeSliceMultiBodyScheduleResult {
     return construct_schedule_lattice(
         prob, total_time, surgery_routes.size(),
         [this](size_t index) -> const auto& { return voxels_at(index); });
+  }
+
+  int64_t compute_circuit_volume() const {
+    assert(surgery_routes.size() == prob.instructions.size());
+    int64_t circuit_volume = static_cast<int64_t>(total_time) *
+                             static_cast<int64_t>(prob.data_qubits.size());
+    for (const auto& inst : prob.instructions) {
+      const size_t voxel_count = voxels_at(inst.instId).size();
+      const size_t operand_count = inst.targetIds.size();
+      assert(voxel_count >= operand_count);
+      circuit_volume += static_cast<int64_t>(voxel_count - operand_count);
+      if (inst.targetIds.front() == -1) {
+        circuit_volume += prob.magic_prep_time;
+      }
+    }
+    return circuit_volume;
   }
 };
