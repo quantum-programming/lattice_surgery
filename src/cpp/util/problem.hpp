@@ -77,10 +77,10 @@ class Problem {
       } else {
         throw std::runtime_error("Unknown gate: " + gate);
       }
-      instId++;
 
       qubit_ids.insert(operands.begin(), operands.end());
       instructions.emplace_back(gate, std::move(operands), instId);
+      instId++;
     }
     // There should be no missing qubit id
     assert(int(qubit_ids.size()) ==
