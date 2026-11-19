@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "constants.hpp"
@@ -61,25 +62,25 @@ class Problem {
 
     while (std::getline(is, line)) {
       if (line.empty()) continue;
-      std::stringstream ss(line);
+      std::istringstream ss(line);
       ss >> gate;
       std::vector<int> operands;
       while (ss >> operand) operands.push_back(operand);
-
       if (gate == "CX") {
         assert(operands.size() == 2);
-        int control = operands[0], target = operands[1];
-        instructions.emplace_back(gate, control, target, instId);
       } else if (gate == "MAGIC_MOVE" || gate == "MAGIC_MZZ") {
         assert(operands.size() == 1);
-        int source = -1, target = operands[0];
-        instructions.emplace_back(gate, source, target, instId);
+      } else if (gate == "MAGIC_MZ3") {
+        assert(operands.size() == 2);
+      } else if (gate == "MAGIC_MZ4") {
+        assert(operands.size() == 3);
       } else {
         throw std::runtime_error("Unknown gate: " + gate);
       }
       instId++;
 
       qubit_ids.insert(operands.begin(), operands.end());
+      instructions.emplace_back(gate, std::move(operands), instId++);
     }
     // There should be no missing qubit id
     assert(int(qubit_ids.size()) ==

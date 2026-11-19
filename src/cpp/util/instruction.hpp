@@ -4,7 +4,9 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "constants.hpp"
@@ -20,25 +22,34 @@ struct Instruction {
   std::vector<int> targetIds;
 
   std::vector<std::vector<Direction>> directions;
-  std::array<bool, 2> kink_parity_allowed;
+  // Used by the two-endpoint path checks.
+  std::array<bool, 2> kink_parity_allowed{};
 
-  Instruction(std::string gate, int control, int target, int instId)
-      : instId(instId), gate(gate) {
+  Instruction(const std::string& gate, int control, int target, int instId)
+      : Instruction(gate,
+                    gate == "CX" ? std::vector<int>{control, target}
+                                 : std::vector<int>{target},
+                    instId) {}
+
+  Instruction(const std::string& gate, std::vector<int> operands, int instId)
+      : instId(instId), gate(gate), targetIds(std::move(operands)) {
     if (gate == "CX") {
-      targetIds = {control, target};
       directions = {{Direction::H}, {Direction::V}};
       kink_parity_allowed = {false, true};
     } else if (gate == "MAGIC_MZZ") {
-      targetIds = {-1, target};
       directions = {{Direction::H}, {Direction::H}};
       kink_parity_allowed = {true, false};
     } else if (gate == "MAGIC_MOVE") {
-      targetIds = {-1, target};
       directions = {{Direction::H, Direction::V}, {Direction::H, Direction::V}};
       kink_parity_allowed = {true, true};
+    } else if (gate == "MAGIC_MZ3" || gate == "MAGIC_MZ4") {
+      directions.assign(gate == "MAGIC_MZ3" ? 3 : 4, {Direction::H});
     } else {
       throw std::runtime_error("Unknown gate: " + gate);
     }
+
+    if (gate != "CX") targetIds.insert(targetIds.begin(), -1);
+    assert(targetIds.size() == directions.size());
   }
 
   friend std::ostream& operator<<(std::ostream& os, const Instruction& inst) {
