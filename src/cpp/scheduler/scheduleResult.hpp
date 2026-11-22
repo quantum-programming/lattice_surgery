@@ -93,7 +93,8 @@ class MultiTimeSliceSurgeryPath : public SurgeryPathBase {
 struct MultiTimeSliceSurgeryTree {
   std::vector<std::pair<int, int>> voxels;  // (beat, position)
   std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> edges;
-  std::vector<std::pair<int, int>> leaves;  // In Instruction::targetIds order.
+  // In Instruction::targetIds order, with any unplaced factory omitted.
+  std::vector<std::pair<int, int>> leaves;
 
   std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>
   make_adjacency() const {
@@ -111,14 +112,14 @@ struct MultiTimeSliceSurgeryTree {
 
 template <typename VoxelsAt>
 vector4D construct_schedule_lattice(const Problem& prob, int total_time,
-                                    size_t count, VoxelsAt voxels_at) {
+                                    int count, VoxelsAt voxels_at) {
   vector4D lattice(
       total_time,
       std::vector<std::vector<std::vector<int>>>(
           prob.layer_count, std::vector<std::vector<int>>(
                                 prob.height, std::vector<int>(prob.width, 0))));
 
-  for (size_t index = 0; index < count; index++) {
+  for (int index = 0; index < count; index++) {
     for (const auto& [timing, position] : voxels_at(index)) {
       auto [x, y, z] = prob.position_to_xyz(position);
       lattice[timing][z][y][x] = index + 1;
@@ -269,8 +270,8 @@ class ScheduleResultBase {
   static vector4D _construct_lattice(const Problem& prob, int total_time,
                                      const std::vector<PathType>& paths) {
     return construct_schedule_lattice(
-        prob, total_time, paths.size(),
-        [&paths](size_t index) { return paths[index].getTimingPositions(); });
+        prob, total_time, int(paths.size()),
+        [&paths](int index) { return paths[index].getTimingPositions(); });
   }
 };
 
@@ -349,7 +350,7 @@ class MultiTimeSliceMultiBodyScheduleResult {
   MultiTimeSliceMultiBodyScheduleResult(
       const Problem& prob, std::vector<MultiTimeSliceSurgeryRoute> routes)
       : prob(prob), surgery_routes(std::move(routes)) {
-    for (size_t index = 0; index < surgery_routes.size(); index++) {
+    for (int index = 0; index < int(surgery_routes.size()); index++) {
       for (const auto& voxel : voxels_at(index)) {
         total_time = std::max(total_time, voxel.first + 1);
       }
@@ -367,19 +368,31 @@ class MultiTimeSliceMultiBodyScheduleResult {
 
   vector4D construct_lattice() const {
     return construct_schedule_lattice(
-        prob, total_time, surgery_routes.size(),
-        [this](size_t index) -> const auto& { return voxels_at(index); });
+        prob, total_time, int(surgery_routes.size()),
+        [this](int index) -> const auto& { return voxels_at(index); });
   }
 
   int64_t compute_circuit_volume() const {
     assert(surgery_routes.size() == prob.instructions.size());
-    int64_t circuit_volume = static_cast<int64_t>(total_time) *
-                             static_cast<int64_t>(prob.data_qubits.size());
+    int64_t circuit_volume =
+        int64_t(total_time) * int64_t(prob.data_qubits.size());
     for (const auto& inst : prob.instructions) {
-      const size_t voxel_count = voxels_at(inst.instId).size();
-      const size_t operand_count = inst.targetIds.size();
-      assert(voxel_count >= operand_count);
-      circuit_volume += static_cast<int64_t>(voxel_count - operand_count);
+      const auto voxel_count = int64_t(voxels_at(inst.instId).size());
+      const auto operand_count = int64_t(inst.targetIds.size());
+      const auto* tree =
+          std::get_if<MultiTimeSliceSurgeryTree>(&surgery_routes[inst.instId]);
+      const int64_t placed_operands =
+          tree ? int64_t(tree->leaves.size())
+               : std::min(voxel_count, operand_count);
+      assert(placed_operands <= voxel_count);
+      assert(placed_operands <= operand_count);
+      circuit_volume += int64_t(voxel_count - placed_operands);
+      if (placed_operands < operand_count) {
+        assert(inst.targetIds.front() == -1 &&
+               placed_operands + 1 == operand_count);
+        // Count the virtual factory voxel when no physical factory was placed.
+        circuit_volume++;
+      }
       if (inst.targetIds.front() == -1) {
         circuit_volume += prob.magic_prep_time;
       }
