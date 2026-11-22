@@ -8,12 +8,14 @@
 #include <set>
 #include <sstream>
 #include <tuple>
+#include <type_traits>
 
 #include "../util/LifetimeArray.hpp"
 #include "../util/constants.hpp"
 #include "../util/instruction.hpp"
 #include "../util/instructionDependencyManager.hpp"
 #include "../util/problem.hpp"
+#include "../util/steinerTree.hpp"
 #include "routingError.hpp"
 #include "scheduleResult.hpp"
 
@@ -491,119 +493,235 @@ class DoubleTimeSliceScheduler {
     }
   }
 
-  template <RoutingAlgorithm routing_algo = CareKinkParity>
-  MultiTimeSliceScheduleResult naive_schedule() {
+  MultiTimeSliceSurgeryTree find_tree_ignore_kink_parity(
+      const Instruction& inst, int operand_offset = 0,
+      decltype(&find_minimum_steiner_tree) solve_tree =
+          find_minimum_steiner_tree) const {
+    assert(0 <= operand_offset);
+    assert(operand_offset <= int(inst.targetIds.size()) - 2);
+    const int older_code_beat = elapsed_code_beat - 1;
+
+    struct TerminalCandidates {
+      int code_beat;
+      std::vector<std::pair<int, int>> positions;  // (bus, patch)
+    };
+    std::vector<TerminalCandidates> operand_terminals;
+    for (int index = operand_offset; index < int(inst.targetIds.size()); index++) {
+      const int target_id = inst.targetIds[index];
+      TerminalCandidates candidates{older_code_beat, {}};
+      for (int code_beat = older_code_beat; code_beat <= elapsed_code_beat;
+           code_beat++) {
+        auto patches = get_available_target_positions(code_beat, target_id);
+        std::sort(patches.begin(), patches.end());
+        for (int patch : patches) {
+          for (int bus : next_ancillary_qubits(patch, Direction::H)) {
+            if (!is_occupied(code_beat, bus)) {
+              candidates.positions.emplace_back(bus, patch);
+            }
+          }
+        }
+        if (!candidates.positions.empty()) {
+          candidates.code_beat = code_beat;
+          break;
+        }
+      }
+      if (candidates.positions.empty()) return {};
+      operand_terminals.push_back(std::move(candidates));
+    }
+
+    // Give the free bus voxels consecutive IDs in (code_beat, position) order.
+    std::vector<std::pair<int, int>> bus_voxels;
+    std::array<std::vector<int>, 2> vertex_at;
+    for (int slice = 0; slice < 2; slice++) {
+      const int code_beat = older_code_beat + slice;
+      vertex_at[slice].assign(prob.chip_size, -1);
+      for (int pos = 0; pos < prob.chip_size; pos++) {
+        if (prob.is_data_qubit(pos) || is_occupied(code_beat, pos)) continue;
+        vertex_at[slice][pos] = int(bus_voxels.size());
+        bus_voxels.emplace_back(code_beat, pos);
+      }
+    }
+
+    std::vector<std::vector<int>> adjacency(bus_voxels.size());
+    for (int vertex = 0; vertex < int(bus_voxels.size()); vertex++) {
+      const auto [code_beat, pos] = bus_voxels[vertex];
+      const int slice = code_beat - older_code_beat;
+      auto& neighbors = adjacency[vertex];
+      for (int neighbor_pos : next_ancillary_qubits(pos)) {
+        const int neighbor = vertex_at[slice][neighbor_pos];
+        if (neighbor >= 0) neighbors.push_back(neighbor);
+      }
+      const int time_neighbor = vertex_at[1 - slice][pos];
+      if (time_neighbor >= 0) neighbors.push_back(time_neighbor);
+    }
+
+    std::vector<std::vector<int>> terminal_groups;
+    for (const auto& candidates : operand_terminals) {
+      auto& group = terminal_groups.emplace_back();
+      for (const auto& [bus, patch] : candidates.positions) {
+        const int vertex =
+            vertex_at[candidates.code_beat - older_code_beat][bus];
+        assert(vertex >= 0);
+        group.push_back(vertex);
+      }
+    }
+
+    const auto bus_tree = solve_tree(adjacency, terminal_groups);
+    if (bus_tree.vertices.empty()) return {};
+    assert(bus_tree.selected_terminals.size() == operand_terminals.size());
+
+    MultiTimeSliceSurgeryTree tree;
+    tree.voxels.reserve(bus_tree.vertices.size() + operand_terminals.size());
+    tree.edges.reserve(bus_tree.edges.size() + operand_terminals.size());
+    for (int vertex : bus_tree.vertices) {
+      tree.voxels.push_back(bus_voxels[vertex]);
+    }
+    for (const auto& [first, second] : bus_tree.edges) {
+      tree.edges.emplace_back(bus_voxels[first], bus_voxels[second]);
+    }
+    for (int index = 0; index < int(operand_terminals.size()); index++) {
+      const auto& candidates = operand_terminals[index];
+      const auto& terminal = bus_voxels[bus_tree.selected_terminals[index]];
+      assert(terminal.first == candidates.code_beat);
+      const auto selected =
+          std::find_if(candidates.positions.begin(), candidates.positions.end(),
+                       [&terminal](const auto& positions) {
+                         return positions.first == terminal.second;
+                       });
+      assert(selected != candidates.positions.end());
+      const auto& leaf =
+          tree.leaves.emplace_back(candidates.code_beat, selected->second);
+      tree.voxels.push_back(leaf);
+      tree.edges.emplace_back(std::minmax(leaf, terminal));
+    }
+    return tree;
+  }
+
+  template <RoutingAlgorithm routing_algo>
+  MultiTimeSliceSurgeryTree find_tree(const Instruction& inst) const {
+    assert(inst.targetIds.size() > 2);
+    if constexpr (routing_algo == IgnoreKinkParity) {
+      return find_tree_ignore_kink_parity(inst);
+    } else if constexpr (routing_algo == IgnoreMagicTopology) {
+      assert(inst.targetIds[0] == -1);
+      return find_tree_ignore_kink_parity(inst, 1);
+    } else {
+      static_assert(routing_algo == IgnoreTopology ||
+                        routing_algo == IgnoreTopologyInfiniteMagic,
+                    "Unsupported multibody routing algorithm");
+      // Multibody instructions currently all use magic states.
+      assert(inst.targetIds[0] == -1);
+      MultiTimeSliceSurgeryTree tree;
+      tree.voxels = find_path_ignore_topology<routing_algo>(inst);
+      tree.leaves = tree.voxels;
+      return tree;
+    }
+  }
+
+  template <typename Operands>
+  void commit_route(const std::vector<std::pair<int, int>>& voxels,
+                    const Operands& operands, bool uses_magic) {
+    for (const auto& [code_beat, pos] : voxels) {
+      assert(!is_occupied(code_beat, pos));
+      single_occupy(code_beat, pos);
+    }
+    // Reserve the older slice of every late operand to preserve dependencies.
+    const int older_code_beat = elapsed_code_beat - 1;
+    for (const auto& [code_beat, pos] : operands) {
+      if (code_beat == elapsed_code_beat &&
+          !is_occupied(older_code_beat, pos)) {
+        single_occupy(older_code_beat, pos);
+      }
+    }
+    if (uses_magic) {
+      const auto [code_beat, pos] = operands[0];
+      assert(prob.is_magic_factory(pos));
+      // Include the surgery code beat and any reservation of the older slice.
+      const int cool_time =
+          1 + prob.magic_prep_time + (code_beat + 1 - elapsed_code_beat);
+      occupy(pos, cool_time);
+    }
+  }
+
+  template <RoutingAlgorithm routing_algo, typename Route>
+  bool find_and_commit_route(const Instruction& inst, Route& route) {
+    const bool uses_magic = inst.targetIds[0] == -1 &&
+                            routing_algo != IgnoreMagicTopology &&
+                            routing_algo != IgnoreTopologyInfiniteMagic;
+    if constexpr (std::is_same_v<Route, MultiTimeSliceSurgeryRoute>) {
+      if (inst.targetIds.size() > 2) {
+        auto tree = find_tree<routing_algo>(inst);
+        if (tree.voxels.empty()) return false;
+        commit_route(tree.voxels, tree.leaves, uses_magic);
+        route = std::move(tree);
+        return true;
+      }
+    }
+
+    auto encoded_path = find_path<routing_algo>(inst);
+    if (encoded_path.empty()) return false;
+    const std::array operands{encoded_path[0], encoded_path.back()};
+    commit_route(encoded_path, operands, uses_magic);
+    route = MultiTimeSliceSurgeryPath(std::move(encoded_path));
+    return true;
+  }
+
+  template <typename Route>
+  [[noreturn]] void throw_routing_error(const Instruction& inst,
+                                       const std::vector<Route>& routes) const {
+    std::stringstream ss;
+    ss << "Routing Failed\n"
+       << "Inst: " << inst << '\n';
+    if constexpr (std::is_same_v<Route, MultiTimeSliceSurgeryPath>) {
+      MultiTimeSliceScheduleResult(prob, routes).output_index(ss);
+    }
+    throw RoutingError(ss.str());
+  }
+
+  template <typename Result>
+  using RouteFor = std::conditional_t<
+      std::is_same_v<Result, MultiTimeSliceMultiBodyScheduleResult>,
+      MultiTimeSliceSurgeryRoute, MultiTimeSliceSurgeryPath>;
+
+  template <RoutingAlgorithm routing_algo = CareKinkParity,
+            typename Result = MultiTimeSliceScheduleResult>
+  Result naive_schedule() {
     initialize();
-
-    std::vector<MultiTimeSliceSurgeryPath> surgery_paths;
-    surgery_paths.reserve(prob.instructions.size());
-
-    std::vector<std::pair<int, int>> encoded_path;
+    std::vector<RouteFor<Result>> routes(prob.instructions.size());
 
     for (auto&& inst : prob.instructions) {
-      while (true) {
-        encoded_path = find_path<routing_algo>(inst);
-        if (!encoded_path.empty()) {
-          break;
-        } else if (occupied[0].all_available() && occupied[1].all_available()) {
-          std::stringstream ss;
-          ss << "Routing Failed\n"
-             << "Inst: " << inst << '\n';
-          MultiTimeSliceScheduleResult(prob, surgery_paths).output_index(ss);
-          throw RoutingError(ss.str());
+      auto& route = routes[inst.instId];
+      while (!find_and_commit_route<routing_algo>(inst, route)) {
+        if (occupied[0].all_available() && occupied[1].all_available()) {
+          throw_routing_error(inst, routes);
         }
         wait_code_beat();
       }
-
-      for (auto&& [t, pos] : encoded_path) {
-        assert(!is_occupied(t, pos));
-        single_occupy(t, pos);
-      }
-      // Occupy past target qubits to comply with instruction dependencies.
-      for (auto&& [t, pos] : {encoded_path[0], encoded_path.back()}) {
-        if (t == elapsed_code_beat) {
-          single_occupy(elapsed_code_beat - 1, pos);
-        }
-      }
-
-      // Cool time for magic state preparation
-      if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
-                    routing_algo != IgnoreMagicTopology) {
-        if (inst.targetIds[0] == -1) {
-          const auto [t, pos] = encoded_path[0];
-          // Routing cost: 1
-          // Preparation cost: prob.magic_prep_time
-          // Extra cost: 1 (if t = elapsed_code_beat;
-          //  because t = elapsed_code_beat - 1 needs to be unavailable.)
-          const int cool_time =
-              1 + prob.magic_prep_time + (t + 1 - elapsed_code_beat);
-          assert(prob.is_magic_factory(pos));
-          occupy(pos, cool_time);
-        }
-      }
-
-      surgery_paths.emplace_back(std::move(encoded_path));
     }
 
-    return MultiTimeSliceScheduleResult(prob, surgery_paths);
+    return Result(prob, std::move(routes));
   }
 
-  template <RoutingAlgorithm routing_algo = CareKinkParity>
-  MultiTimeSliceScheduleResult look_ahead_schedule() {
+  template <RoutingAlgorithm routing_algo = CareKinkParity,
+            typename Result = MultiTimeSliceScheduleResult>
+  Result look_ahead_schedule() {
     initialize();
-
-    std::vector<MultiTimeSliceSurgeryPath> surgery_paths(
-        prob.instructions.size());
-
+    std::vector<RouteFor<Result>> routes(prob.instructions.size());
     auto reordered_instructions = reorder_instructions(prob);
     InstructionDependencyManager manager(prob.data_qubits.size(),
                                          reordered_instructions);
-
-    std::vector<std::pair<int, int>> encoded_path;
 
     while (!manager.all_finished()) {
       for (auto it = manager.begin(); it != manager.end();) {
         int inst_index = *it;
         const Instruction& inst = reordered_instructions[inst_index];
 
-        encoded_path = find_path<routing_algo>(inst);
-
-        if (!encoded_path.empty()) {
+        if (find_and_commit_route<routing_algo>(inst, routes[inst.instId])) {
           it = manager.process_instruction(inst_index);
-          for (auto&& [t, pos] : encoded_path) {
-            assert(!is_occupied(t, pos));
-            single_occupy(t, pos);
-          }
-          // Occupy past target qubits to comply with instruction dependencies.
-          for (auto&& [t, pos] : {encoded_path[0], encoded_path.back()}) {
-            if (t == elapsed_code_beat) {
-              single_occupy(elapsed_code_beat - 1, pos);
-            }
-          }
-          // Cool time for magic state preparation
-          if constexpr (routing_algo != IgnoreTopologyInfiniteMagic &&
-                        routing_algo != IgnoreMagicTopology) {
-            if (inst.targetIds[0] == -1) {
-              const auto [t, pos] = encoded_path[0];
-              // Routing cost: 1
-              // Preparation cost: prob.magic_prep_time
-              // Extra cost: 1 (if t = elapsed_code_beat;
-              //  because t = elapsed_code_beat - 1 needs to be unavailable.)
-              const int cool_time =
-                  1 + prob.magic_prep_time + (t + 1 - elapsed_code_beat);
-              assert(prob.is_magic_factory(pos));
-              occupy(pos, cool_time);
-            }
-          }
-          surgery_paths[inst.instId] = std::move(encoded_path);
         } else {
           it++;
           if (occupied[0].all_available() && occupied[1].all_available()) {
-            std::stringstream ss;
-            ss << "Routing Failed\n"
-               << "Inst: " << inst << '\n';
-            MultiTimeSliceScheduleResult(prob, surgery_paths).output_index(ss);
-            throw RoutingError(ss.str());
+            throw_routing_error(inst, routes);
           }
         }
       }
@@ -611,6 +729,6 @@ class DoubleTimeSliceScheduler {
       wait_code_beat();
     }
 
-    return MultiTimeSliceScheduleResult(prob, surgery_paths);
+    return Result(prob, std::move(routes));
   }
 };
