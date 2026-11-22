@@ -8,10 +8,24 @@
 class ScheduleResultValidator {
  public:
   struct ValidationFlags {
-    bool check_cx_topology = true;
-    bool check_magic_operand = true;
-    bool check_magic_topology = true;
-    bool check_kink = true;
+    const bool require_logical_topology;
+    const bool require_msf;
+    const bool require_msf_topology;
+    const bool require_kink_parity;
+
+    constexpr ValidationFlags(bool logical_topology = true, bool msf = true,
+                              bool msf_topology = true, bool kink_parity = true)
+        : require_logical_topology(logical_topology),
+          require_msf(msf),
+          require_msf_topology(msf_topology),
+          require_kink_parity(kink_parity) {
+      // Checking the MSF connection requires a placed factory and a checked
+      // logical route. Kink parity requires the full topology.
+      if (require_msf_topology) {
+        assert(require_msf && require_logical_topology);
+      }
+      if (require_kink_parity) assert(require_msf_topology);
+    }
   };
 
   static ValidationFlags get_validation_flags(RoutingAlgorithm algo) {
@@ -70,17 +84,19 @@ class ScheduleResultValidator {
   void operands_are_correct(const Instruction& inst,
                             const MultiTimeSliceSurgeryPath& path) const {
     assert(inst.targetIds.size() == 2);
-    operand_matches_target(path.timing_positions.front().second,
-                           inst.targetIds[0]);
+    if (inst.targetIds[0] == -1 && path.timing_positions.size() == 1) {
+      assert(!validation_flags.require_msf);
+    } else {
+      operand_matches_target(path.timing_positions.front().second,
+                             inst.targetIds[0]);
+    }
     operand_matches_target(path.timing_positions.back().second,
                            inst.targetIds[1]);
   }
 
   void operand_matches_target(int operand, int target_id) const {
     if (target_id == -1) {
-      if (validation_flags.check_magic_operand) {
-        assert(prob.is_magic_factory(operand));
-      }
+      assert(prob.is_magic_factory(operand));
     } else {
       const int target_pos = prob.data_qubits[target_id];
       assert(operand == target_pos);
@@ -137,13 +153,16 @@ class ScheduleResultValidator {
     assert(!path.timing_positions.empty());
     operands_are_correct(inst, path);
 
-    if (topology_is_checked(inst)) {
+    const bool check_topology = inst.targetIds[0] == -1
+                                    ? validation_flags.require_msf_topology
+                                    : validation_flags.require_logical_topology;
+    if (check_topology) {
       assert(path.timing_positions.size() >= 2);
       path_is_connected(path);
       validate_path_boundaries(inst, path);
     }
 
-    if (validation_flags.check_kink) {
+    if (validation_flags.require_kink_parity) {
       kink_parity_is_valid(inst, path);
     }
   }
