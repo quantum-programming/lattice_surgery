@@ -85,7 +85,7 @@ std::string to_csv(fs::path input_path, std::string factory, int layer_count,
     DoubleTimeSliceScheduler double_scheduler(prob);
     append_metrics<MultiTimeSliceMultiBodyScheduleResult,
                    IgnoreTopologyInfiniteMagic, IgnoreTopology,
-                   IgnoreMagicTopology, IgnoreKinkParity>(
+                   IgnoreMagicTopology, IgnoreKinkParity, CareKinkParity>(
         ss, csv_row_prefix, "Double", double_scheduler);
   } else {
     SingleTimeSliceScheduler single_scheduler(prob);

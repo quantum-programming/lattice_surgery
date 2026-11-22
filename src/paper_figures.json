@@ -3,7 +3,10 @@
     {
       "name": "heisenberg_10",
       "file_patterns": [
-        "../data/circuit/result_*_10_Heisenberg2D_*.in"
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*[0-9].in",
+        "../data/circuit/result_trotter_10_Heisenberg2D_*_det.in",
+        "../data/circuit/result_trotter_10_Heisenberg2D_*_rand.in",
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*_multi.in"
       ],
       "factories": [
         "inner",
@@ -35,7 +38,8 @@
     {
       "name": "msf_prep_time_select",
       "file_patterns": [
-        "../data/circuit/result_SELECT_10_Heisenberg2D_*_6.in"
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*_6.in",
+        "../data/circuit/result_SELECT_10_Heisenberg2D_*_6_multi.in"
       ],
       "factories": [
         "inner",
@@ -71,7 +75,8 @@
     {
       "name": "msf_prep_time_trotter",
       "file_patterns": [
-        "../data/circuit/result_trotter_10_Heisenberg2D_*.in"
+        "../data/circuit/result_trotter_10_Heisenberg2D_*_det.in",
+        "../data/circuit/result_trotter_10_Heisenberg2D_*_rand.in"
       ],
       "factories": [
         "inner",
