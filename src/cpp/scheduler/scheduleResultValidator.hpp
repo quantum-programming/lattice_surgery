@@ -267,12 +267,14 @@ class ScheduleResultValidator {
 
   bool voxels_are_adjacent(const std::pair<int, int>& first,
                            const std::pair<int, int>& second) const {
-    const auto [first_beat, first_pos] = first;
-    const auto [second_beat, second_pos] = second;
+    const auto [first_code_beat, first_pos] = first;
+    const auto [second_code_beat, second_pos] = second;
     const bool spatially_adjacent =
-        first_beat == second_beat && prob.is_adjacent(first_pos, second_pos);
+        first_code_beat == second_code_beat &&
+        prob.is_adjacent(first_pos, second_pos);
     const bool temporally_adjacent =
-        std::abs(first_beat - second_beat) == 1 && first_pos == second_pos;
+        std::abs(first_code_beat - second_code_beat) == 1 &&
+        first_pos == second_pos;
     return spatially_adjacent || temporally_adjacent;
   }
 

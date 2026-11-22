@@ -91,7 +91,7 @@ class MultiTimeSliceSurgeryPath : public SurgeryPathBase {
 };
 
 struct MultiTimeSliceSurgeryTree {
-  std::vector<std::pair<int, int>> voxels;  // (beat, position)
+  std::vector<std::pair<int, int>> voxels;  // (code_beat, position)
   std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> edges;
   // In Instruction::targetIds order, with any unplaced factory omitted.
   std::vector<std::pair<int, int>> leaves;
