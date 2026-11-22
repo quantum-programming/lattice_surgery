@@ -26,7 +26,7 @@ inline SteinerTree find_minimum_steiner_tree(
     if (terminals.empty()) return {};
   }
 
-  const int vertex_count = static_cast<int>(adjacency.size());
+  const int vertex_count = int(adjacency.size());
   const std::size_t subset_count = std::size_t{1} << terminal_groups.size();
 
   struct State {
@@ -38,7 +38,7 @@ inline SteinerTree find_minimum_steiner_tree(
   // given groups. A finite state has a predecessor, a split, or is a terminal.
   std::vector<std::vector<State>> states(subset_count,
                                          std::vector<State>(vertex_count));
-  for (std::size_t group = 0; group < terminal_groups.size(); ++group) {
+  for (int group = 0; group < int(terminal_groups.size()); group++) {
     auto& row = states[std::size_t{1} << group];
     for (int terminal : terminal_groups[group]) {
       assert(0 <= terminal && terminal < vertex_count);
@@ -46,13 +46,13 @@ inline SteinerTree find_minimum_steiner_tree(
     }
   }
 
-  for (std::size_t subset = 1; subset < subset_count; ++subset) {
+  for (std::size_t subset = 1; subset < subset_count; subset++) {
     auto& row = states[subset];
     for (std::size_t left = (subset - 1) & subset; left != 0;
          left = (left - 1) & subset) {
       const std::size_t right = subset ^ left;
       if (left > right) continue;
-      for (int vertex = 0; vertex < vertex_count; ++vertex) {
+      for (int vertex = 0; vertex < vertex_count; vertex++) {
         const long long merged_cost =
             static_cast<long long>(states[left][vertex].cost) +
             states[right][vertex].cost;
@@ -66,11 +66,11 @@ inline SteinerTree find_minimum_steiner_tree(
     // Singleton subsets start at distance zero (multi-source BFS). Other
     // subsets start with the costs of the merges at each vertex.
     std::vector<std::vector<int>> buckets(vertex_count);
-    for (int vertex = 0; vertex < vertex_count; ++vertex) {
+    for (int vertex = 0; vertex < vertex_count; vertex++) {
       const int cost = row[vertex].cost;
       if (cost != INF) buckets[cost].push_back(vertex);
     }
-    for (int cost = 0; cost + 1 < vertex_count; ++cost) {
+    for (int cost = 0; cost + 1 < vertex_count; cost++) {
       for (int vertex : buckets[cost]) {
         if (row[vertex].cost != cost) continue;
         for (int neighbor : adjacency[vertex]) {
@@ -113,8 +113,8 @@ inline SteinerTree find_minimum_steiner_tree(
       pending.emplace_back(subset ^ state.split, vertex);
       pending.emplace_back(state.split, vertex);
     } else {
-      std::size_t group = 0;
-      while ((std::size_t{1} << group) != subset) ++group;
+      int group = 0;
+      while ((std::size_t{1} << group) != subset) group++;
       tree.selected_terminals[group] = vertex;
     }
   }

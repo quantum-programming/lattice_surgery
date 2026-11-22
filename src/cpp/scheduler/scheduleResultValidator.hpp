@@ -136,7 +136,7 @@ class ScheduleResultValidator {
   template <typename Route>
   void validate_routes(const std::vector<Route>& routes) const {
     assert(routes.size() == prob.instructions.size());
-    for (size_t index = 0; index < prob.instructions.size(); index++) {
+    for (int index = 0; index < int(prob.instructions.size()); index++) {
       validate_surgery(prob.instructions[index], routes[index]);
     }
   }
@@ -180,7 +180,7 @@ class ScheduleResultValidator {
     const std::set<std::pair<int, int>> leaves(tree.leaves.begin(),
                                                tree.leaves.end());
     assert(leaves.size() == tree.leaves.size());
-    const size_t operand_offset = validate_tree_operands(inst, tree, neighbors);
+    const int operand_offset = validate_tree_operands(inst, tree, neighbors);
 
     // An operand can be isolated when its topology is relaxed.
     size_t isolated_operands = 0;
@@ -188,7 +188,7 @@ class ScheduleResultValidator {
       if (leaves.count(voxel)) {
         assert(prob.is_data_qubit(voxel.second));
         assert(adjacent.size() <= 1);
-        if (adjacent.empty()) ++isolated_operands;
+        if (adjacent.empty()) isolated_operands++;
       } else {
         assert(!prob.is_data_qubit(voxel.second));
         assert(adjacent.size() >= 2);
@@ -203,7 +203,7 @@ class ScheduleResultValidator {
     }
   }
 
-  size_t validate_tree_operands(
+  int validate_tree_operands(
       const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
       const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
           neighbors) const {
@@ -211,9 +211,10 @@ class ScheduleResultValidator {
     const bool unplaced_magic = inst.targetIds.front() == -1 &&
                                 tree.leaves.size() + 1 == inst.targetIds.size();
     if (validation_flags.require_msf) assert(!unplaced_magic);
-    const size_t operand_offset = unplaced_magic ? 1 : 0;
-    assert(tree.leaves.size() + operand_offset == inst.targetIds.size());
-    for (size_t index = 0; index < tree.leaves.size(); index++) {
+    const int operand_offset = unplaced_magic ? 1 : 0;
+    assert(int(tree.leaves.size()) + operand_offset ==
+           int(inst.targetIds.size()));
+    for (int index = 0; index < int(tree.leaves.size()); index++) {
       const auto& leaf = tree.leaves[index];
       assert(neighbors.count(leaf));
       operand_matches_target(leaf.second,
@@ -226,7 +227,7 @@ class ScheduleResultValidator {
       const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
       const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
           neighbors,
-      size_t operand_offset, size_t isolated_operands) const {
+      int operand_offset, size_t isolated_operands) const {
     if (!tree.edges.empty()) {
       const auto& first_voxel = tree.edges[0].first;
       std::vector<std::pair<int, int>> dfs_stack{first_voxel};
