@@ -182,38 +182,23 @@ class ScheduleResultValidator {
     assert(leaves.size() == tree.leaves.size());
     const size_t operand_offset = validate_tree_operands(inst, tree, neighbors);
 
-    // Relaxed routing can reserve just the operand voxels without routing
-    // edges.
-    const bool check_topology = topology_is_checked(inst);
-    if (!check_topology && !validation_flags.check_kink && tree.edges.empty()) {
-      assert(tree.voxels.size() == tree.leaves.size());
-      return;
-    }
-
-    if (check_topology) {
-      for (const auto& [first, second] : tree.edges) {
-        assert(voxels_are_adjacent(first, second));
-      }
-    }
-
-    // Connectivity and |E| = |V| - 1 together rule out cycles.
-    assert(tree.edges.size() + 1 == tree.voxels.size());
+    // An operand can be isolated when its topology is relaxed.
+    size_t isolated_operands = 0;
     for (const auto& [voxel, adjacent] : neighbors) {
       if (leaves.count(voxel)) {
         assert(prob.is_data_qubit(voxel.second));
-        assert(adjacent.size() == 1);
+        assert(adjacent.size() <= 1);
+        if (adjacent.empty()) ++isolated_operands;
       } else {
         assert(!prob.is_data_qubit(voxel.second));
         assert(adjacent.size() >= 2);
       }
     }
 
-    validate_tree_connectivity(tree, neighbors);
+    validate_tree_topology(inst, tree, neighbors, operand_offset,
+                           isolated_operands);
 
-    if (check_topology) {
-      validate_tree_boundaries(inst, tree, neighbors, operand_offset);
-    }
-    if (validation_flags.check_kink) {
+    if (validation_flags.require_kink_parity) {
       assert(prob.has_valid_multibody_segments(neighbors, tree.leaves.front()));
     }
   }
@@ -223,9 +208,9 @@ class ScheduleResultValidator {
       const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
           neighbors) const {
     // An unplaced magic-state factory omits the first operand's leaf.
-    const bool unplaced_magic = !validation_flags.check_magic_operand &&
-                                inst.targetIds.front() == -1 &&
+    const bool unplaced_magic = inst.targetIds.front() == -1 &&
                                 tree.leaves.size() + 1 == inst.targetIds.size();
+    if (validation_flags.require_msf) assert(!unplaced_magic);
     const size_t operand_offset = unplaced_magic ? 1 : 0;
     assert(tree.leaves.size() + operand_offset == inst.targetIds.size());
     for (size_t index = 0; index < tree.leaves.size(); index++) {
@@ -237,42 +222,46 @@ class ScheduleResultValidator {
     return operand_offset;
   }
 
-  void validate_tree_connectivity(
-      const MultiTimeSliceSurgeryTree& tree,
-      const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
-          neighbors) const {
-    const auto& first_voxel = tree.leaves.at(0);
-    std::vector<std::pair<int, int>> dfs_stack{first_voxel};
-    std::set<std::pair<int, int>> visited{first_voxel};
-    while (!dfs_stack.empty()) {
-      const auto voxel = dfs_stack.back();
-      dfs_stack.pop_back();
-      for (const auto& neighbor : neighbors.at(voxel)) {
-        const bool first_visit = visited.insert(neighbor).second;
-        if (!first_visit) continue;
-        dfs_stack.push_back(neighbor);
-      }
-    }
-    assert(visited.size() == tree.voxels.size());
-  }
-
-  void validate_tree_boundaries(
+  void validate_tree_topology(
       const Instruction& inst, const MultiTimeSliceSurgeryTree& tree,
       const std::map<std::pair<int, int>, std::vector<std::pair<int, int>>>&
           neighbors,
-      size_t operand_offset) const {
-    for (size_t index = 0; index < tree.leaves.size(); index++) {
+      size_t operand_offset, size_t isolated_operands) const {
+    if (!tree.edges.empty()) {
+      const auto& first_voxel = tree.edges[0].first;
+      std::vector<std::pair<int, int>> dfs_stack{first_voxel};
+      std::set<std::pair<int, int>> visited{first_voxel};
+      while (!dfs_stack.empty()) {
+        const auto voxel = dfs_stack.back();
+        dfs_stack.pop_back();
+        for (const auto& neighbor : neighbors.at(voxel)) {
+          if (!visited.count(neighbor)) {
+            visited.insert(neighbor);
+            if (validation_flags.require_logical_topology) {
+              assert(voxels_are_adjacent(voxel, neighbor));
+            }
+            dfs_stack.push_back(neighbor);
+          }
+        }
+      }
+      // Every edge must belong to the DFS tree.
+      // Isolated vertices are allowed here (MSF).
+      assert(tree.edges.size() + 1 == visited.size());
+      assert(visited.size() + isolated_operands == tree.voxels.size());
+    }
+
+    const bool skip_msf = inst.targetIds[operand_offset] == -1 &&
+                          !validation_flags.require_msf_topology;
+    if (skip_msf) assert(neighbors.at(tree.leaves[0]).empty());
+    if (!validation_flags.require_logical_topology) return;
+
+    for (int index = int(skip_msf); index < int(tree.leaves.size()); index++) {
       const auto& leaf = tree.leaves[index];
       const auto& adjacent = neighbors.at(leaf);
       assert(adjacent.size() == 1);
       validate_boundary_condition(leaf, adjacent.front(),
                                   inst.directions[index + operand_offset]);
     }
-  }
-
-  bool topology_is_checked(const Instruction& inst) const {
-    return inst.gate == "CX" ? validation_flags.check_cx_topology
-                             : validation_flags.check_magic_topology;
   }
 
   bool voxels_are_adjacent(const std::pair<int, int>& first,
