@@ -3,9 +3,11 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <exception>
 #include <functional>
 #include <iomanip>
+#include <limits>
 #include <map>
 #include <queue>
 #include <set>
@@ -489,23 +491,32 @@ class DoubleTimeSliceScheduler {
     }
   }
 
+  // Type for masking bits that represent terminals.
+  using mask_t = std::uint64_t;
+
+  static mask_t all_groups_mask(int group_count) {
+    constexpr int mask_bits = std::numeric_limits<mask_t>::digits;
+    assert(0 < group_count && group_count <= mask_bits);
+    return std::numeric_limits<mask_t>::max() >> (mask_bits - group_count);
+  }
+
   struct TerminalTree {
     std::vector<int> vertices;  // Bus vertex IDs. Empty on failure.
     std::vector<std::pair<int, int>> edges;
     std::vector<int> selected_terminals;  // In operand order.
-    int remaining = 0;  // Bit mask of uncovered operand groups.
+    mask_t remaining = 0;  // Bit mask of uncovered operand groups.
 
     TerminalTree() = default;
     explicit TerminalTree(int group_count)
         : selected_terminals(group_count, -1),
-          remaining((1 << group_count) - 1) {}
+          remaining(all_groups_mask(group_count)) {}
 
     // Record this vertex as the terminal for each newly reached group.
-    void append(int vertex, int terminal_mask) {
+    void append(int vertex, mask_t terminal_mask) {
       vertices.push_back(vertex);
-      const int found = terminal_mask & remaining;
+      const mask_t found = terminal_mask & remaining;
       for (int group = 0; group < int(selected_terminals.size()); group++) {
-        if (found & (1 << group)) selected_terminals[group] = vertex;
+        if (found & (mask_t(1) << group)) selected_terminals[group] = vertex;
       }
       remaining &= ~found;
     }
@@ -513,7 +524,7 @@ class DoubleTimeSliceScheduler {
 
   struct TreeSeed {
     int vertex;
-    std::vector<int> terminal_masks;
+    std::vector<mask_t> terminal_masks;
   };
 
   // Start with the smallest terminal group in a component that covers all
@@ -523,13 +534,12 @@ class DoubleTimeSliceScheduler {
       const std::vector<std::vector<int>>& terminal_groups) {
     const int vertex_count = int(adjacency.size());
     const int group_count = int(terminal_groups.size());
-    assert(0 < group_count && group_count <= 4);
+    const mask_t all_terminals = all_groups_mask(group_count);
 
-    std::vector<int> terminal_masks(vertex_count);
-    const int all_terminals = (1 << group_count) - 1;
+    std::vector<mask_t> terminal_masks(vertex_count);
     for (int group = 0; group < group_count; group++) {
       for (int vertex : terminal_groups[group])
-        terminal_masks[vertex] |= 1 << group;
+        terminal_masks[vertex] |= mask_t(1) << group;
     }
 
     // Find a bus component with a candidate for every operand.
@@ -537,17 +547,17 @@ class DoubleTimeSliceScheduler {
     int component = -1;
     for (int start = 0; start < vertex_count; start++) {
       if (component_at[start] >= 0) continue;
-      std::vector<int> pending{start};
+      std::vector<int> dfs_stack{start};
       component_at[start] = start;
-      int terminals = 0;
-      while (!pending.empty()) {
-        const int vertex = pending.back();
-        pending.pop_back();
+      mask_t terminals = 0;
+      while (!dfs_stack.empty()) {
+        const int vertex = dfs_stack.back();
+        dfs_stack.pop_back();
         terminals |= terminal_masks[vertex];
         for (int neighbor : adjacency[vertex]) {
           if (component_at[neighbor] >= 0) continue;
           component_at[neighbor] = start;
-          pending.push_back(neighbor);
+          dfs_stack.push_back(neighbor);
         }
       }
       if (terminals == all_terminals) {
@@ -599,7 +609,8 @@ class DoubleTimeSliceScheduler {
       std::fill(distance.begin(), distance.end(), INF);
       queue.clear();
       for (int vertex : sources) {
-        if (predecessor[vertex] != unvisited || (blocked && (*blocked)[vertex])) {
+        if (predecessor[vertex] != unvisited ||
+            (blocked && (*blocked)[vertex])) {
           continue;
         }
         predecessor[vertex] = -1;
@@ -720,9 +731,10 @@ class DoubleTimeSliceScheduler {
       std::vector<bool> targets(vertex_count);
       std::vector<int> target_vertices;
       for (int group = 0; group < group_count; group++) {
-        if (!(tree.remaining & (1 << group))) continue;
+        const mask_t group_bit = mask_t(1) << group;
+        if (!(tree.remaining & group_bit)) continue;
         for (int vertex : terminal_groups[group]) {
-          if (!(terminal_masks[vertex] & (1 << group)) || targets[vertex])
+          if (!(terminal_masks[vertex] & group_bit) || targets[vertex])
             continue;
           targets[vertex] = true;
           target_vertices.push_back(vertex);
@@ -737,7 +749,8 @@ class DoubleTimeSliceScheduler {
       }
 
       // Match same-axis legs on the two sides of a crossing.
-      to_target.find(planar, target_vertices, [](int) { return false; }, &in_tree);
+      to_target.find(
+          planar, target_vertices, [](int) { return false; }, &in_tree);
       std::array<int, 4> relay{};
       int best_distance = INF;
       const auto consider = [&](int u, int v) {
