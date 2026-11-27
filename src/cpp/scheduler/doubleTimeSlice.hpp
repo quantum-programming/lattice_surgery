@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <exception>
 #include <functional>
+#include <initializer_list>
 #include <iomanip>
 #include <limits>
 #include <map>
@@ -522,14 +523,8 @@ class DoubleTimeSliceScheduler {
     }
   };
 
-  struct TreeSeed {
-    int vertex;
-    std::vector<mask_t> terminal_masks;
-  };
-
-  // Start with the smallest terminal group in a component that covers all
-  // groups.
-  static TreeSeed find_tree_seed(
+  // Keep the terminal masks in the first component covering every group.
+  static std::vector<mask_t> find_terminal_component(
       const std::vector<std::vector<int>>& adjacency,
       const std::vector<std::vector<int>>& terminal_groups) {
     const int vertex_count = int(adjacency.size());
@@ -542,9 +537,7 @@ class DoubleTimeSliceScheduler {
         terminal_masks[vertex] |= mask_t(1) << group;
     }
 
-    // Find a bus component with a candidate for every operand.
     std::vector<int> component_at(vertex_count, -1);
-    int component = -1;
     for (int start = 0; start < vertex_count; start++) {
       if (component_at[start] >= 0) continue;
       std::vector<int> dfs_stack{start};
@@ -561,39 +554,19 @@ class DoubleTimeSliceScheduler {
         }
       }
       if (terminals == all_terminals) {
-        component = start;
-        break;
+        for (int vertex = 0; vertex < vertex_count; vertex++) {
+          if (component_at[vertex] != start) terminal_masks[vertex] = 0;
+        }
+        return terminal_masks;
       }
     }
-    if (component < 0) return {-1, {}};
-
-    int seed = -1;
-    int fewest_candidates = INF;
-    for (const auto& group : terminal_groups) {
-      int count = 0;
-      int first = -1;
-      for (int vertex : group) {
-        if (component_at[vertex] != component) continue;
-        if (first < 0) first = vertex;
-        count++;
-      }
-      if (count < fewest_candidates) {
-        seed = first;
-        fewest_candidates = count;
-      }
-    }
-    assert(seed >= 0);
-
-    for (int vertex = 0; vertex < vertex_count; vertex++) {
-      if (component_at[vertex] != component) terminal_masks[vertex] = 0;
-    }
-    return {seed, std::move(terminal_masks)};
+    return {};
   }
 
   struct BusSearch {
     std::vector<int> predecessor;
     std::vector<int> distance;
-    std::vector<int> queue;
+    std::vector<int> bfs_order;
 
     explicit BusSearch(int vertex_count, bool track_distance = false)
         : predecessor(vertex_count),
@@ -607,7 +580,7 @@ class DoubleTimeSliceScheduler {
       constexpr int unvisited = -2;
       std::fill(predecessor.begin(), predecessor.end(), unvisited);
       std::fill(distance.begin(), distance.end(), INF);
-      queue.clear();
+      bfs_order.clear();
       for (int vertex : sources) {
         if (predecessor[vertex] != unvisited ||
             (blocked && (*blocked)[vertex])) {
@@ -615,10 +588,10 @@ class DoubleTimeSliceScheduler {
         }
         predecessor[vertex] = -1;
         if (!distance.empty()) distance[vertex] = 0;
-        queue.push_back(vertex);
+        bfs_order.push_back(vertex);
       }
-      for (int index = 0; index < int(queue.size()); index++) {
-        const int vertex = queue[index];
+      for (int index = 0; index < int(bfs_order.size()); index++) {
+        const int vertex = bfs_order[index];
         if (is_target(vertex)) return vertex;
         for (int neighbor : adjacency[vertex]) {
           if (predecessor[neighbor] != unvisited ||
@@ -627,7 +600,7 @@ class DoubleTimeSliceScheduler {
           }
           predecessor[neighbor] = vertex;
           if (!distance.empty()) distance[neighbor] = distance[vertex] + 1;
-          queue.push_back(neighbor);
+          bfs_order.push_back(neighbor);
         }
       }
       return -1;
@@ -638,20 +611,16 @@ class DoubleTimeSliceScheduler {
   std::vector<std::vector<int>> make_planar_adjacency(
       const std::vector<std::pair<int, int>>& bus_voxels,
       const std::vector<std::vector<int>>& adjacency,
-      std::vector<std::pair<int, int>>* relay_centers = nullptr) const {
+      std::vector<std::pair<int, int>>* transitions = nullptr) const {
     std::vector<std::vector<int>> planar(adjacency.size());
     for (int vertex = 0; vertex < int(adjacency.size()); vertex++) {
       const auto& voxel = bus_voxels[vertex];
-      // Even columns allow a relay without cutting the empty-window bus.
-      const bool relay_column =
-          relay_centers &&
-          std::get<0>(prob.position_to_xyz(voxel.second)) % 2 == 0;
       for (int neighbor : adjacency[vertex]) {
         if (prob.voxel_edge_direction(voxel, bus_voxels[neighbor]) !=
             Direction::Z) {
           planar[vertex].push_back(neighbor);
-        } else if (relay_column && vertex < neighbor) {
-          relay_centers->emplace_back(vertex, neighbor);
+        } else if (transitions && vertex < neighbor) {
+          transitions->emplace_back(vertex, neighbor);
         }
       }
     }
@@ -663,11 +632,33 @@ class DoubleTimeSliceScheduler {
       const std::vector<std::vector<int>>& adjacency,
       const std::vector<std::vector<int>>& terminal_groups,
       const std::vector<std::vector<int>>* planar = nullptr) {
-    const auto start = find_tree_seed(adjacency, terminal_groups);
-    if (start.vertex < 0) return {};
-    const auto& terminal_masks = start.terminal_masks;
+    const auto terminal_masks =
+        find_terminal_component(adjacency, terminal_groups);
+    if (terminal_masks.empty()) return {};
+
+    // Start with the first candidate in the group with the fewest candidates.
+    const auto find_tree_seed = [&terminal_groups, &terminal_masks]() {
+      int seed = -1;
+      int fewest_candidates = INF;
+      for (const auto& group : terminal_groups) {
+        int count = 0;
+        int first = -1;
+        for (int vertex : group) {
+          if (terminal_masks[vertex] == 0) continue;
+          if (first < 0) first = vertex;
+          count++;
+        }
+        if (count < fewest_candidates) {
+          seed = first;
+          fewest_candidates = count;
+        }
+      }
+      assert(seed >= 0);
+      return seed;
+    };
+    const int seed = find_tree_seed();
     TerminalTree tree(int(terminal_groups.size()));
-    tree.append(start.vertex, terminal_masks[start.vertex]);
+    tree.append(seed, terminal_masks[seed]);
     BusSearch search(int(adjacency.size()));
     const auto is_target = [&](int vertex) {
       return (terminal_masks[vertex] & tree.remaining) != 0;
@@ -681,9 +672,10 @@ class DoubleTimeSliceScheduler {
 
       // Walk back to the tree, then append from the attachment to the terminal.
       branch.clear();
-      for (int vertex = target; search.predecessor[vertex] >= 0;
-           vertex = search.predecessor[vertex]) {
-        branch.push_back(vertex);
+      int current = target;
+      while (search.predecessor[current] >= 0) {
+        branch.push_back(current);
+        current = search.predecessor[current];
       }
       for (auto vertex = branch.rbegin(); vertex != branch.rend(); vertex++) {
         tree.edges.emplace_back(
@@ -695,114 +687,178 @@ class DoubleTimeSliceScheduler {
     return tree;
   }
 
-  // Grow a tree with planar paths and at most one relay per added branch.
-  TerminalTree find_tree_with_relays(
+  // Attach the nearest two components, using planar paths first.
+  TerminalTree find_tree_without_kinks(
       const std::vector<std::pair<int, int>>& bus_voxels,
       const std::vector<std::vector<int>>& adjacency,
-      const std::vector<std::vector<int>>& terminal_groups) const {
-    const auto start = find_tree_seed(adjacency, terminal_groups);
-    if (start.vertex < 0) return {};
-    const auto& terminal_masks = start.terminal_masks;
+      std::vector<std::vector<int>> terminal_groups) const {
+    const auto terminal_masks =
+        find_terminal_component(adjacency, terminal_groups);
+    if (terminal_masks.empty()) return {};
     const int vertex_count = int(bus_voxels.size());
     const int group_count = int(terminal_groups.size());
-
-    std::vector<std::pair<int, int>> relay_centers;
+    const auto outside_component = [&](int vertex) {
+      return terminal_masks[vertex] == 0;
+    };
+    for (auto& group : terminal_groups) {
+      group.erase(std::remove_if(group.begin(), group.end(), outside_component),
+                  group.end());
+    }
+    std::vector<std::pair<int, int>> transitions;
     const auto planar =
-        make_planar_adjacency(bus_voxels, adjacency, &relay_centers);
-    BusSearch from_tree(vertex_count, true), to_target(vertex_count, true);
-    TerminalTree tree(group_count);
-    std::vector<bool> in_tree(vertex_count), reserved(vertex_count);
-    const auto append = [&](int vertex) {
-      assert(!in_tree[vertex]);
-      in_tree[vertex] = true;
-      tree.append(vertex, terminal_masks[vertex]);
-    };
-    const auto append_toward_tree = [&](int vertex, const auto& predecessor) {
-      while (!in_tree[vertex]) {
-        append(vertex);
-        const int next = predecessor[vertex];
-        assert(next >= 0);
-        tree.edges.emplace_back(std::minmax(vertex, next));
-        vertex = next;
-      }
-    };
-    append(start.vertex);
-    while (tree.remaining != 0) {
-      std::vector<bool> targets(vertex_count);
-      std::vector<int> target_vertices;
-      for (int group = 0; group < group_count; group++) {
-        const mask_t group_bit = mask_t(1) << group;
-        if (!(tree.remaining & group_bit)) continue;
-        for (int vertex : terminal_groups[group]) {
-          if (!(terminal_masks[vertex] & group_bit) || targets[vertex])
+        make_planar_adjacency(bus_voxels, adjacency, &transitions);
+    TerminalTree tree;
+    tree.selected_terminals.assign(group_count, -1);
+    std::vector<bool> in_tree(vertex_count);
+    std::vector<std::vector<int>> forest(group_count);
+    int component_count = group_count;
+
+    BusSearch search(vertex_count, true);
+    std::vector<bool> reserved(vertex_count);
+    std::vector<int> sources;
+    std::vector<int> component_at(vertex_count);
+
+    // Find the shortest planar connection between distinct forest components.
+    const auto find_planar_connection = [&]() {
+      std::pair<int, int> connection{-1, -1};
+      int best_distance = INF;
+      for (int a : search.bfs_order) {
+        for (int b : planar[a]) {
+          if (a >= b || component_at[b] < 0 ||
+              component_at[a] == component_at[b]) {
             continue;
-          targets[vertex] = true;
-          target_vertices.push_back(vertex);
+          }
+          const int distance = search.distance[a] + 1 + search.distance[b];
+          if (distance >= best_distance) continue;
+          best_distance = distance;
+          connection = {a, b};
         }
       }
-      const int target = from_tree.find(
-          planar, tree.vertices, [&](int vertex) { return targets[vertex]; },
-          &reserved);
-      if (target >= 0) {
-        append_toward_tree(target, from_tree.predecessor);
-        continue;
-      }
+      return connection;
+    };
 
-      // Match same-axis legs on the two sides of a crossing.
-      to_target.find(
-          planar, target_vertices, [](int) { return false; }, &in_tree);
-      std::array<int, 4> relay{};
+    // Find the shortest non-kink transition between distinct forest components.
+    const auto find_non_kink_transition = [&]() {
+      std::array<int, 4> non_kink_transition{-1, -1, -1, -1};
       int best_distance = INF;
-      const auto consider = [&](int u, int v) {
+      for (const auto& [u, v] : transitions) {
+        if (in_tree[u] || in_tree[v]) continue;
         for (int a : planar[u]) {
-          if (from_tree.distance[a] == INF) continue;
+          // A shortest path through an adjacent center enters the leg from it.
+          if (component_at[a] < 0 || search.predecessor[a] == u) continue;
           const auto axis =
               prob.voxel_edge_direction(bus_voxels[a], bus_voxels[u]);
           for (int b : planar[v]) {
-            if (to_target.distance[b] == INF ||
-                prob.voxel_edge_direction(bus_voxels[v], bus_voxels[b]) != axis)
+            if (component_at[b] < 0 || component_at[b] == component_at[a] ||
+                search.predecessor[b] == v ||
+                prob.voxel_edge_direction(bus_voxels[v], bus_voxels[b]) != axis) {
               continue;
-            // A shortest planar path through an adjacent center enters it next.
-            if (from_tree.predecessor[a] == u || to_target.predecessor[b] == v)
-              continue;
-            const int distance =
-                from_tree.distance[a] + 3 + to_target.distance[b];
+            }
+            const int distance = search.distance[a] + 3 + search.distance[b];
             if (distance >= best_distance) continue;
             best_distance = distance;
-            relay = {a, u, v, b};
+            non_kink_transition = {a, u, v, b};
           }
         }
-      };
-      for (const auto& [u, v] : relay_centers) {
-        if (in_tree[u] || in_tree[v] || targets[u] || targets[v]) continue;
-        consider(u, v);
-        consider(v, u);
       }
-      if (best_distance == INF) return {};
+      return non_kink_transition;
+    };
 
-      const auto [a, u, v, b] = relay;
-      append_toward_tree(a, from_tree.predecessor);
-      reserved[u] = reserved[v] = true;
-      append(u);
-      append(v);
-      tree.edges.emplace_back(std::minmax(a, u));
-      tree.edges.emplace_back(std::minmax(u, v));
-      int previous = v;
-      for (int vertex = b; vertex >= 0;
-           vertex = to_target.predecessor[vertex]) {
-        append(vertex);
-        tree.edges.emplace_back(std::minmax(previous, vertex));
-        previous = vertex;
+    // Join two predecessor paths, with transition between them if present.
+    const auto restore_connecting_path =
+        [&search](int first, int second,
+                  std::initializer_list<int> transition = {}) {
+          std::vector<int> path;
+          int vertex = first;
+          while (vertex >= 0) {
+            path.push_back(vertex);
+            vertex = search.predecessor[vertex];
+          }
+          std::reverse(path.begin(), path.end());
+          path.insert(path.end(), transition);
+          vertex = second;
+          while (vertex >= 0) {
+            path.push_back(vertex);
+            vertex = search.predecessor[vertex];
+          }
+          return path;
+        };
+
+    // Returns two component IDs to be connected and the connecting path.
+    const auto find_connecting_path =
+        [&]() -> std::tuple<int, int, std::vector<int>> {
+      std::fill(component_at.begin(), component_at.end(), -1);
+      sources.clear();
+
+      // A single bus vertex connects two data operands.
+      for (int group = 0; group < group_count; group++) {
+        if (forest[group].empty() && tree.selected_terminals[group] >= 0) {
+          continue;
+        }
+        const auto& vertices =
+            forest[group].empty() ? terminal_groups[group] : forest[group];
+        for (int vertex : vertices) {
+          if (reserved[vertex] || component_at[vertex] == group) continue;
+          // A shared source joins two components without a bus edge.
+          if (component_at[vertex] >= 0) {
+            return {component_at[vertex], group, std::vector<int>{vertex}};
+          }
+          component_at[vertex] = group;
+          sources.push_back(vertex);
+        }
       }
+
+      // A planar path (of length >= 2) connects two data operands.
+      search.find(planar, sources, [](int) { return false; }, &reserved);
+      for (int vertex : search.bfs_order) {
+        const int previous = search.predecessor[vertex];
+        if (previous >= 0) component_at[vertex] = component_at[previous];
+      }
+      const auto [left, right] = find_planar_connection();
+      if (left >= 0) {
+        return {component_at[left], component_at[right],
+                restore_connecting_path(left, right)};
+      }
+
+      // A non-kink transition is required to connect two data operands.
+      const auto [a, u, v, b] = find_non_kink_transition();
+      if (a < 0) return {};
+      auto path = restore_connecting_path(a, b, {u, v});
+      reserved[u] = reserved[v] = true;
+      return {component_at[a], component_at[b], std::move(path)};
+    };
+
+    while (component_count > 1) {
+      const auto [first, second, path] = find_connecting_path();
+      if (path.empty()) return {};
+      if (forest[first].empty()) tree.selected_terminals[first] = path.front();
+      if (forest[second].empty()) tree.selected_terminals[second] = path.back();
+      for (int vertex : path) {
+        if (in_tree[vertex]) continue;
+        in_tree[vertex] = true;
+        forest[first].push_back(vertex);
+      }
+      for (int index = 1; index < int(path.size()); index++) {
+        tree.edges.emplace_back(std::minmax(path[index - 1], path[index]));
+      }
+      forest[first].insert(forest[first].end(), forest[second].begin(),
+                           forest[second].end());
+      forest[second].clear();
+      component_count--;
     }
+    const auto connected =
+        std::find_if(forest.begin(), forest.end(),
+                     [](const auto& vertices) { return !vertices.empty(); });
+    assert(connected != forest.end());
+    tree.vertices = std::move(*connected);
     assert(tree.edges.size() + 1 == tree.vertices.size());
     return tree;
   }
 
   // Build the free bus graph and attach the earliest terminal candidates.
   template <RoutingAlgorithm routing_algo, bool prefer_planar = true>
-  MultiTimeSliceSurgeryTree find_connected_tree(const Instruction& inst,
-                                                int operand_offset) const {
+  MultiTimeSliceSurgeryTree find_tree(const Instruction& inst,
+                                      int operand_offset) const {
     static_assert(routing_algo == IgnoreKinkParity ||
                   routing_algo == CareKinkParity);
     assert(0 <= operand_offset);
@@ -857,7 +913,8 @@ class DoubleTimeSliceScheduler {
 
     TerminalTree bus_tree;
     if constexpr (routing_algo == CareKinkParity) {
-      bus_tree = find_tree_with_relays(bus_voxels, adjacency, terminal_groups);
+      bus_tree = find_tree_without_kinks(bus_voxels, adjacency,
+                                         std::move(terminal_groups));
     } else if constexpr (prefer_planar) {
       const auto planar = make_planar_adjacency(bus_voxels, adjacency);
       bus_tree = grow_tree(adjacency, terminal_groups, &planar);
@@ -899,12 +956,12 @@ class DoubleTimeSliceScheduler {
   MultiTimeSliceSurgeryTree find_tree(const Instruction& inst) const {
     assert(inst.targetIds.size() > 2);
     if constexpr (routing_algo == IgnoreKinkParity) {
-      return find_connected_tree<IgnoreKinkParity, prefer_planar>(inst, 0);
+      return find_tree<IgnoreKinkParity, prefer_planar>(inst, 0);
     } else if constexpr (routing_algo == CareKinkParity) {
-      return find_connected_tree<CareKinkParity>(inst, 0);
+      return find_tree<CareKinkParity>(inst, 0);
     } else if constexpr (routing_algo == IgnoreMagicTopology) {
       assert(inst.targetIds[0] == -1);
-      return find_connected_tree<IgnoreKinkParity, prefer_planar>(inst, 1);
+      return find_tree<IgnoreKinkParity, prefer_planar>(inst, 1);
     } else {
       static_assert(routing_algo == IgnoreTopology ||
                         routing_algo == IgnoreTopologyInfiniteMagic,
