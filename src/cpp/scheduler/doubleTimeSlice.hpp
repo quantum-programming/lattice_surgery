@@ -553,38 +553,37 @@ class DoubleTimeSliceScheduler {
 
   struct BusSearch {
     std::vector<int> predecessor;
-    std::vector<int> distance;
+    std::vector<int> distances;
+    std::vector<int> component_at;
     std::vector<int> bfs_order;
 
-    explicit BusSearch(int vertex_count)
-        : predecessor(vertex_count), distance(vertex_count) {}
-
-    // Record distances and predecessors from all sources.
-    void run(const std::vector<std::vector<int>>& adjacency,
-             const std::vector<int>& sources,
-             const std::vector<bool>* blocked = nullptr) {
-      constexpr int unvisited = -2;
-      std::fill(predecessor.begin(), predecessor.end(), unvisited);
-      std::fill(distance.begin(), distance.end(), INF);
-      bfs_order.clear();
+    // Record shortest distances, predecessors, and source components.
+    BusSearch(const std::vector<std::vector<int>>& graph,
+              const std::vector<int>& sources,
+              const std::vector<int>& source_component_at,
+              const std::vector<bool>* blocked = nullptr)
+        : predecessor(graph.size(), -1),
+          distances(graph.size(), INF),
+          component_at(source_component_at) {
+      assert(component_at.size() == graph.size());
       for (int vertex : sources) {
-        if (predecessor[vertex] != unvisited ||
-            (blocked && (*blocked)[vertex])) {
+        if (blocked && (*blocked)[vertex]) {
+          component_at[vertex] = -1;
           continue;
         }
-        predecessor[vertex] = -1;
-        distance[vertex] = 0;
+        if (distances[vertex] != INF) continue;
+        distances[vertex] = 0;
         bfs_order.push_back(vertex);
       }
       for (int index = 0; index < int(bfs_order.size()); index++) {
         const int vertex = bfs_order[index];
-        for (int neighbor : adjacency[vertex]) {
-          if (predecessor[neighbor] != unvisited ||
-              (blocked && (*blocked)[neighbor])) {
+        for (int neighbor : graph[vertex]) {
+          if (distances[neighbor] != INF || (blocked && (*blocked)[neighbor])) {
             continue;
           }
           predecessor[neighbor] = vertex;
-          distance[neighbor] = distance[vertex] + 1;
+          distances[neighbor] = distances[vertex] + 1;
+          component_at[neighbor] = component_at[vertex];
           bfs_order.push_back(neighbor);
         }
       }
@@ -648,29 +647,22 @@ class DoubleTimeSliceScheduler {
     std::vector<std::vector<int>> forest(group_count);
     int component_count = group_count;
 
-    BusSearch search(vertex_count);
     std::vector<bool> reserved(check_kinks ? vertex_count : 0);
-    std::vector<int> sources;
-    std::vector<int> component_at(vertex_count);
 
-    // Find the shortest connection (on a single layer or the whole layers)
+    // Find the shortest connection in the given search result
     const auto find_shortest_connection =
-        [&](const std::vector<std::vector<int>>& graph) {
-          search.run(graph, sources, check_kinks ? &reserved : nullptr);
-          for (int vertex : search.bfs_order) {
-            const int previous = search.predecessor[vertex];
-            if (previous >= 0) component_at[vertex] = component_at[previous];
-          }
-
+        [](const std::vector<std::vector<int>>& graph,
+           const BusSearch& search) {
           std::pair<int, int> connection{-1, -1};
           int best_distance = INF;
           for (int a : search.bfs_order) {
             for (int b : graph[a]) {
-              if (a >= b || search.distance[b] == INF ||
-                  component_at[a] == component_at[b]) {
+              if (a >= b || search.distances[b] == INF ||
+                  search.component_at[a] == search.component_at[b]) {
                 continue;
               }
-              const int distance = search.distance[a] + 1 + search.distance[b];
+              const int distance =
+                  search.distances[a] + 1 + search.distances[b];
               if (distance >= best_distance) continue;
               best_distance = distance;
               connection = {a, b};
@@ -680,24 +672,26 @@ class DoubleTimeSliceScheduler {
         };
 
     // Find the shortest non-kink transition between distinct forest components.
-    const auto find_non_kink_transition = [&]() {
+    const auto find_non_kink_transition = [&](const BusSearch& search) {
       std::array<int, 4> non_kink_transition{-1, -1, -1, -1};
       int best_distance = INF;
       for (const auto& [u, v] : transitions) {
         if (in_tree[u] || in_tree[v]) continue;
         for (int a : planar[u]) {
           // A shortest path through an adjacent center enters the leg from it.
-          if (component_at[a] < 0 || search.predecessor[a] == u) continue;
+          if (search.component_at[a] < 0 || search.predecessor[a] == u)
+            continue;
           const auto axis =
               prob.voxel_edge_direction(bus_voxels[a], bus_voxels[u]);
           for (int b : planar[v]) {
-            if (component_at[b] < 0 || component_at[b] == component_at[a] ||
+            if (search.component_at[b] < 0 ||
+                search.component_at[b] == search.component_at[a] ||
                 search.predecessor[b] == v ||
                 prob.voxel_edge_direction(bus_voxels[v], bus_voxels[b]) !=
                     axis) {
               continue;
             }
-            const int distance = search.distance[a] + 3 + search.distance[b];
+            const int distance = search.distances[a] + 3 + search.distances[b];
             if (distance >= best_distance) continue;
             best_distance = distance;
             non_kink_transition = {a, u, v, b};
@@ -707,31 +701,34 @@ class DoubleTimeSliceScheduler {
       return non_kink_transition;
     };
 
-    // Join two predecessor paths, with transition between them if present.
+    // Return the component IDs and restore the path from the search result.
     const auto restore_connecting_path =
-        [&search](int first, int second,
-                  std::initializer_list<int> transition = {}) {
-          std::vector<int> path;
-          int vertex = first;
-          while (vertex >= 0) {
-            path.push_back(vertex);
-            vertex = search.predecessor[vertex];
-          }
-          std::reverse(path.begin(), path.end());
-          path.insert(path.end(), transition);
-          vertex = second;
-          while (vertex >= 0) {
-            path.push_back(vertex);
-            vertex = search.predecessor[vertex];
-          }
-          return path;
-        };
+        [](const BusSearch& search, int first, int second,
+           std::initializer_list<int> transition = {})
+        -> std::tuple<int, int, std::vector<int>> {
+      std::vector<int> path;
+      int vertex = first;
+      while (vertex >= 0) {
+        path.push_back(vertex);
+        vertex = search.predecessor[vertex];
+      }
+      std::reverse(path.begin(), path.end());
+      path.insert(path.end(), transition);
+      vertex = second;
+      while (vertex >= 0) {
+        path.push_back(vertex);
+        vertex = search.predecessor[vertex];
+      }
+      return {search.component_at[first], search.component_at[second],
+              std::move(path)};
+    };
 
     // Returns two component IDs to be connected and the connecting path.
     const auto find_connecting_path =
         [&]() -> std::tuple<int, int, std::vector<int>> {
-      std::fill(component_at.begin(), component_at.end(), -1);
-      sources.clear();
+      // Preserve source order and store component IDs by vertex.
+      std::vector<int> sources;
+      std::vector<int> source_component_at(vertex_count, -1);
 
       // A single bus vertex connects two data operands.
       for (int group = 0; group < group_count; group++) {
@@ -742,46 +739,45 @@ class DoubleTimeSliceScheduler {
             forest[group].empty() ? terminal_groups[group] : forest[group];
         for (int vertex : vertices) {
           if ((check_kinks && reserved[vertex]) ||
-              component_at[vertex] == group) {
+              source_component_at[vertex] == group) {
             continue;
           }
           // A shared source joins two components without a bus edge.
-          if (component_at[vertex] >= 0) {
-            return {component_at[vertex], group, std::vector<int>{vertex}};
+          if (source_component_at[vertex] >= 0) {
+            return {source_component_at[vertex], group,
+                    std::vector<int>{vertex}};
           }
-          component_at[vertex] = group;
+          source_component_at[vertex] = group;
           sources.push_back(vertex);
         }
       }
 
-      // The code below reflects the following logic.
-      // If not check_kink:
-      //     If prefer_planar: Try planar first.
-      //     Try the whole graph then.
-      // If check_kink:
-      //     Try planar first.
-      //     Try non-kink transitions then.
-      std::pair<int, int> connection{-1, -1};
       if constexpr (check_kinks || prefer_planar) {
-        connection = find_shortest_connection(planar);
-      }
-      if constexpr (!check_kinks) {
-        if (connection.first < 0) {
-          connection = find_shortest_connection(adjacency);
+        const BusSearch planar_search(planar, sources, source_component_at,
+                                      check_kinks ? &reserved : nullptr);
+        const auto [left, right] =
+            find_shortest_connection(planar, planar_search);
+        if (left >= 0) {
+          return restore_connecting_path(planar_search, left, right);
+        }
+
+        if constexpr (check_kinks) {
+          const auto [a, u, v, b] = find_non_kink_transition(planar_search);
+          if (a >= 0) {
+            auto connection =
+                restore_connecting_path(planar_search, a, b, {u, v});
+            reserved[u] = reserved[v] = true;
+            return connection;
+          }
         }
       }
-      const auto [left, right] = connection;
-      if (left >= 0) {
-        return {component_at[left], component_at[right],
-                restore_connecting_path(left, right)};
-      }
 
-      if constexpr (check_kinks) {
-        const auto [a, u, v, b] = find_non_kink_transition();
-        if (a >= 0) {
-          auto path = restore_connecting_path(a, b, {u, v});
-          reserved[u] = reserved[v] = true;
-          return {component_at[a], component_at[b], std::move(path)};
+      if constexpr (!check_kinks) {
+        const BusSearch full_search(adjacency, sources, source_component_at);
+        const auto [left, right] =
+            find_shortest_connection(adjacency, full_search);
+        if (left >= 0) {
+          return restore_connecting_path(full_search, left, right);
         }
       }
       return {};
